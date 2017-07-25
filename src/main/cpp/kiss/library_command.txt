@@ -1,0 +1,1 @@
+g++ -O2 -Wall -fPIC -pedantic *.cpp -shared -o kiss.so -Wl,--whole-archive -Wl,--no-whole-archive
