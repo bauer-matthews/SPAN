@@ -49,9 +49,6 @@ public class ProtocolParser {
                 .safetyProperty(parseSafetyProperties(sectionText.get(Section.SAFETY)))
                 .build();
 
-        // TODO: remove line below
-        Console.printMessage(Severity.INFO, protocol.toString());
-
         return protocol;
     }
 
