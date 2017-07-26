@@ -11,6 +11,7 @@ package parser.protocol;
 public class Commands {
 
     static final String VERSION = "version";
+    static final String RECIPE_SIZE = "recipe size";
     static final String FRACTION = "fraction";
     static final String FUNCTIONS = "functions";
     static final String VARIABLES = "variables";

@@ -14,6 +14,7 @@ import protocol.role.ActionParseException;
 import protocol.role.Role;
 import rewriting.*;
 import rewriting.terms.*;
+import util.apfloat.ApfloatFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -124,10 +125,18 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
 
         String version = null;
+        Integer recipeSize = null;
         for(Statement statement : statements) {
 
             if(statement.getCommand().equalsIgnoreCase(Commands.VERSION)) {
                 version = statement.getValue();
+            } else if(statement.getCommand().equalsIgnoreCase(Commands.RECIPE_SIZE)) {
+                try{
+                    recipeSize = Integer.parseInt(statement.getValue().trim());
+                } catch (NumberFormatException ex) {
+                    throw new ProtocolParseException(Resources.INVALID_RECIPE_SIZE
+                            .evaluate(Collections.singletonList(statement.getValue().trim())));
+                }
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));
@@ -138,10 +147,15 @@ public class ProtocolParser {
            throw  new ProtocolParseException(Resources.NO_VERSION);
         }
 
-        return new Metadata(version);
+        if(recipeSize == null) {
+            throw new ProtocolParseException(Resources.NO_RECIPE_SIZE);
+        }
+
+        return new Metadata(version, recipeSize.intValue());
     }
 
-    private static Map<String, Apfloat> parseFractionConstants(String text) throws ProtocolParseException {
+    private static Map<String, Apfloat> parseFractionConstants(String text) throws ProtocolParseException,
+            NumberFormatException {
 
         Collection<Statement> statements = extractStatements(text);
 
@@ -149,16 +163,8 @@ public class ProtocolParser {
         for(Statement statement : statements) {
 
             if(statement.getCommand().toLowerCase().startsWith(Commands.FRACTION)) {
-
-                String[] frac = statement.getValue().split("/");
-                if(frac.length != 2) {
-                    throw new ProtocolParseException("Invalid fraction: " + statement.getValue().trim());
-                }
-
-                Apfloat num = new Apfloat(frac[0].trim());
-                Apfloat denom = new Apfloat(frac[1].trim());
-
-                constantMap.put(getName(statement.getCommand()), num.divide(denom));
+                constantMap.put(getName(statement.getCommand()),
+                        ApfloatFactory.fromString(statement.getValue().trim()));
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));
@@ -262,23 +268,40 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
         Collection<VariableTerm> variableTerms = new ArrayList<>();
 
+        Apfloat probability = null;
+
         for(Statement statement : statements) {
             if(statement.getCommand().toLowerCase().startsWith(Commands.SECRECY)) {
-                Term secretVariable = TermFactory.buildTerm(statement.getValue());
 
-                if(! (secretVariable instanceof  VariableTerm)) {
-                    throw new ProtocolParseException(Resources.INVALID_SECRET_VARIABLE
-                            .evaluate(Collections.singletonList(secretVariable.toString())));
-                } else {
-                    variableTerms.add((VariableTerm) secretVariable);
+                String[] pieces = statement.getValue().split(Resources.SECRECY_PROP_DELIMETER);
+
+                if(pieces.length !=2) {
+                    throw new ProtocolParseException(Resources.INVALID_SECRECY_PROPERTY
+                            .evaluate(Collections.singletonList(statement.getValue())));
                 }
+
+                probability = ApfloatFactory.fromString(pieces[1].trim());
+
+                String[] vars = pieces[0].split(",");
+                for(int i=0; i< vars.length; i++) {
+                    Term secretVariable = TermFactory.buildTerm(vars[i].trim());
+
+                    if(! (secretVariable instanceof  VariableTerm)) {
+                        throw new ProtocolParseException(Resources.INVALID_SECRET_VARIABLE
+                                .evaluate(Collections.singletonList(secretVariable.toString())));
+                    } else {
+                        variableTerms.add((VariableTerm) secretVariable);
+                    }
+                }
+
+                return new SafetyProperty(variableTerms, probability);
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));
             }
         }
 
-        return new SafetyProperty(variableTerms);
+        throw new ProtocolParseException(Resources.NO_SECRECY_PROPERTY);
     }
 
     private static Collection<Role> parseRoles(String text) throws ProtocolParseException, TermParseException,

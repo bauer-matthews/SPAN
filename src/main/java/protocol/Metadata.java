@@ -18,15 +18,22 @@ import static com.google.common.base.Objects.equal;
 public class Metadata {
 
     private final String version;
+    private final int recipeSize;
 
-    public Metadata(String version) {
+    public Metadata(String version, int recipeSize) {
 
         Objects.requireNonNull(version);
+
         this.version = version;
+        this.recipeSize = recipeSize;
     }
 
     String getVersion() {
         return this.version;
+    }
+
+    public int getRecipeSize() {
+        return recipeSize;
     }
 
     @Override
@@ -36,18 +43,21 @@ public class Metadata {
             return false;
         }
 
+        if(!(recipeSize == ((Metadata) o).recipeSize)) return false;
+
         return equal(version, ((Metadata) o).getVersion());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(version);
+        return Objects.hash(version, recipeSize);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("version", version)
+                .add("recipe size", recipeSize)
                 .toString();
     }
 }

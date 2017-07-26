@@ -3,6 +3,7 @@
 .metadata
 
     version : 1.0;
+    recipe size : 2;
 
 .constants
 
@@ -25,4 +26,4 @@
     role : in(v) . [u = v, T] out(p -> h(u) | h(v) + p -> h(v));
 
 .safety
-    secrecy : m;
+    secrecy : m, r >= 1/2;
