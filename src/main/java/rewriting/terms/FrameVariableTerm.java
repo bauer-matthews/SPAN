@@ -7,21 +7,21 @@ import java.util.Objects;
 /**
  * Created by matt on 7/26/17.
  */
-public class FrameVariableTerm implements Term{
+public class FrameVariableTerm implements Term {
 
     private final VariableTerm variableTerm;
-    private final int role;
+    private final int index;
 
-    public FrameVariableTerm(VariableTerm variableTerm, int role) {
+    public FrameVariableTerm(VariableTerm variableTerm, int index) {
 
         Objects.requireNonNull(variableTerm);
 
         this.variableTerm = variableTerm;
-        this.role = role;
+        this.index = index;
     }
 
     public int getRole() {
-        return role;
+        return index;
     }
 
     public VariableTerm getName() {
@@ -36,21 +36,21 @@ public class FrameVariableTerm implements Term{
         }
 
         if(!(variableTerm.equals(((FrameVariableTerm) o).variableTerm))) return false;
-        if(!(role == ((FrameVariableTerm) o).role)) return false;
+        if(!(index == ((FrameVariableTerm) o).index)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variableTerm, role);
+        return Objects.hash(variableTerm, index);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("variable term", variableTerm.toString())
-                .add("role", role)
+                .add("index", index)
                 .toString();
     }
 }

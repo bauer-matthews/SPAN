@@ -7,6 +7,7 @@ import rewriting.Rewrites;
 import rewriting.Signature;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,11 +25,11 @@ public class Protocol {
     private final Signature signature;
     private final Rewrites rewrites;
     private final Map<String, Apfloat> fractionConstants;
-    private final Collection<Role> roles;
+    private final List<Role> roles;
     private final SafetyProperty safetyProperty;
 
     Protocol(Metadata metadata, Signature signature, Rewrites rewrites, Map<String, Apfloat> fractionConstants,
-             Collection<Role> roles, SafetyProperty safetyProperty) {
+             List<Role> roles, SafetyProperty safetyProperty) {
 
         Objects.requireNonNull(metadata);
         Objects.requireNonNull(signature);
@@ -45,23 +46,23 @@ public class Protocol {
         this.safetyProperty = safetyProperty;
     }
 
-    String getProtocolVersion() {
+    public String getProtocolVersion() {
         return this.metadata.getVersion();
     }
 
-    Signature getSignature() {
+    public Signature getSignature() {
         return this.signature;
     }
 
-    Rewrites getRewrites() {
+    public Rewrites getRewrites() {
         return this.rewrites;
     }
 
-    Map<String, Apfloat> getFractionConstants() {
+    public Map<String, Apfloat> getFractionConstants() {
         return this.fractionConstants;
     }
 
-    Collection<Role> getRoles() {
+    public Collection<Role> getRoles() {
         return roles;
     }
 

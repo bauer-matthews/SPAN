@@ -1,11 +1,13 @@
 package protocol;
 
+import cache.GlobalDataCache;
 import org.apfloat.Apfloat;
 import protocol.role.Role;
 import rewriting.Rewrites;
 import rewriting.Signature;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,7 +25,7 @@ public class ProtocolBuilder {
     private Signature signature;
     private Rewrites rewrites;
     private Map<String, Apfloat> fractionConstants;
-    private Collection<Role> roles;
+    private List<Role> roles;
     private SafetyProperty safetyProperty;
 
     public ProtocolBuilder() {
@@ -50,7 +52,7 @@ public class ProtocolBuilder {
         return this;
     }
 
-    public ProtocolBuilder roles(Collection<Role> roles) {
+    public ProtocolBuilder roles(List<Role> roles) {
         this.roles = roles;
         return this;
     }

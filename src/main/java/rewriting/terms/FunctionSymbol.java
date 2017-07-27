@@ -15,18 +15,18 @@ import java.util.Objects;
 public class FunctionSymbol {
 
     private final String symbol;
-    private final int args;
+    private final int arity;
 
-    public FunctionSymbol(String symbol, int args) {
+    public FunctionSymbol(String symbol, int arity) {
 
         Objects.requireNonNull(symbol);
 
         this.symbol = symbol;
-        this.args = args;
+        this.arity = arity;
     }
 
-    public int getNumArgs() {
-        return args;
+    public int getArity() {
+        return arity;
     }
 
     public String getSymbol() {
@@ -40,7 +40,7 @@ public class FunctionSymbol {
             return false;
         }
 
-        if(this.args != ((FunctionSymbol) o).args) {
+        if(this.arity != ((FunctionSymbol) o).arity) {
             return false;
         }
 
@@ -49,14 +49,14 @@ public class FunctionSymbol {
 
     @Override
     public int hashCode() {
-        return Objects.hash(symbol, args);
+        return Objects.hash(symbol, arity);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("symbol", symbol)
-                .add("args", args)
+                .add("arity", arity)
                 .toString();
     }
 }

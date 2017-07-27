@@ -3,9 +3,13 @@ package protocol.role;
 import com.google.common.base.MoreObjects;
 import org.apfloat.Apfloat;
 import rewriting.Equality;
+import rewriting.terms.FunctionSymbol;
+import rewriting.terms.FunctionTerm;
+import rewriting.terms.Term;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,12 +20,12 @@ import java.util.Objects;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class OutputAction implements Action {
+public class OutputProcess implements AtomicProcess {
 
     Collection<Equality> guards;
     Collection<ProbOutput> probOutputs;
 
-    OutputAction(Collection<Equality> guards, Collection<ProbOutput> probOutputs) {
+    OutputProcess(Collection<Equality> guards, Collection<ProbOutput> probOutputs) {
 
         Objects.requireNonNull(guards);
         Objects.requireNonNull(probOutputs);
@@ -39,15 +43,19 @@ public class OutputAction implements Action {
         }
     }
 
+    public Collection<Equality> getGuards() {
+        return guards;
+    }
+
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof OutputAction)) {
+        if (! (o instanceof OutputProcess)) {
             return false;
         }
 
-        if(!guards.equals(((OutputAction) o).guards)) return false;
-        if(!probOutputs.equals(((OutputAction) o).probOutputs)) return false;
+        if(!guards.equals(((OutputProcess) o).guards)) return false;
+        if(!probOutputs.equals(((OutputProcess) o).probOutputs)) return false;
 
         return true;
     }

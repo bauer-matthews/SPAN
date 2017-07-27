@@ -1,7 +1,6 @@
 package protocol.role;
 
 import com.google.common.base.MoreObjects;
-import protocol.Metadata;
 import rewriting.terms.VariableTerm;
 
 import java.util.Objects;
@@ -16,11 +15,11 @@ import static com.google.common.base.Objects.equal;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class InputAction implements Action {
+public class InputProcess implements AtomicProcess {
 
     private final VariableTerm variable;
 
-    public InputAction(VariableTerm variable) {
+    public InputProcess(VariableTerm variable) {
 
         Objects.requireNonNull(variable);
         this.variable = variable;
@@ -29,11 +28,11 @@ public class InputAction implements Action {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof InputAction)) {
+        if (! (o instanceof InputProcess)) {
             return false;
         }
 
-        return equal(variable, ((InputAction) o).variable);
+        return equal(variable, ((InputProcess) o).variable);
     }
 
     @Override

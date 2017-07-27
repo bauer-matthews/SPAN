@@ -8,5 +8,6 @@ package protocol.role;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public interface Action {
+public interface AtomicProcess {
+
 }

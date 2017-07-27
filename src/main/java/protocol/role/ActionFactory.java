@@ -22,7 +22,7 @@ public class ActionFactory {
         FRACTION_CONSTANTS = fractionConstants;
     }
 
-    public static Action buildAction(String actionString) throws TermParseException, ActionParseException {
+    public static AtomicProcess buildAction(String actionString) throws TermParseException, ActionParseException {
 
         if(actionString.startsWith("in")) {
             return parseInput(actionString);
@@ -33,7 +33,7 @@ public class ActionFactory {
         }
     }
 
-    private static Action parseInput(String actionString) throws TermParseException, ActionParseException {
+    private static AtomicProcess parseInput(String actionString) throws TermParseException, ActionParseException {
         String variable = actionString.substring(actionString.indexOf("(") +1, actionString.length() -1);
 
         Term var = TermFactory.buildTerm(variable);
@@ -41,11 +41,11 @@ public class ActionFactory {
         if(! (var instanceof VariableTerm)) {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         } else {
-            return new InputAction((VariableTerm) var);
+            return new InputProcess((VariableTerm) var);
         }
     }
 
-    private static Action parseOutput(String actionString) throws TermParseException, ActionParseException {
+    private static AtomicProcess parseOutput(String actionString) throws TermParseException, ActionParseException {
 
         String guardString = actionString.substring(actionString.indexOf("[") + 1, actionString.indexOf("]"));
         String outString = actionString.substring(actionString.indexOf("]")+1);
@@ -67,7 +67,7 @@ public class ActionFactory {
             probOutputs.add(parseProbOutputs(probOutString));
         }
 
-        return new OutputAction(guards, probOutputs);
+        return new OutputProcess(guards, probOutputs);
     }
 
     private static ProbOutput parseProbOutputs(String probOutput) throws TermParseException, ActionParseException {

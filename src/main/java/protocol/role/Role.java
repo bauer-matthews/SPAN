@@ -17,12 +17,16 @@ import static com.google.common.base.Objects.equal;
  */
 public class Role {
 
-    List<Action> actions;
+    List<AtomicProcess> atomicProcess;
 
-    public Role(List<Action> actions)
+    public Role(List<AtomicProcess> atomicProcess)
     {
-        Objects.requireNonNull(actions);
-        this.actions = actions;
+        Objects.requireNonNull(atomicProcess);
+        this.atomicProcess = atomicProcess;
+    }
+
+    public List<AtomicProcess> getAtomicProcesses() {
+        return atomicProcess;
     }
 
     @Override
@@ -32,18 +36,18 @@ public class Role {
             return false;
         }
 
-        return equal(actions, ((Role) o).actions);
+        return equal(atomicProcess, ((Role) o).atomicProcess);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(actions);
+        return Objects.hash(atomicProcess);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("actions", actions.toString())
+                .add("actions", atomicProcess.toString())
                 .toString();
     }
 }

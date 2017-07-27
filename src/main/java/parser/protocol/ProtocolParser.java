@@ -1,5 +1,6 @@
 package parser.protocol;
 
+import cache.GlobalDataCache;
 import configuration.RunConfiguration;
 import log.Console;
 import log.Severity;
@@ -8,7 +9,7 @@ import protocol.Metadata;
 import protocol.Protocol;
 import protocol.ProtocolBuilder;
 import protocol.SafetyProperty;
-import protocol.role.Action;
+import protocol.role.AtomicProcess;
 import protocol.role.ActionFactory;
 import protocol.role.ActionParseException;
 import protocol.role.Role;
@@ -49,6 +50,8 @@ public class ProtocolParser {
                 .roles(parseRoles(sectionText.get(Section.ROLES)))
                 .safetyProperty(parseSafetyProperties(sectionText.get(Section.SAFETY)))
                 .build();
+
+        GlobalDataCache.setProtocol(protocol);
 
         return protocol;
     }
@@ -304,16 +307,16 @@ public class ProtocolParser {
         throw new ProtocolParseException(Resources.NO_SECRECY_PROPERTY);
     }
 
-    private static Collection<Role> parseRoles(String text) throws ProtocolParseException, TermParseException,
+    private static List<Role> parseRoles(String text) throws ProtocolParseException, TermParseException,
             ActionParseException {
 
         Collection<Statement> statements = extractStatements(text);
-        Collection<Role> roles = new ArrayList<>();
+        List<Role> roles = new ArrayList<>();
 
         for(Statement statement : statements) {
             if(statement.getCommand().toLowerCase().startsWith(Commands.ROLE)) {
 
-                List<Action> actions = new ArrayList<>();
+                List<AtomicProcess> actions = new ArrayList<>();
 
                 String[] actionStrings = statement.getValue().split("\\.");
                 for(int i = 0; i < actionStrings.length; i++) {
