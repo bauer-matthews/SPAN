@@ -1,5 +1,6 @@
 package protocol;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import parser.protocol.Statement;
 
@@ -18,7 +19,7 @@ import static com.google.common.base.Objects.equal;
 public class Metadata {
 
     private final String version;
-    private final int recipeSize;
+    private int recipeSize;
 
     public Metadata(String version, int recipeSize) {
 
@@ -28,12 +29,17 @@ public class Metadata {
         this.recipeSize = recipeSize;
     }
 
-    String getVersion() {
+    public String getVersion() {
         return this.version;
     }
 
     public int getRecipeSize() {
         return recipeSize;
+    }
+
+    @VisibleForTesting
+    public void setRecipeSize(int recipeSize) {
+        this.recipeSize = recipeSize;
     }
 
     @Override

@@ -184,8 +184,8 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
         Collection<NameTerm> publicNames = new ArrayList<>();
         Collection<NameTerm> privateNames = new ArrayList<>();
-        Collection<FunctionSymbol> functions = new ArrayList<>();
         Collection<VariableTerm> variables = new ArrayList<>();
+        List<FunctionSymbol> functions = new ArrayList<>();
 
         for(Statement statement : statements) {
 

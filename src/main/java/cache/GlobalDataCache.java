@@ -1,10 +1,14 @@
 package cache;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.apfloat.Apfloat;
 import protocol.Protocol;
 import rewriting.terms.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -16,10 +20,22 @@ import java.util.*;
  */
 public class GlobalDataCache {
 
+    private static final LoadingCache<Integer, Collection<Term>> recipies;
     private static Protocol protocol;
 
+    static {
+        recipies = CacheBuilder.newBuilder()
+                .maximumSize(1000)
+                .build(
+                        new CacheLoader<Integer, Collection<Term>>() {
+                            // TODO: tighten exception
+                            public Collection<Term> load(Integer numFrameVariables) throws Exception {
+                                return getRecipes(numFrameVariables);
+                            }
+                        });
+    }
+
     public static void setProtocol(Protocol protocolInstance) {
-        Objects.requireNonNull(protocolInstance);
         protocol = protocolInstance;
     }
 
@@ -31,11 +47,13 @@ public class GlobalDataCache {
 
         Collection<Term> terms = new ArrayList<>();
 
-        //TODO: use a helper funciton to generate all recipes of a given size and then apply the set of fuction symbols
-        // on top, cache the computed set using guava cache library. Will return the set with w1 ... wn. This way
-        // we only need to compute it once. Just make sure the transition implement it that way
-
-        // TODO: pull the recipe size and other info (function symbols etc.. from protocol).
+        for(int i=1; i <= protocol.getMetadata().getRecipeSize(); i++) {
+            if(i==1) {
+                terms = getBaseRecipes(numFrameVariables);
+            } else {
+                terms = applyFunctions(terms);
+            }
+        }
 
         return terms;
     }
@@ -81,7 +99,7 @@ public class GlobalDataCache {
 
                 int diff = functionSymbol.getArity() - currentArity;
                 for (int i = 0; i < diff; i++) {
-                    extendLists(lists, recipies);
+                    lists = extendLists(lists, recipies);
                 }
 
                 currentArity = functionSymbol.getArity();
@@ -103,21 +121,28 @@ public class GlobalDataCache {
             for (Term term : terms) {
 
                 // TODO: optimize
-                list.add(term);
-                newLists.add(list);
-                list.remove(term);
+                List<Term> newList = new ArrayList<>();
+                newList.addAll(list);
+                newList.add(term);
+                newLists.add(newList);
             }
         }
 
         return newLists;
     }
 
-    private static List<FunctionSymbol> orderByArity(Collection<FunctionSymbol> functionSymbols) {
+    private static List<FunctionSymbol> orderByArity(List<FunctionSymbol> functionSymbols) {
 
-        List<FunctionSymbol> orderedList = new ArrayList<>();
+        for(int i=0; i< functionSymbols.size(); i++) {
 
-        // TODO
+            int length = functionSymbols.size()-2;
+            for(int j=0; j< length; j++) {
+                if(functionSymbols.get(j).getArity() > functionSymbols.get(j+1).getArity()) {
+                    Collections.swap(functionSymbols, j, j+1);
+                }
+            }
+        }
 
-        return orderedList;
+        return functionSymbols;
     }
 }
