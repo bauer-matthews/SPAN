@@ -15,8 +15,8 @@ import java.util.Objects;
  */
 public class Equality {
 
-    private final Term lhs;
-    private final Term rhs;
+    private Term lhs;
+    private Term rhs;
 
     public Equality(Term lhs, Term rhs) {
 
@@ -24,6 +24,22 @@ public class Equality {
         Objects.requireNonNull(rhs);
 
         this.lhs = lhs;
+        this.rhs = rhs;
+    }
+
+    public Term getLhs() {
+        return lhs;
+    }
+
+    public Term getRhs() {
+        return rhs;
+    }
+
+    public void setLhs(Term lhs) {
+        this.lhs = lhs;
+    }
+
+    public void setRhs(Term rhs) {
         this.rhs = rhs;
     }
 
@@ -48,8 +64,8 @@ public class Equality {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("lhs", lhs)
-                .add("rhs", rhs)
+                .add("lhs", lhs.toMathString())
+                .add("rhs", rhs.toMathString())
                 .toString();
     }
 }

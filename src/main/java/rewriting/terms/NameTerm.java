@@ -2,6 +2,8 @@ package rewriting.terms;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -26,6 +28,36 @@ public class NameTerm implements Term {
     }
 
     public String getName() {
+        return name;
+    }
+
+    @Override
+    public Collection<VariableTerm> getVariables() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public Term substitute(VariableTerm var, Term term) {
+        return this;
+    }
+
+    @Override
+    public boolean isNameTerm() {
+        return true;
+    }
+
+    @Override
+    public boolean isVariableTerm() {
+        return false;
+    }
+
+    @Override
+    public boolean isCompoundTerm() {
+        return false;
+    }
+
+    @Override
+    public String toMathString() {
         return name;
     }
 
