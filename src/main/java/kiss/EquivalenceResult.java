@@ -42,13 +42,13 @@ public class EquivalenceResult {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof EquivalenceResult)) {
+        if (!(o instanceof EquivalenceResult)) {
             return false;
         }
 
-        if(!this.frame1.equals(((EquivalenceResult) o).frame1)) return false;
-        if(!this.frame2.equals(((EquivalenceResult) o).frame2)) return false;
-        if(!this.equivalent == ((EquivalenceResult) o).equivalent) return false;
+        if (!this.frame1.equals(((EquivalenceResult) o).frame1)) return false;
+        if (!this.frame2.equals(((EquivalenceResult) o).frame2)) return false;
+        if (!this.equivalent == ((EquivalenceResult) o).equivalent) return false;
 
         return true;
     }

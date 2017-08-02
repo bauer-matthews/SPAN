@@ -38,7 +38,7 @@ public class FrameVariableTerm implements Term {
     @Override
     public Term substitute(VariableTerm var, Term term) {
 
-        if(variableTerm.equals(var)) {
+        if (variableTerm.equals(var)) {
             return term;
         } else {
             return this;
@@ -69,12 +69,12 @@ public class FrameVariableTerm implements Term {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof VariableTerm)) {
+        if (!(o instanceof VariableTerm)) {
             return false;
         }
 
-        if(!(variableTerm.equals(((FrameVariableTerm) o).variableTerm))) return false;
-        if(!(index == ((FrameVariableTerm) o).index)) return false;
+        if (!(variableTerm.equals(((FrameVariableTerm) o).variableTerm))) return false;
+        if (!(index == ((FrameVariableTerm) o).index)) return false;
 
         return true;
     }

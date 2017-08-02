@@ -13,7 +13,7 @@ public class RewriteUtils {
 
     public static Term applySubstitution(Term term, Collection<Equality> equalities) {
 
-        for(Equality equality : equalities) {
+        for (Equality equality : equalities) {
             term = term.substitute((VariableTerm) equality.getLhs(), equality.getRhs());
         }
         return term;
@@ -24,9 +24,9 @@ public class RewriteUtils {
         Term subLhs = equality.getLhs();
         Term subRhs = equality.getRhs();
 
-        for(Equality subEquality : equalities) {
-            subLhs = subLhs.substitute((VariableTerm) equality.getLhs(), equality.getRhs());
-            subRhs = subRhs.substitute((VariableTerm) equality.getLhs(), equality.getRhs());
+        for (Equality subEquality : equalities) {
+            subLhs = subLhs.substitute((VariableTerm) subEquality.getLhs(), subEquality.getRhs());
+            subRhs = subRhs.substitute((VariableTerm) subEquality.getLhs(), subEquality.getRhs());
         }
 
         return new Equality(subLhs, subRhs);

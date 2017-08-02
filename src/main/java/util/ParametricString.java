@@ -37,14 +37,14 @@ public class ParametricString {
 
         String evalString = string;
 
-        if(parameters.size() != values .size() ) {
+        if (parameters.size() != values.size()) {
             Console.printMessage(Severity.WARNING, "Evaluating parametric string with " +
                     "an incorrect number of arguments");
         }
 
         int size = Math.min(parameters.size(), values.size());
 
-        for(int i=0; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             evalString = evalString.replaceAll(parameters.get(i), values.get(i));
         }
 
@@ -62,7 +62,7 @@ public class ParametricString {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof  ParametricString)) {
+        if (!(o instanceof ParametricString)) {
             return false;
         }
 

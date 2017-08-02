@@ -31,7 +31,7 @@ public class ProbOutput {
         this.outputTerms = outputTerms;
     }
 
-    public Apfloat getProbability() {
+    Apfloat getProbability() {
         return probability;
     }
 
@@ -42,12 +42,12 @@ public class ProbOutput {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof ProbOutput)) {
+        if (!(o instanceof ProbOutput)) {
             return false;
         }
 
-        if(!probability.equals(((ProbOutput) o).probability)) return false;
-        if(!outputTerms.equals(((ProbOutput) o).outputTerms)) return false;
+        if (!probability.equals(((ProbOutput) o).probability)) return false;
+        if (!outputTerms.equals(((ProbOutput) o).outputTerms)) return false;
 
         return true;
     }

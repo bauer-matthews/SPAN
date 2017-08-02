@@ -8,7 +8,7 @@ package parser.protocol;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class Commands {
+class Commands {
 
     static final String VERSION = "version";
     static final String RECIPE_SIZE = "recipe size";

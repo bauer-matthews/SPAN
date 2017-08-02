@@ -61,7 +61,7 @@ public class TestReduce {
         Term hashMessage = new FunctionTerm(HASH_SYMBOL, hashMessageTerms);
 
         reducedTerm = RewriteEngine.reduce(cipher3, rewrites);
-        assert(hashMessage.equals(reducedTerm));
+        assert (hashMessage.equals(reducedTerm));
 
         List<Term> cipher4Subterms = new ArrayList<>();
         cipher4Subterms.add(cipher3);
@@ -72,6 +72,6 @@ public class TestReduce {
         Term hashHashMessage = new FunctionTerm(HASH_SYMBOL, hashHashMessageTerms);
 
         reducedTerm = RewriteEngine.reduce(cipher4, rewrites);
-        assert(hashHashMessage.equals(reducedTerm));
+        assert (hashHashMessage.equals(reducedTerm));
     }
 }

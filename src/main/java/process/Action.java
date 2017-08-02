@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class Action {
+class Action {
 
     private final Term recipe;
     private final int roleIndex;
@@ -27,12 +27,12 @@ public class Action {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof Action)) {
+        if (!(o instanceof Action)) {
             return false;
         }
 
-        if(!recipe.equals(((Action) o).recipe)) return false;
-        if(roleIndex != ((Action) o).roleIndex) return false;
+        if (!recipe.equals(((Action) o).recipe)) return false;
+        if (roleIndex != ((Action) o).roleIndex) return false;
 
         return true;
     }

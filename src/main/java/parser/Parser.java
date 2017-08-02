@@ -11,7 +11,7 @@ import rewriting.terms.TermParseException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
+ * <p>
  * Created: 5/22/17
  *
  * @author Matthew S. Bauer

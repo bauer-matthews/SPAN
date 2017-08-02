@@ -1,11 +1,15 @@
 package configuration;
 
+import com.google.common.base.MoreObjects;
+import kiss.DeductionResult;
+
 import java.io.File;
 import java.text.ParseException;
+import java.util.Objects;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
+ * <p>
  * Created: 5/22/17
  *
  * @author Matthew S. Bauer
@@ -35,5 +39,4 @@ public class RunConfiguration {
     public static File getProtocolFile() {
         return protocolFile;
     }
-
 }

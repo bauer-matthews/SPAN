@@ -56,14 +56,14 @@ public class Signature {
     @Override
     public boolean equals(Object o) {
 
-        if( ! (o instanceof  Signature)) {
+        if (!(o instanceof Signature)) {
             return false;
         }
 
-        if(!functions.equals(((Signature) o).functions)) return false;
-        if(!publicNames.equals(((Signature) o).publicNames)) return false;
-        if(!privateNames.equals(((Signature) o).privateNames)) return false;
-        if(!variables.equals(((Signature) o).variables)) return false;
+        if (!functions.equals(((Signature) o).functions)) return false;
+        if (!publicNames.equals(((Signature) o).publicNames)) return false;
+        if (!privateNames.equals(((Signature) o).privateNames)) return false;
+        if (!variables.equals(((Signature) o).variables)) return false;
 
         return true;
     }

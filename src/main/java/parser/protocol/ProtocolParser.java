@@ -67,14 +67,14 @@ public class ProtocolParser {
             StringBuilder stringBuilder = new StringBuilder();
             String line = reader.readLine();
 
-            while(line != null) {
+            while (line != null) {
 
                 //noinspection StatementWithEmptyBody
                 if (line.startsWith("#")) {
                     // Comment, ignore
                 } else if (line.startsWith(".")) {
 
-                    if(section != null) {
+                    if (section != null) {
                         sectionText.put(section, stringBuilder.toString());
                     }
 
@@ -87,7 +87,7 @@ public class ProtocolParser {
                 line = reader.readLine();
             }
 
-            if(section != null) {
+            if (section != null) {
                 sectionText.put(section, stringBuilder.toString());
             }
 
@@ -97,7 +97,7 @@ public class ProtocolParser {
         }
 
         List<Section> sectionList = Arrays.asList(Section.values());
-        if(!sectionText.keySet().containsAll(sectionList)) {
+        if (!sectionText.keySet().containsAll(sectionList)) {
             throw new ProtocolParseException(Resources.MISSING_INVALID_SECTIONS);
         }
 
@@ -129,12 +129,12 @@ public class ProtocolParser {
 
         String version = null;
         Integer recipeSize = null;
-        for(Statement statement : statements) {
+        for (Statement statement : statements) {
 
-            if(statement.getCommand().equalsIgnoreCase(Commands.VERSION)) {
+            if (statement.getCommand().equalsIgnoreCase(Commands.VERSION)) {
                 version = statement.getValue();
-            } else if(statement.getCommand().equalsIgnoreCase(Commands.RECIPE_SIZE)) {
-                try{
+            } else if (statement.getCommand().equalsIgnoreCase(Commands.RECIPE_SIZE)) {
+                try {
                     recipeSize = Integer.parseInt(statement.getValue().trim());
                 } catch (NumberFormatException ex) {
                     throw new ProtocolParseException(Resources.INVALID_RECIPE_SIZE
@@ -146,11 +146,11 @@ public class ProtocolParser {
             }
         }
 
-        if(version == null) {
-           throw  new ProtocolParseException(Resources.NO_VERSION);
+        if (version == null) {
+            throw new ProtocolParseException(Resources.NO_VERSION);
         }
 
-        if(recipeSize == null) {
+        if (recipeSize == null) {
             throw new ProtocolParseException(Resources.NO_RECIPE_SIZE);
         }
 
@@ -163,9 +163,9 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
 
         Map<String, Apfloat> constantMap = new HashMap<>();
-        for(Statement statement : statements) {
+        for (Statement statement : statements) {
 
-            if(statement.getCommand().toLowerCase().startsWith(Commands.FRACTION)) {
+            if (statement.getCommand().toLowerCase().startsWith(Commands.FRACTION)) {
                 constantMap.put(getName(statement.getCommand()),
                         ApfloatFactory.fromString(statement.getValue().trim()));
             } else {
@@ -187,15 +187,15 @@ public class ProtocolParser {
         Collection<FunctionSymbol> functions = new ArrayList<>();
         Collection<VariableTerm> variables = new ArrayList<>();
 
-        for(Statement statement : statements) {
+        for (Statement statement : statements) {
 
-            if(statement.getCommand().toLowerCase().startsWith(Commands.FUNCTIONS)) {
+            if (statement.getCommand().toLowerCase().startsWith(Commands.FUNCTIONS)) {
 
-                for( String symbolArityPair : statement.getValue().split(",")) {
+                for (String symbolArityPair : statement.getValue().split(",")) {
 
                     String[] split = symbolArityPair.split("/");
 
-                    if( split.length != 2) {
+                    if (split.length != 2) {
                         throw new ProtocolParseException(Resources.INVALID_FUNCTION_SYMBOL
                                 .evaluate(Collections.singletonList(symbolArityPair)));
                     }
@@ -208,21 +208,21 @@ public class ProtocolParser {
                     }
                 }
 
-            } else if(statement.getCommand().toLowerCase().startsWith(Commands.PRIVATE_NAMES)) {
-                for(String name : statement.getValue().split(",")) {
+            } else if (statement.getCommand().toLowerCase().startsWith(Commands.PRIVATE_NAMES)) {
+                for (String name : statement.getValue().split(",")) {
                     privateNames.add(new NameTerm(name.trim(), true));
                 }
 
-            } else if(statement.getCommand().toLowerCase().startsWith(Commands.VARIABLES)) {
+            } else if (statement.getCommand().toLowerCase().startsWith(Commands.VARIABLES)) {
 
-                for(String var : statement.getValue().split(",")) {
+                for (String var : statement.getValue().split(",")) {
                     variables.add(new VariableTerm(var.trim()));
                 }
 
-            } else if(statement.getCommand().toLowerCase().startsWith(Commands.PUBLIC_NAMES)) {
+            } else if (statement.getCommand().toLowerCase().startsWith(Commands.PUBLIC_NAMES)) {
 
-                for(String name : statement.getValue().split(",")) {
-                    publicNames.add(new NameTerm(name.trim(),false));
+                for (String name : statement.getValue().split(",")) {
+                    publicNames.add(new NameTerm(name.trim(), false));
                 }
 
             } else {
@@ -241,12 +241,12 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
         Collection<Rewrite> rewrites = new ArrayList<>();
 
-        for(Statement statement : statements) {
-            if(statement.getCommand().toLowerCase().startsWith(Commands.REWRITE)) {
+        for (Statement statement : statements) {
+            if (statement.getCommand().toLowerCase().startsWith(Commands.REWRITE)) {
 
                 String[] rule = statement.getValue().split("->");
 
-                if(rule.length != 2) {
+                if (rule.length != 2) {
                     throw new ProtocolParseException(Resources.INVALID_REWRITE_RULE
                             .evaluate(Collections.singletonList(statement.getValue())));
                 }
@@ -273,12 +273,12 @@ public class ProtocolParser {
 
         Apfloat probability = null;
 
-        for(Statement statement : statements) {
-            if(statement.getCommand().toLowerCase().startsWith(Commands.SECRECY)) {
+        for (Statement statement : statements) {
+            if (statement.getCommand().toLowerCase().startsWith(Commands.SECRECY)) {
 
                 String[] pieces = statement.getValue().split(Resources.SECRECY_PROP_DELIMETER);
 
-                if(pieces.length !=2) {
+                if (pieces.length != 2) {
                     throw new ProtocolParseException(Resources.INVALID_SECRECY_PROPERTY
                             .evaluate(Collections.singletonList(statement.getValue())));
                 }
@@ -286,10 +286,10 @@ public class ProtocolParser {
                 probability = ApfloatFactory.fromString(pieces[1].trim());
 
                 String[] vars = pieces[0].split(",");
-                for(int i=0; i< vars.length; i++) {
+                for (int i = 0; i < vars.length; i++) {
                     Term secretVariable = TermFactory.buildTerm(vars[i].trim());
 
-                    if(! (secretVariable instanceof  VariableTerm)) {
+                    if (!(secretVariable instanceof VariableTerm)) {
                         throw new ProtocolParseException(Resources.INVALID_SECRET_VARIABLE
                                 .evaluate(Collections.singletonList(secretVariable.toString())));
                     } else {
@@ -313,13 +313,13 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
         List<Role> roles = new ArrayList<>();
 
-        for(Statement statement : statements) {
-            if(statement.getCommand().toLowerCase().startsWith(Commands.ROLE)) {
+        for (Statement statement : statements) {
+            if (statement.getCommand().toLowerCase().startsWith(Commands.ROLE)) {
 
                 List<AtomicProcess> actions = new ArrayList<>();
 
                 String[] actionStrings = statement.getValue().split("\\.");
-                for(int i = 0; i < actionStrings.length; i++) {
+                for (int i = 0; i < actionStrings.length; i++) {
                     actions.add(ActionFactory.buildAction(actionStrings[i].trim()));
                 }
 
@@ -338,7 +338,7 @@ public class ProtocolParser {
 
         String[] commandPieces = command.split(" ");
 
-        if(commandPieces.length != 2) {
+        if (commandPieces.length != 2) {
             throw new ProtocolParseException(Resources.INVALID_COMMAND.evaluate(Collections.singletonList(command)));
         }
 
@@ -352,12 +352,12 @@ public class ProtocolParser {
 
         Collection<Statement> statements = new ArrayList<>();
 
-        while(scanner.hasNext()) {
+        while (scanner.hasNext()) {
 
             String statement = scanner.next();
             String[] statementPieces = statement.split(STATEMENT_DELIMITER);
 
-            if(statementPieces.length != 2) {
+            if (statementPieces.length != 2) {
                 throw new ProtocolParseException(Resources.INVALID_STATEMENT
                         .evaluate(Collections.singletonList(statement.trim())));
             }

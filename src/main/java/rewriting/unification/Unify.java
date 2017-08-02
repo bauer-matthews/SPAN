@@ -20,7 +20,7 @@ public class Unify {
 
         Collection<Equality> solvedEqualities = computeSolvedForm(unifyTerms);
 
-        if(properSolvedForm(solvedEqualities)) {
+        if (properSolvedForm(solvedEqualities)) {
             return Optional.of(solvedEqualities);
         } else {
             return Optional.empty();
@@ -42,19 +42,19 @@ public class Unify {
     private static boolean applyTransformations(Collection<Equality> equalities) {
 
         boolean applied = false;
-        if(Transformations.applyFunction(equalities)) {
+        if (Transformations.applyFunction(equalities)) {
             applied = true;
         }
 
-        if(Transformations.applyOrient(equalities)) {
+        if (Transformations.applyOrient(equalities)) {
             applied = true;
         }
 
-        if(Transformations.applyEliminate(equalities)) {
+        if (Transformations.applyEliminate(equalities)) {
             applied = true;
         }
 
-        if(Transformations.applyDelete(equalities)) {
+        if (Transformations.applyDelete(equalities)) {
             applied = true;
         }
 
@@ -63,8 +63,8 @@ public class Unify {
 
     private static boolean properSolvedForm(Collection<Equality> equalities) {
 
-        for(Equality equality : equalities) {
-            if(!equality.getLhs().isVariableTerm()) {
+        for (Equality equality : equalities) {
+            if (!equality.getLhs().isVariableTerm()) {
                 return false;
             }
         }

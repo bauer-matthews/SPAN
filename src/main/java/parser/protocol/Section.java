@@ -8,7 +8,7 @@ package parser.protocol;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public enum Section {
+enum Section {
 
     METADATA, CONSTANTS, SIGNATURE, REWRITES, ROLES, SAFETY
 }

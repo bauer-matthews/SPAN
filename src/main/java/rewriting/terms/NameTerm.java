@@ -64,11 +64,11 @@ public class NameTerm implements Term {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof NameTerm)) {
+        if (!(o instanceof NameTerm)) {
             return false;
         }
 
-        if(this.protocolPrivate != ((NameTerm) o).protocolPrivate) {
+        if (this.protocolPrivate != ((NameTerm) o).protocolPrivate) {
             return false;
         }
 

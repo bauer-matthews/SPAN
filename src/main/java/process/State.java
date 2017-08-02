@@ -37,17 +37,17 @@ public class State {
 
         List<Action> actions = new ArrayList<>();
 
-        for(int i=0; i < roles.size(); i++) {
+        for (int i = 0; i < roles.size(); i++) {
 
-            if(roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
+            if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
                 // TODO check that the guard is satisfied (apply substitution, reduce and check for equality)
 
-                Collection<Equality> guards = ((OutputProcess)roles.get(i).getAtomicProcesses().get(0)).getGuards();
+                Collection<Equality> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
                 actions.add(new Action(null, i));
 
             } else {
-                for(Term recipe : GlobalDataCache.getRecipes(frame.size())) {
+                for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
                     actions.add(new Action(recipe, i));
                 }
             }
@@ -59,13 +59,13 @@ public class State {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof State)) {
+        if (!(o instanceof State)) {
             return false;
         }
 
-        if(!substitution.equals(((State) o).substitution)) return false;
-        if(!frame.equals(((State) o).frame)) return false;
-        if(!roles.equals(((State) o).roles)) return false;
+        if (!substitution.equals(((State) o).substitution)) return false;
+        if (!frame.equals(((State) o).frame)) return false;
+        if (!roles.equals(((State) o).roles)) return false;
 
         return true;
     }

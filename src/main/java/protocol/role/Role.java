@@ -9,7 +9,7 @@ import static com.google.common.base.Objects.equal;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
+ * <p>
  * Created: 5/22/17
  *
  * @author Matthew S. Bauer
@@ -17,10 +17,9 @@ import static com.google.common.base.Objects.equal;
  */
 public class Role {
 
-    List<AtomicProcess> atomicProcess;
+    private final List<AtomicProcess> atomicProcess;
 
-    public Role(List<AtomicProcess> atomicProcess)
-    {
+    public Role(List<AtomicProcess> atomicProcess) {
         Objects.requireNonNull(atomicProcess);
         this.atomicProcess = atomicProcess;
     }
@@ -32,7 +31,7 @@ public class Role {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof Role)) {
+        if (!(o instanceof Role)) {
             return false;
         }
 

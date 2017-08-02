@@ -22,8 +22,8 @@ import java.util.Objects;
  */
 public class OutputProcess implements AtomicProcess {
 
-    Collection<Equality> guards;
-    Collection<ProbOutput> probOutputs;
+    private final Collection<Equality> guards;
+    private final Collection<ProbOutput> probOutputs;
 
     OutputProcess(Collection<Equality> guards, Collection<ProbOutput> probOutputs) {
 
@@ -34,11 +34,11 @@ public class OutputProcess implements AtomicProcess {
         this.probOutputs = probOutputs;
 
         Apfloat sum = Apfloat.ZERO;
-        for(ProbOutput pout : probOutputs) {
+        for (ProbOutput pout : probOutputs) {
             sum = sum.add(pout.getProbability());
         }
 
-        if(!sum.equals(Apfloat.ONE)) {
+        if (!sum.equals(Apfloat.ONE)) {
             throw new IllegalArgumentException(Resources.INVALID_PROBS);
         }
     }
@@ -50,12 +50,12 @@ public class OutputProcess implements AtomicProcess {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof OutputProcess)) {
+        if (!(o instanceof OutputProcess)) {
             return false;
         }
 
-        if(!guards.equals(((OutputProcess) o).guards)) return false;
-        if(!probOutputs.equals(((OutputProcess) o).probOutputs)) return false;
+        if (!guards.equals(((OutputProcess) o).guards)) return false;
+        if (!probOutputs.equals(((OutputProcess) o).probOutputs)) return false;
 
         return true;
     }

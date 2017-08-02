@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
+ * <p>
  * Created: 5/22/17
  *
  * @author Matthew S. Bauer
@@ -21,7 +21,7 @@ class CLIOptions {
 
     private static final Options options = new Options();
     private static final Options helpOptions = new Options();
-    private static final Map<Option, Consumer<Option>>  optionMap = new HashMap<>();
+    private static final Map<Option, Consumer<Option>> optionMap = new HashMap<>();
 
     static {
         addHelpOptions(options, helpOptions);
@@ -39,7 +39,7 @@ class CLIOptions {
     static Consumer<Option> getOptionConsumer() {
         return option -> {
 
-            if( optionMap.get(option) == null ) {
+            if (optionMap.get(option) == null) {
                 printParseError(new ParseException("Unrecognized option :" + option.getOpt()));
                 CLIOptions.printUsage();
                 System.exit(1);
@@ -81,7 +81,7 @@ class CLIOptions {
 
         optionMap.put(protocol, (protocolOpt) -> {
             File protocolFile = new File(protocolOpt.getValue());
-            if(!protocolFile.exists() || protocolFile.isDirectory()) {
+            if (!protocolFile.exists() || protocolFile.isDirectory()) {
                 System.err.println("Invalid file path argument for option: " + protocolOpt.getOpt());
                 printUsage();
                 System.exit(1);

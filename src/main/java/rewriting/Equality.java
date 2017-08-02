@@ -46,12 +46,12 @@ public class Equality {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof Equality)) {
+        if (!(o instanceof Equality)) {
             return false;
         }
 
-        if(!this.lhs.equals(((Equality) o).lhs)) return false;
-        if(!this.rhs.equals(((Equality) o).rhs)) return false;
+        if (!this.lhs.equals(((Equality) o).lhs)) return false;
+        if (!this.rhs.equals(((Equality) o).rhs)) return false;
 
         return true;
     }

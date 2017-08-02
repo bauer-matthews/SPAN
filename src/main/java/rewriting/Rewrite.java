@@ -39,12 +39,12 @@ public class Rewrite {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof Rewrite)) {
+        if (!(o instanceof Rewrite)) {
             return false;
         }
 
-        if(!this.lhs.equals(((Rewrite) o).lhs)) return false;
-        if(!this.rhs.equals(((Rewrite) o).rhs)) return false;
+        if (!this.lhs.equals(((Rewrite) o).lhs)) return false;
+        if (!this.rhs.equals(((Rewrite) o).rhs)) return false;
 
         return true;
     }

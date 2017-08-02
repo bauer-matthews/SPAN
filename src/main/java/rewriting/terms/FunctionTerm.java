@@ -25,7 +25,7 @@ public class FunctionTerm implements Term {
         Objects.requireNonNull(rootSymbol);
         Objects.requireNonNull(subterms);
 
-        if(subterms.size() != rootSymbol.getArity()) {
+        if (subterms.size() != rootSymbol.getArity()) {
             throw new IllegalArgumentException(Resources.INVALID_NUM_SUBTERMS);
         }
 
@@ -45,7 +45,7 @@ public class FunctionTerm implements Term {
     public Collection<VariableTerm> getVariables() {
 
         Collection<VariableTerm> variableTerms = new ArrayList<>();
-        for(Term term : subterms) {
+        for (Term term : subterms) {
             variableTerms.addAll(term.getVariables());
         }
 
@@ -56,7 +56,7 @@ public class FunctionTerm implements Term {
     public Term substitute(VariableTerm var, Term term) {
 
         List<Term> newSubterms = new ArrayList<>();
-        for(Term subterm : subterms) {
+        for (Term subterm : subterms) {
             newSubterms.add(subterm.substitute(var, term));
         }
 
@@ -86,8 +86,8 @@ public class FunctionTerm implements Term {
         sb.append("(");
 
         boolean first = true;
-        for(Term term : subterms) {
-            if(!first) {
+        for (Term term : subterms) {
+            if (!first) {
                 sb.append(", ");
             }
             sb.append(term.toMathString());
@@ -101,11 +101,11 @@ public class FunctionTerm implements Term {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof FunctionTerm)) {
+        if (!(o instanceof FunctionTerm)) {
             return false;
         }
 
-        if(this.rootSymbol != ((FunctionTerm) o).rootSymbol) {
+        if (this.rootSymbol != ((FunctionTerm) o).rootSymbol) {
             return false;
         }
 

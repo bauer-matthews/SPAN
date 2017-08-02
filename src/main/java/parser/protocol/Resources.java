@@ -47,5 +47,4 @@ class Resources {
     static final String MISSING_INVALID_SECTIONS = "Missing or invalid sections in protocol definition";
 
     static final String SECRECY_PROP_DELIMETER = ">=";
-
 }

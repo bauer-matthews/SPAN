@@ -24,9 +24,9 @@ public class ActionFactory {
 
     public static AtomicProcess buildAction(String actionString) throws TermParseException, ActionParseException {
 
-        if(actionString.startsWith("in")) {
+        if (actionString.startsWith("in")) {
             return parseInput(actionString);
-        } else if(actionString.startsWith("[")) {
+        } else if (actionString.startsWith("[")) {
             return parseOutput(actionString);
         } else {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
@@ -34,11 +34,11 @@ public class ActionFactory {
     }
 
     private static AtomicProcess parseInput(String actionString) throws TermParseException, ActionParseException {
-        String variable = actionString.substring(actionString.indexOf("(") +1, actionString.length() -1);
+        String variable = actionString.substring(actionString.indexOf("(") + 1, actionString.length() - 1);
 
         Term var = TermFactory.buildTerm(variable);
 
-        if(! (var instanceof VariableTerm)) {
+        if (!(var instanceof VariableTerm)) {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         } else {
             return new InputProcess((VariableTerm) var);
@@ -48,7 +48,7 @@ public class ActionFactory {
     private static AtomicProcess parseOutput(String actionString) throws TermParseException, ActionParseException {
 
         String guardString = actionString.substring(actionString.indexOf("[") + 1, actionString.indexOf("]"));
-        String outString = actionString.substring(actionString.indexOf("]")+1);
+        String outString = actionString.substring(actionString.indexOf("]") + 1);
 
         Collection<Equality> guards = new ArrayList<>();
         String[] guardStrings = guardString.split(",");
@@ -61,7 +61,7 @@ public class ActionFactory {
 
         Collection<ProbOutput> probOutputs = new ArrayList<>();
 
-        String[] outStrings = outString.substring(outString.indexOf("(")+1, outString.length()-1).split("\\+");
+        String[] outStrings = outString.substring(outString.indexOf("(") + 1, outString.length() - 1).split("\\+");
 
         for (String probOutString : outStrings) {
             probOutputs.add(parseProbOutputs(probOutString));
@@ -76,13 +76,13 @@ public class ActionFactory {
 
         String[] probPieces = probOutput.split("->");
 
-        if(probPieces.length != 2) {
+        if (probPieces.length != 2) {
             throw new ActionParseException(Resources.BAD_OUTPUT.evaluate(Collections.singletonList(probOutput)));
         }
 
         Apfloat fraction = FRACTION_CONSTANTS.get(probPieces[0].trim());
 
-        if(fraction==null) {
+        if (fraction == null) {
             try {
                 fraction = new Apfloat(probPieces[0].trim());
             } catch (NumberFormatException ex) {
@@ -93,8 +93,8 @@ public class ActionFactory {
 
         String[] outPieces = probPieces[1].split("\\|");
 
-        for (int i=0; i < outPieces.length; i++) {
-            outputTerms.add(TermFactory.buildTerm(outPieces[i].trim()));
+        for (String outPiece : outPieces) {
+            outputTerms.add(TermFactory.buildTerm(outPiece.trim()));
         }
 
         return new ProbOutput(fraction, outputTerms);
@@ -103,7 +103,7 @@ public class ActionFactory {
     private static Equality parseEquality(String guard) throws TermParseException, ActionParseException {
         String[] pieces = guard.split("=");
 
-        if(pieces.length != 2) {
+        if (pieces.length != 2) {
             throw new ActionParseException(Resources.BAD_EQUALITY.evaluate(Collections.singletonList(guard)));
         }
 

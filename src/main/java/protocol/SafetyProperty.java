@@ -2,6 +2,7 @@ package protocol;
 
 import com.google.common.base.MoreObjects;
 import org.apfloat.Apfloat;
+import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ public class SafetyProperty {
     private final Collection<VariableTerm> secrets;
     private final Apfloat probability;
 
-    public SafetyProperty(Collection secrets, Apfloat probability) {
+    public SafetyProperty(Collection<VariableTerm> secrets, Apfloat probability) {
 
         Objects.requireNonNull(secrets);
         Objects.requireNonNull(probability);
@@ -32,11 +33,11 @@ public class SafetyProperty {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof SafetyProperty)) {
+        if (!(o instanceof SafetyProperty)) {
             return false;
         }
 
-        if(!(probability.equals(((SafetyProperty) o).probability))) return false;
+        if (!(probability.equals(((SafetyProperty) o).probability))) return false;
 
         return secrets.equals(((SafetyProperty) o).secrets);
     }

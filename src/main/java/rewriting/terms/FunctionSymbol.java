@@ -36,11 +36,11 @@ public class FunctionSymbol {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof FunctionSymbol)) {
+        if (!(o instanceof FunctionSymbol)) {
             return false;
         }
 
-        if(this.arity != ((FunctionSymbol) o).arity) {
+        if (this.arity != ((FunctionSymbol) o).arity) {
             return false;
         }
 

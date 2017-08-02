@@ -17,9 +17,9 @@ public class RewriteEngine {
     static Term reduce(Term term, Collection<Rewrite> rewrites) {
 
         boolean rewrite = true;
-        do{
+        do {
             Term reducedTerm = rewrite(term, rewrites);
-            if(reducedTerm != null) {
+            if (reducedTerm != null) {
                 term = reducedTerm;
             } else {
                 rewrite = false;
@@ -32,19 +32,19 @@ public class RewriteEngine {
 
     private static Term rewrite(Term term, Collection<Rewrite> rewrites) {
 
-        for(Rewrite rewrite : rewrites) {
+        for (Rewrite rewrite : rewrites) {
             Optional<Collection<Equality>> unifier = Unify.unify(term, rewrite.getLhs());
-            if(unifier.isPresent()) {
+            if (unifier.isPresent()) {
                 return RewriteUtils.applySubstitution(rewrite.getRhs(), unifier.get());
             }
         }
 
-        if(term.isCompoundTerm()) {
+        if (term.isCompoundTerm()) {
             List<Term> subterms = ((FunctionTerm) term).getSubterms();
-            for(int i=0; i< subterms.size(); i++) {
-                for(Rewrite rewrite : rewrites) {
+            for (int i = 0; i < subterms.size(); i++) {
+                for (Rewrite rewrite : rewrites) {
                     Optional<Collection<Equality>> unifier = Unify.unify(subterms.get(i), rewrite.getLhs());
-                    if(unifier.isPresent()) {
+                    if (unifier.isPresent()) {
                         subterms.set(i, RewriteUtils.applySubstitution(rewrite.getRhs(), unifier.get()));
                     }
                 }

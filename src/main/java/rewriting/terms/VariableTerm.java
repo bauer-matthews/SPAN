@@ -32,7 +32,7 @@ public class VariableTerm implements Term {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof VariableTerm)) {
+        if (!(o instanceof VariableTerm)) {
             return false;
         }
 
@@ -59,7 +59,7 @@ public class VariableTerm implements Term {
     @Override
     public Term substitute(VariableTerm var, Term term) {
 
-        if(this.equals(var)) {
+        if (this.equals(var)) {
             return term;
         } else {
             return this;

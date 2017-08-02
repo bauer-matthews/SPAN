@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
+ * <p>
  * Created: 5/22/17
  *
  * @author Matthew S. Bauer
@@ -26,13 +26,13 @@ public class OptionsParser {
             CommandLine cmd = parser.parse(CLIOptions.getOptions(), args, false);
             List<Option> optionsList = Arrays.asList(cmd.getOptions());
 
-            if(optionsList.isEmpty()) {
+            if (optionsList.isEmpty()) {
                 CLIOptions.printUsage();
                 System.exit(1);
             }
 
-            for(Option option : CLIOptions.getHelpOptions().getOptions()) {
-                if(optionsList.contains(option)) {
+            for (Option option : CLIOptions.getHelpOptions().getOptions()) {
+                if (optionsList.contains(option)) {
                     CLIOptions.printUsage();
                     System.exit(1);
                 }

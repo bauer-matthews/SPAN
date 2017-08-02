@@ -23,36 +23,36 @@ public class TermFactory {
 
     public static void initTermBuilder(Signature signature) {
 
-        for(NameTerm name : signature.getPrivateNames()) {
+        for (NameTerm name : signature.getPrivateNames()) {
             PRIVATE_NAMES.add(name.getName());
         }
 
-        for(NameTerm name : signature.getPublicNames()) {
+        for (NameTerm name : signature.getPublicNames()) {
             PUBLIC_NAMES.add(name.getName());
         }
 
-        for(VariableTerm var : signature.getVariables()) {
+        for (VariableTerm var : signature.getVariables()) {
             VARIABLES.add(var.getName());
         }
 
-        for(FunctionSymbol functionSymbol : signature.getFunctions()) {
+        for (FunctionSymbol functionSymbol : signature.getFunctions()) {
             FUNCTIONS.add(functionSymbol);
         }
     }
 
     public static Term buildTerm(String termString) throws TermParseException {
 
-        if(!termString.contains("(")) {
+        if (!termString.contains("(")) {
 
-            if(VARIABLES.contains(termString)) {
+            if (VARIABLES.contains(termString)) {
                 return new VariableTerm(termString);
             }
 
-            if(PRIVATE_NAMES.contains(termString)) {
+            if (PRIVATE_NAMES.contains(termString)) {
                 return new NameTerm(termString, true);
             }
 
-            if(PUBLIC_NAMES.contains(termString)) {
+            if (PUBLIC_NAMES.contains(termString)) {
                 return new NameTerm(termString, false);
             }
 
@@ -60,54 +60,54 @@ public class TermFactory {
 
         } else {
 
-            if(!termString.endsWith(")")) {
+            if (!termString.endsWith(")")) {
                 throw new TermParseException(Resources.BAD_PARSE.evaluate(Collections.singletonList(termString)));
             } else {
                 String functionSymbol = termString.substring(0, termString.indexOf("(")).trim();
 
-                String subtermString = termString.substring(termString.indexOf("(") + 1, termString.length()-1);
+                String subtermString = termString.substring(termString.indexOf("(") + 1, termString.length() - 1);
                 Collection<String> subterms = new ArrayList<>();
 
                 int openCount = 0;
                 int closedCount = 0;
                 int startPosition = 0;
 
-                for(int i=0; i < subtermString.length(); i++) {
+                for (int i = 0; i < subtermString.length(); i++) {
 
-                    if(subtermString.charAt(i) ==  '(') {
+                    if (subtermString.charAt(i) == '(') {
                         openCount++;
                     }
 
-                    if(subtermString.charAt(i) ==  ')') {
+                    if (subtermString.charAt(i) == ')') {
                         closedCount++;
                     }
 
-                    if(subtermString.charAt(i) ==  ',') {
+                    if (subtermString.charAt(i) == ',') {
 
-                        if(openCount == closedCount) {
+                        if (openCount == closedCount) {
                             subterms.add(subtermString.substring(startPosition, i).trim());
-                            startPosition = i+1;
+                            startPosition = i + 1;
                         }
                     }
                 }
 
                 subterms.add(subtermString.substring(startPosition).trim());
 
-                if(openCount != closedCount) {
+                if (openCount != closedCount) {
                     throw new TermParseException(Resources.UNBALANCED_PARENS
                             .evaluate(Collections.singletonList(termString)));
                 }
 
                 FunctionSymbol root = new FunctionSymbol(functionSymbol, subterms.size());
 
-                if(!FUNCTIONS.contains(root)) {
+                if (!FUNCTIONS.contains(root)) {
                     throw new TermParseException(Resources.UNKNOWN_ROOT_SYMBOL
                             .evaluate(new ArrayList<>(Arrays.asList(termString, functionSymbol))));
                 } else {
 
                     List<Term> parsedSubterms = new ArrayList<>();
 
-                    for(String subterm : subterms) {
+                    for (String subterm : subterms) {
                         parsedSubterms.add(buildTerm(subterm));
                     }
 

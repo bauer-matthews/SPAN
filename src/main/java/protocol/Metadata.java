@@ -39,11 +39,11 @@ public class Metadata {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof Metadata)) {
+        if (!(o instanceof Metadata)) {
             return false;
         }
 
-        if(!(recipeSize == ((Metadata) o).recipeSize)) return false;
+        if (!(recipeSize == ((Metadata) o).recipeSize)) return false;
 
         return equal(version, ((Metadata) o).getVersion());
     }

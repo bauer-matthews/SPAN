@@ -63,7 +63,7 @@ public class ProtocolBuilder {
 
     public Protocol build() throws IllegalStateException {
 
-        if(metadata == null || signature == null || rewrites == null || fractionConstants == null ||
+        if (metadata == null || signature == null || rewrites == null || fractionConstants == null ||
                 roles == null || safetyProperty == null) {
             throw new IllegalStateException("Builder is missing required fields");
         }

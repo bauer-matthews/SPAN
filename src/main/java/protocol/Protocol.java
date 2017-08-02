@@ -13,7 +13,7 @@ import java.util.Objects;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
+ * <p>
  * Created: 5/22/17
  *
  * @author Matthew S. Bauer
@@ -69,16 +69,16 @@ public class Protocol {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof Protocol)) {
+        if (!(o instanceof Protocol)) {
             return false;
         }
 
-        if(!metadata.equals(((Protocol) o).metadata)) return false;
-        if(!signature.equals(((Protocol) o).signature)) return false;
-        if(!rewrites.equals(((Protocol) o).rewrites)) return false;
-        if(!fractionConstants.equals(((Protocol) o).fractionConstants)) return false;
-        if(!roles.equals(((Protocol) o).roles)) return false;
-        if(!safetyProperty.equals(((Protocol) o).safetyProperty)) return false;
+        if (!metadata.equals(((Protocol) o).metadata)) return false;
+        if (!signature.equals(((Protocol) o).signature)) return false;
+        if (!rewrites.equals(((Protocol) o).rewrites)) return false;
+        if (!fractionConstants.equals(((Protocol) o).fractionConstants)) return false;
+        if (!roles.equals(((Protocol) o).roles)) return false;
+        if (!safetyProperty.equals(((Protocol) o).safetyProperty)) return false;
 
         return true;
     }

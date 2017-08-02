@@ -55,14 +55,14 @@ public class DeductionResult {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof DeductionResult)) {
+        if (!(o instanceof DeductionResult)) {
             return false;
         }
 
-        if(!this.term.equals(((DeductionResult) o).term)) return false;
-        if(!this.recipe.equals(((DeductionResult) o).recipe)) return false;
-        if(!this.frame.equals(((DeductionResult) o).frame)) return false;
-        if(!this.isDeducible == ((DeductionResult) o).isDeducible) return false;
+        if (!this.term.equals(((DeductionResult) o).term)) return false;
+        if (!this.recipe.equals(((DeductionResult) o).recipe)) return false;
+        if (!this.frame.equals(((DeductionResult) o).frame)) return false;
+        if (!this.isDeducible == ((DeductionResult) o).isDeducible) return false;
 
         return true;
     }
@@ -81,5 +81,4 @@ public class DeductionResult {
                 .add("recipe", recipe.toString())
                 .toString();
     }
-
 }

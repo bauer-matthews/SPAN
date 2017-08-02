@@ -12,8 +12,8 @@ public class ApfloatFactory {
     public static Apfloat fromString(String numString) throws NumberFormatException {
 
         String[] frac = numString.split("/");
-        if(frac.length != 2) {
-            new NumberFormatException("Invalid fraction" + numString.trim());
+        if (frac.length != 2) {
+            throw new NumberFormatException("Invalid fraction" + numString.trim());
         }
 
         Apfloat num = new Apfloat(frac[0].trim());

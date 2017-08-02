@@ -18,7 +18,7 @@ import java.util.Optional;
 public class TestUnification {
 
     @Test
-    public void TestUnify1() throws Exception{
+    public void TestUnify1() throws Exception {
 
         FunctionSymbol pairFunction = new FunctionSymbol("Pair", 2);
 
@@ -39,14 +39,14 @@ public class TestUnification {
 
         Term rhs = new FunctionTerm(pairFunction, rhsSubterms);
 
-        Optional<Collection<Equality>> solution =  Unify.unify(new Equality(lhs, rhs));
+        Optional<Collection<Equality>> solution = Unify.unify(new Equality(lhs, rhs));
 
-        assert(solution.isPresent());
-        assert(solution.get().size() == 2);
+        assert (solution.isPresent());
+        assert (solution.get().size() == 2);
 
         Term newLhs = RewriteUtils.applySubstitution(lhs, solution.get());
         Term newRhs = RewriteUtils.applySubstitution(rhs, solution.get());
 
-        assert(newLhs.equals(newRhs));
+        assert (newLhs.equals(newRhs));
     }
 }

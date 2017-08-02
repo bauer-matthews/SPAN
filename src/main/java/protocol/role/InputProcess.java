@@ -19,7 +19,7 @@ public class InputProcess implements AtomicProcess {
 
     private final VariableTerm variable;
 
-    public InputProcess(VariableTerm variable) {
+    InputProcess(VariableTerm variable) {
 
         Objects.requireNonNull(variable);
         this.variable = variable;

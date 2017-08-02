@@ -14,8 +14,8 @@ class Transformations {
 
     static boolean applyDelete(Collection<Equality> equalities) {
 
-        for(Equality equality : equalities) {
-            if(equality.getLhs().equals(equality.getRhs())) {
+        for (Equality equality : equalities) {
+            if (equality.getLhs().equals(equality.getRhs())) {
                 equalities.remove(equality);
                 return true;
             }
@@ -25,8 +25,8 @@ class Transformations {
 
     static boolean applyOrient(Collection<Equality> equalities) {
 
-        for(Equality equality : equalities) {
-            if((!(equality.getLhs().isVariableTerm())) && (equality.getRhs().isVariableTerm())) {
+        for (Equality equality : equalities) {
+            if ((!(equality.getLhs().isVariableTerm())) && (equality.getRhs().isVariableTerm())) {
                 equalities.add(new Equality(equality.getRhs(), equality.getLhs()));
                 equalities.remove(equality);
                 return true;
@@ -37,24 +37,24 @@ class Transformations {
 
     static boolean applyEliminate(Collection<Equality> equalities) {
 
-        for(Equality equality : equalities) {
+        for (Equality equality : equalities) {
 
             Collection<VariableTerm> vars = new ArrayList<>();
-            for(Equality equality1 : equalities) {
-                if(!equality.equals(equality1)) {
+            for (Equality equality1 : equalities) {
+                if (!equality.equals(equality1)) {
                     vars.addAll(equality1.getLhs().getVariables());
                     vars.addAll(equality1.getRhs().getVariables());
                 }
             }
 
-            if(vars.contains(equality.getLhs())
+            if (vars.contains(equality.getLhs())
                     && (equality.getLhs().isVariableTerm())
                     && (!(equality.getRhs().getVariables().contains(equality.getLhs())))) {
 
                 Collection<Equality> newEqualities = new ArrayList<>();
-                for(Equality equality1 : equalities) {
+                for (Equality equality1 : equalities) {
 
-                    if(equality1.equals(equality)) {
+                    if (equality1.equals(equality)) {
                         newEqualities.add(equality);
                     } else {
                         newEqualities.add(new Equality(
@@ -73,15 +73,15 @@ class Transformations {
 
     static boolean applyFunction(Collection<Equality> equalities) {
 
-        for(Equality equality : equalities) {
-            if(equality.getLhs().isCompoundTerm() && equality.getRhs().isCompoundTerm()) {
+        for (Equality equality : equalities) {
+            if (equality.getLhs().isCompoundTerm() && equality.getRhs().isCompoundTerm()) {
 
                 FunctionTerm lhs = (FunctionTerm) equality.getLhs();
                 FunctionTerm rhs = (FunctionTerm) equality.getRhs();
 
-                if(lhs.getRootSymbol().equals(rhs.getRootSymbol())) {
+                if (lhs.getRootSymbol().equals(rhs.getRootSymbol())) {
 
-                    for(int i=0; i< lhs.getRootSymbol().getArity(); i++) {
+                    for (int i = 0; i < lhs.getRootSymbol().getArity(); i++) {
                         equalities.add(new Equality(
                                 lhs.getSubterms().get(i), rhs.getSubterms().get(i)));
                     }
