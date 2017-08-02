@@ -3,7 +3,7 @@ package protocol;
 import com.google.common.base.MoreObjects;
 import org.apfloat.Apfloat;
 import protocol.role.Role;
-import rewriting.Rewrites;
+import rewriting.Rewrite;
 import rewriting.Signature;
 
 import java.util.Collection;
@@ -23,13 +23,13 @@ public class Protocol {
 
     private final Metadata metadata;
     private final Signature signature;
-    private final Rewrites rewrites;
+    private final Collection<Rewrite> rewrites;
     private final Map<String, Apfloat> fractionConstants;
     private final List<Role> roles;
     private final SafetyProperty safetyProperty;
 
-    Protocol(Metadata metadata, Signature signature, Rewrites rewrites, Map<String, Apfloat> fractionConstants,
-             List<Role> roles, SafetyProperty safetyProperty) {
+    Protocol(Metadata metadata, Signature signature, Collection<Rewrite> rewrites,
+             Map<String, Apfloat> fractionConstants, List<Role> roles, SafetyProperty safetyProperty) {
 
         Objects.requireNonNull(metadata);
         Objects.requireNonNull(signature);
@@ -54,7 +54,7 @@ public class Protocol {
         return this.signature;
     }
 
-    public Rewrites getRewrites() {
+    public Collection<Rewrite> getRewrites() {
         return this.rewrites;
     }
 

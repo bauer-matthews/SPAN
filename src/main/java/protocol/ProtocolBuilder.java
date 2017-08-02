@@ -1,9 +1,8 @@
 package protocol;
 
-import cache.GlobalDataCache;
 import org.apfloat.Apfloat;
 import protocol.role.Role;
-import rewriting.Rewrites;
+import rewriting.Rewrite;
 import rewriting.Signature;
 
 import java.util.Collection;
@@ -23,7 +22,7 @@ public class ProtocolBuilder {
     // Required Parameters
     private Metadata metadata;
     private Signature signature;
-    private Rewrites rewrites;
+    private Collection<Rewrite> rewrites;
     private Map<String, Apfloat> fractionConstants;
     private List<Role> roles;
     private SafetyProperty safetyProperty;
@@ -42,7 +41,7 @@ public class ProtocolBuilder {
         return this;
     }
 
-    public ProtocolBuilder rewrites(Rewrites rewrites) {
+    public ProtocolBuilder rewrites(Collection<Rewrite> rewrites) {
         this.rewrites = rewrites;
         return this;
     }

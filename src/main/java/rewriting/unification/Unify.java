@@ -1,6 +1,7 @@
 package rewriting.unification;
 
 import rewriting.Equality;
+import rewriting.terms.Term;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +11,10 @@ import java.util.Optional;
  * Created by mbauer on 7/30/2017.
  */
 public class Unify {
+
+    public static Optional<Collection<Equality>> unify(Term term1, Term term2) {
+        return unify(new Equality(term1, term2));
+    }
 
     public static Optional<Collection<Equality>> unify(Equality unifyTerms) {
 
