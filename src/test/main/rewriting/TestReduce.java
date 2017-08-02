@@ -46,7 +46,7 @@ public class TestReduce {
         FunctionTerm cipher2 = new FunctionTerm(DEC_SYMBOL, cipher2Subterms);
 
         Rewrite rewrite = new Rewrite(dec, VAR_M);
-        Collection rewrites = new ArrayList();
+        Collection<Rewrite> rewrites = new ArrayList<>();
         rewrites.add(rewrite);
 
         Term reducedTerm = RewriteEngine.reduce(cipher2, rewrites);
