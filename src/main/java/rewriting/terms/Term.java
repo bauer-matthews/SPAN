@@ -1,5 +1,7 @@
 package rewriting.terms;
 
+import java.util.Collection;
+
 /**
  * SPAN - Stochastic Protocol Analyzer
  * <p>
@@ -10,8 +12,16 @@ package rewriting.terms;
  */
 public interface Term {
 
-    // TODO
-    // unify
+    Collection<VariableTerm> getVariables();
 
+    Term substitute(VariableTerm var, Term term);
+
+    boolean isNameTerm();
+
+    boolean isVariableTerm();
+
+    boolean isCompoundTerm();
+
+    String toMathString();
 
 }

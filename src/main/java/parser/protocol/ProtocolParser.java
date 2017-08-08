@@ -236,7 +236,7 @@ public class ProtocolParser {
         return signature;
     }
 
-    private static Rewrites parseRewrites(String text) throws ProtocolParseException, TermParseException {
+    private static Collection<Rewrite> parseRewrites(String text) throws ProtocolParseException, TermParseException {
 
         Collection<Statement> statements = extractStatements(text);
         Collection<Rewrite> rewrites = new ArrayList<>();
@@ -262,7 +262,7 @@ public class ProtocolParser {
             }
         }
 
-        return new Rewrites(rewrites);
+        return rewrites;
     }
 
     private static SafetyProperty parseSafetyProperties(String text) throws TermParseException,

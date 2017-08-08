@@ -2,6 +2,8 @@ package rewriting.terms;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,8 +20,6 @@ public class FunctionTerm implements Term {
     private final FunctionSymbol rootSymbol;
     private final List<Term> subterms;
 
-
-
     public FunctionTerm(FunctionSymbol rootSymbol, List<Term> subterms) {
 
         Objects.requireNonNull(rootSymbol);
@@ -31,6 +31,71 @@ public class FunctionTerm implements Term {
 
         this.rootSymbol = rootSymbol;
         this.subterms = subterms;
+    }
+
+    public FunctionSymbol getRootSymbol() {
+        return rootSymbol;
+    }
+
+    public List<Term> getSubterms() {
+        return subterms;
+    }
+
+    @Override
+    public Collection<VariableTerm> getVariables() {
+
+        Collection<VariableTerm> variableTerms = new ArrayList<>();
+        for(Term term : subterms) {
+            variableTerms.addAll(term.getVariables());
+        }
+
+        return variableTerms;
+    }
+
+    @Override
+    public Term substitute(VariableTerm var, Term term) {
+
+        List<Term> newSubterms = new ArrayList<>();
+        for(Term subterm : subterms) {
+            newSubterms.add(subterm.substitute(var, term));
+        }
+
+        return new FunctionTerm(this.rootSymbol, newSubterms);
+    }
+
+    @Override
+    public boolean isNameTerm() {
+        return false;
+    }
+
+    @Override
+    public boolean isVariableTerm() {
+        return false;
+    }
+
+    @Override
+    public boolean isCompoundTerm() {
+        return true;
+    }
+
+    @Override
+    public String toMathString() {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(rootSymbol.getSymbol());
+        sb.append("(");
+
+        boolean first = true;
+        for(Term term : subterms) {
+            if(!first) {
+                sb.append(", ");
+            }
+            sb.append(term.toMathString());
+            first = false;
+        }
+
+        sb.append(")");
+        return sb.toString();
     }
 
     @Override
@@ -59,5 +124,4 @@ public class FunctionTerm implements Term {
                 .add("subterms", subterms)
                 .toString();
     }
-
 }

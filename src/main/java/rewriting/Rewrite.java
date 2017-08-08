@@ -28,6 +28,14 @@ public class Rewrite {
         this.rhs = rhs;
     }
 
+    public Term getLhs() {
+        return lhs;
+    }
+
+    public Term getRhs() {
+        return rhs;
+    }
+
     @Override
     public boolean equals(Object o) {
 

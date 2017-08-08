@@ -2,6 +2,8 @@ package rewriting.terms;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -47,5 +49,40 @@ public class VariableTerm implements Term {
         return MoreObjects.toStringHelper(this)
                 .add("variable", variable)
                 .toString();
+    }
+
+    @Override
+    public Collection<VariableTerm> getVariables() {
+        return Collections.singleton(this);
+    }
+
+    @Override
+    public Term substitute(VariableTerm var, Term term) {
+
+        if(this.equals(var)) {
+            return term;
+        } else {
+            return this;
+        }
+    }
+
+    @Override
+    public boolean isNameTerm() {
+        return false;
+    }
+
+    @Override
+    public boolean isVariableTerm() {
+        return true;
+    }
+
+    @Override
+    public boolean isCompoundTerm() {
+        return false;
+    }
+
+    @Override
+    public String toMathString() {
+        return variable;
     }
 }
