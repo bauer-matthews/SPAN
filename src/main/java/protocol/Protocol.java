@@ -66,6 +66,10 @@ public class Protocol {
         return roles;
     }
 
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
     @Override
     public boolean equals(Object o) {
 

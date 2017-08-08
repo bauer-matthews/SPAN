@@ -6,6 +6,7 @@ import rewriting.terms.NameTerm;
 import rewriting.terms.VariableTerm;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,12 +19,12 @@ import java.util.Objects;
  */
 public class Signature {
 
-    private final Collection<FunctionSymbol> functions;
+    private final List<FunctionSymbol> functions;
     private final Collection<NameTerm> publicNames;
     private final Collection<NameTerm> privateNames;
     private final Collection<VariableTerm> variables;
 
-    public Signature(Collection<FunctionSymbol> functions, Collection<NameTerm> publicNames,
+    public Signature(List<FunctionSymbol> functions, Collection<NameTerm> publicNames,
                      Collection<NameTerm> privateNames, Collection<VariableTerm> variables) {
 
         Objects.requireNonNull(functions);
@@ -37,7 +38,7 @@ public class Signature {
         this.variables = variables;
     }
 
-    public Collection<FunctionSymbol> getFunctions() {
+    public List<FunctionSymbol> getFunctions() {
         return functions;
     }
 
