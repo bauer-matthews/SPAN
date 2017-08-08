@@ -10,4 +10,8 @@ package protocol.role;
  */
 public interface AtomicProcess {
 
+    boolean isOutput();
+
+    boolean isInput();
+
 }

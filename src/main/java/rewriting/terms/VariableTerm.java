@@ -53,7 +53,12 @@ public class VariableTerm implements Term {
 
     @Override
     public Collection<VariableTerm> getVariables() {
-        return Collections.singleton(this);
+        return Collections.singletonList(this);
+    }
+
+    @Override
+    public Collection<NameTerm> getPrivateNames() {
+        return Collections.emptyList();
     }
 
     @Override

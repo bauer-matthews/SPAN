@@ -13,7 +13,7 @@ import java.util.Optional;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class TestKiss {
+public class TestInvokeKiss {
 
     String QUERRY_1 = "signature pair/2, fst/1, snd/1, enc/2, dec/2;\n" +
             "variables x, y, z;\n" +

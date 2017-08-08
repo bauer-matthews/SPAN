@@ -37,6 +37,16 @@ public class NameTerm implements Term {
     }
 
     @Override
+    public Collection<NameTerm> getPrivateNames() {
+
+        if(protocolPrivate) {
+            return Collections.singletonList(this);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
     public Term substitute(VariableTerm var, Term term) {
         return this;
     }

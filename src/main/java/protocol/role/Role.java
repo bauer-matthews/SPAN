@@ -17,15 +17,23 @@ import static com.google.common.base.Objects.equal;
  */
 public class Role {
 
-    private final List<AtomicProcess> atomicProcess;
+    private final List<AtomicProcess> atomicProcesses;
 
-    public Role(List<AtomicProcess> atomicProcess) {
-        Objects.requireNonNull(atomicProcess);
-        this.atomicProcess = atomicProcess;
+    public Role(List<AtomicProcess> atomicProcesses) {
+        Objects.requireNonNull(atomicProcesses);
+        this.atomicProcesses = atomicProcesses;
     }
 
     public List<AtomicProcess> getAtomicProcesses() {
-        return atomicProcess;
+        return atomicProcesses;
+    }
+
+    public AtomicProcess getHead() {
+        return atomicProcesses.get(0);
+    }
+
+    public void removeHead() {
+        atomicProcesses.remove(0);
     }
 
     @Override
@@ -35,18 +43,18 @@ public class Role {
             return false;
         }
 
-        return equal(atomicProcess, ((Role) o).atomicProcess);
+        return equal(atomicProcesses, ((Role) o).atomicProcesses);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(atomicProcess);
+        return Objects.hash(atomicProcesses);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("actions", atomicProcess.toString())
+                .add("atomic processes", atomicProcesses.toString())
                 .toString();
     }
 }

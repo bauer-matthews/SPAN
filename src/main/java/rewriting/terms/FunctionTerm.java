@@ -53,6 +53,17 @@ public class FunctionTerm implements Term {
     }
 
     @Override
+    public Collection<NameTerm> getPrivateNames() {
+
+        Collection<NameTerm> nameTerms = new ArrayList<>();
+        for (Term term : subterms) {
+            nameTerms.addAll(term.getPrivateNames());
+        }
+
+        return nameTerms;
+    }
+
+    @Override
     public Term substitute(VariableTerm var, Term term) {
 
         List<Term> newSubterms = new ArrayList<>();

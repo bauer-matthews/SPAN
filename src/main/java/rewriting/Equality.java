@@ -35,12 +35,8 @@ public class Equality {
         return rhs;
     }
 
-    public void setLhs(Term lhs) {
-        this.lhs = lhs;
-    }
-
-    public void setRhs(Term rhs) {
-        this.rhs = rhs;
+    public String toMathString() {
+        return lhs.toMathString() + " = " + rhs.toMathString();
     }
 
     @Override

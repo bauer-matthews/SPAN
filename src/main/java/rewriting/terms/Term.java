@@ -14,6 +14,8 @@ public interface Term {
 
     Collection<VariableTerm> getVariables();
 
+    Collection<NameTerm> getPrivateNames();
+
     Term substitute(VariableTerm var, Term term);
 
     boolean isNameTerm();

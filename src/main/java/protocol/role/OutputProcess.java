@@ -47,6 +47,20 @@ public class OutputProcess implements AtomicProcess {
         return guards;
     }
 
+    public Collection<ProbOutput> getProbOutputs() {
+        return probOutputs;
+    }
+
+    @Override
+    public boolean isOutput() {
+        return false;
+    }
+
+    @Override
+    public boolean isInput() {
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
 

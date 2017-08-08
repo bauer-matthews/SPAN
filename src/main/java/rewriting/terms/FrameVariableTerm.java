@@ -36,6 +36,11 @@ public class FrameVariableTerm implements Term {
     }
 
     @Override
+    public Collection<NameTerm> getPrivateNames() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public Term substitute(VariableTerm var, Term term) {
 
         if (variableTerm.equals(var)) {

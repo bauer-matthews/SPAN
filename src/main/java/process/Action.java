@@ -24,6 +24,14 @@ class Action {
         this.roleIndex = roleIndex;
     }
 
+    public int getRoleIndex() {
+        return roleIndex;
+    }
+
+    public Term getRecipe() {
+        return recipe;
+    }
+
     @Override
     public boolean equals(Object o) {
 

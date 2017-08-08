@@ -31,7 +31,7 @@ public class ProbOutput {
         this.outputTerms = outputTerms;
     }
 
-    Apfloat getProbability() {
+    public Apfloat getProbability() {
         return probability;
     }
 

@@ -9,6 +9,7 @@ import rewriting.terms.FrameVariableTerm;
 import rewriting.terms.FunctionSymbol;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
+import util.rewrite.RewriteUtils;
 
 import java.util.*;
 
@@ -18,11 +19,11 @@ import java.util.*;
 public class State {
 
 
-    private final Map<VariableTerm, Term> substitution;
-    private final Map<FrameVariableTerm, Term> frame;
+    private final List<Equality> substitution;
+    private final List<Equality> frame;
     private final List<Role> roles;
 
-    State(Map<VariableTerm, Term> substitution, Map<FrameVariableTerm, Term> frame, List<Role> roles) {
+    State(List<Equality> substitution, List<Equality> frame, List<Role> roles) {
 
         Objects.requireNonNull(substitution);
         Objects.requireNonNull(frame);
@@ -54,6 +55,51 @@ public class State {
         }
 
         return actions;
+    }
+
+    List<Role> getRoles() {
+        return roles;
+    }
+
+    public List<Equality> getFrame() {
+        return frame;
+    }
+
+    public List<Equality> getSubstitution() {
+        return substitution;
+    }
+
+    State outputTerms(List<Term> terms, int roleIndex) {
+
+        roles.get(roleIndex).removeHead();
+
+        List<Equality> newFrame = new ArrayList<>();
+        newFrame.addAll(frame);
+
+        int index = newFrame.size();
+        for(Term term : terms) {
+            newFrame.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), index),
+                    RewriteUtils.applySubstitution(term, substitution)));
+            index++;
+        }
+
+        return new State(substitution, newFrame, roles);
+    }
+
+    State inputTerm(VariableTerm variable, Term value, int roleIndex) {
+
+        roles.get(roleIndex).removeHead();
+
+        List<Equality> newSubstitution = new ArrayList<>();
+        newSubstitution.addAll(substitution);
+
+        newSubstitution.add(new Equality(variable, RewriteUtils.applySubstitution(value, frame)));
+
+        return new State(newSubstitution, frame, roles);
+    }
+
+    public State copy() {
+        return new State(substitution, frame, roles);
     }
 
     @Override

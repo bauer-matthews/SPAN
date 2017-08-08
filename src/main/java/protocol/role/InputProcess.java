@@ -25,6 +25,20 @@ public class InputProcess implements AtomicProcess {
         this.variable = variable;
     }
 
+    public VariableTerm getVariable() {
+        return variable;
+    }
+
+    @Override
+    public boolean isOutput() {
+        return false;
+    }
+
+    @Override
+    public boolean isInput() {
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
 
