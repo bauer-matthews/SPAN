@@ -1,7 +1,8 @@
 package rewriting;
 
 import org.junit.Test;
-import rewriting.terms.FunctionSymbol;
+import resources.rewritting.PairRewrites;
+import resources.signature.Pair;
 import rewriting.terms.FunctionTerm;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
@@ -20,24 +21,22 @@ public class TestUnification {
     @Test
     public void TestUnify1() throws Exception {
 
-        FunctionSymbol pairFunction = new FunctionSymbol("Pair", 2);
-
         ArrayList<Term> subtermsYK = new ArrayList<>();
         subtermsYK.add(new VariableTerm("y"));
         subtermsYK.add(new VariableTerm("k"));
-        Term pairYK = new FunctionTerm(pairFunction, subtermsYK);
+        Term pairYK = new FunctionTerm(Pair.PAIR_SYMBOL, subtermsYK);
 
         ArrayList<Term> lhsSubterms = new ArrayList<>();
         lhsSubterms.add(new VariableTerm("x"));
         lhsSubterms.add(pairYK);
 
-        Term lhs = new FunctionTerm(pairFunction, lhsSubterms);
+        Term lhs = new FunctionTerm(Pair.PAIR_SYMBOL, lhsSubterms);
 
         ArrayList<Term> rhsSubterms = new ArrayList<>();
         rhsSubterms.add(new VariableTerm("n"));
         rhsSubterms.add(new VariableTerm("z"));
 
-        Term rhs = new FunctionTerm(pairFunction, rhsSubterms);
+        Term rhs = new FunctionTerm(Pair.PAIR_SYMBOL, rhsSubterms);
 
         Optional<Collection<Equality>> solution = Unify.unify(new Equality(lhs, rhs));
 

@@ -1,13 +1,20 @@
 package kiss;
 
 import org.junit.Test;
+import process.State;
+import protocol.SafetyProperty;
+import resources.rewritting.RewriteBuilder;
+import resources.signature.SignatureBuilder;
+import resources.signature.Simple;
+import resources.signature.SymmetricKey;
+import rewriting.Equality;
+import rewriting.Rewrite;
 import rewriting.Signature;
-import rewriting.terms.FunctionSymbol;
-import rewriting.terms.NameTerm;
-import rewriting.terms.VariableTerm;
+import rewriting.terms.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,46 +22,94 @@ import java.util.List;
  */
 public class TestEncodeKiss {
 
-    private static final FunctionSymbol PAIR = new FunctionSymbol("pair", 2);
-    private static final FunctionSymbol FST = new FunctionSymbol("fst", 1);
-    private static final FunctionSymbol SND = new FunctionSymbol("snd", 1);
-    private static final FunctionSymbol ENC = new FunctionSymbol("enc", 2);
-    private static final FunctionSymbol DEC = new FunctionSymbol("dec", 2);
+    private static final String defaultEncoding =
+            "signature one/1, two/2, three/3, enc/2, dec/2, hash/1, pair/2, fst/1, snd/1;\n" +
+                    "variables sx, sy, sz, m, k, x, y;\n" +
+                    "names a, b, c, d, e, f, W0, W1;\n" +
+                    "rewrite\n" +
+                    "\t\tdec(enc(m, k), k) -> m;\n" +
+                    "\t\tfst(pair(x, y)) -> x;\n" +
+                    "\t\tsnd(pair(x, y)) -> y;\n" +
+                    "frames\n" +
+                    "\t\tphi1 = new d, e, d.{W0 = enc(d, e), W1 = d},\n" +
+                    "\t\tphi2 = new f, e.{W0 = enc(f, e), W1 = a};\n" +
+                    "questions\n" +
+                    "\t\tequiv phi1 phi2;";
 
-    private static final VariableTerm X = new VariableTerm("x");
-    private static final VariableTerm Y = new VariableTerm("y");
-    private static final VariableTerm Z = new VariableTerm("z");
-
-    private static final NameTerm A = new NameTerm("a", true);
-    private static final NameTerm B = new NameTerm("b", true);
-    private static final NameTerm C = new NameTerm("c", false);
-    private static final NameTerm K = new NameTerm("k", true);
-
+    private static final String deductionEncoding =
+            "signature one/1, two/2, three/3, enc/2, dec/2, hash/1, pair/2, fst/1, snd/1;\n" +
+                    "variables sx, sy, sz, m, k, x, y;\n" +
+                    "names a, b, c, d, e, f, W0, W1;\n" +
+                    "rewrite\n" +
+                    "\t\tdec(enc(m, k), k) -> m;\n" +
+                    "\t\tfst(pair(x, y)) -> x;\n" +
+                    "\t\tsnd(pair(x, y)) -> y;\n" +
+                    "frames\n" +
+                    "\t\tphi1 = new d, e, d.{W0 = enc(d, e), W1 = d},\n" +
+                    "\t\tphi2 = new f, e.{W0 = enc(f, e), W1 = a};\n" +
+                    "questions\n" +
+                    "\t\tequiv phi1 phi2,\n" +
+                    "\t\tdeducible NameTerm{name=d, private=true} phi1,\n" +
+                    "\t\tdeducible NameTerm{name=d, private=true} phi2;";
 
     @Test
     public void encodeKiss() throws Exception {
 
-        List<FunctionSymbol> functions = new ArrayList<>();
-        functions.add(PAIR);
-        functions.add(FST);
-        functions.add(SND);
-        functions.add(ENC);
-        functions.add(DEC);
+        Signature signature = new SignatureBuilder()
+                .addSimple()
+                .addSymmetricKey()
+                .addPair()
+                .build();
 
-        Collection<NameTerm> publicNames = new ArrayList<>();
-        publicNames.add(C);
+        List<Rewrite> rewrites = new RewriteBuilder()
+                .addSymmetricKey()
+                .addPair()
+                .build();
 
-        Collection<NameTerm> privateNames = new ArrayList<>();
-        privateNames.add(A);
-        privateNames.add(B);
-        privateNames.add(K);
+        // DEFINE STATE 1
+        List<Equality> frame1 = new ArrayList<>();
 
-        Collection<VariableTerm> variables = new ArrayList<>();
-        variables.add(X);
-        variables.add(Y);
-        variables.add(Z);
+        List<Term> cipher1Subterms = new ArrayList<>();
+        cipher1Subterms.add(Simple.SEC_NAME_D);
+        cipher1Subterms.add(Simple.SEC_NAME_E);
+        Term cipher1 = new FunctionTerm(SymmetricKey.ENC_SYMBOL, cipher1Subterms);
 
-        Signature signature = new Signature(functions, publicNames, privateNames, variables);
+        frame1.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 0), cipher1));
+        frame1.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 1), Simple.SEC_NAME_D));
+
+        State state1 = new State(Collections.emptyList(), frame1, Collections.emptyList());
+
+        // DEFINE STATE 2
+        List<Equality> frame2 = new ArrayList<>();
+
+        List<Term> cipher2Subterms = new ArrayList<>();
+        cipher2Subterms.add(Simple.SEC_NAME_F);
+        cipher2Subterms.add(Simple.SEC_NAME_E);
+        Term cipher2 = new FunctionTerm(SymmetricKey.ENC_SYMBOL, cipher2Subterms);
+
+        frame2.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 0), cipher2));
+        frame2.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 1), Simple.PUB_NAME_A));
+
+        State state2 = new State(Collections.emptyList(), frame2, Collections.emptyList());
+
+        long startTime = System.currentTimeMillis();
+
+        String encodedString =
+                KissEncoder.encode(signature, rewrites, state1, state2,
+                        Collections.emptyList(), Collections.emptyList());
+
+        long stopTime = System.currentTimeMillis();
+
+        System.out.println("Kiss Encoding Time: " + (stopTime - startTime) + " milliseconds");
+
+        assert (encodedString.equals(defaultEncoding));
+
+        encodedString =
+                KissEncoder.encode(signature, rewrites, state1, state2,
+                       Collections.singletonList(Simple.SEC_NAME_D), Collections.singletonList(Simple.SEC_NAME_D));
+
+        assert (encodedString.equals(deductionEncoding));
+
 
     }
 }

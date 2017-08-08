@@ -23,7 +23,7 @@ public class State {
     private final List<Equality> frame;
     private final List<Role> roles;
 
-    State(List<Equality> substitution, List<Equality> frame, List<Role> roles) {
+    public State(List<Equality> substitution, List<Equality> frame, List<Role> roles) {
 
         Objects.requireNonNull(substitution);
         Objects.requireNonNull(frame);

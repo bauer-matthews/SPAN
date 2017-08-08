@@ -8,8 +8,7 @@ import protocol.Metadata;
 import protocol.Protocol;
 import protocol.ProtocolBuilder;
 import protocol.SafetyProperty;
-import rewriting.Rewrites;
-import rewriting.Signature;
+import resources.signature.Simple;
 import rewriting.terms.*;
 
 import java.util.*;
@@ -44,9 +43,9 @@ public class TestGlobalDataCache {
 
         assert(recipes.size() == 4);
 
-        assert(recipes.contains(new NameTerm("a", false)));
-        assert(recipes.contains(new NameTerm("b", false)));
-        assert(recipes.contains(new NameTerm("c", false)));
+        assert(recipes.contains(Simple.PUB_NAME_A));
+        assert(recipes.contains(Simple.PUB_NAME_B));
+        assert(recipes.contains(Simple.PUB_NAME_C));
 
         assert(recipes.contains(new FrameVariableTerm(new VariableTerm("W"), 0)));
     }
@@ -64,25 +63,12 @@ public class TestGlobalDataCache {
 
     private static void initializeProtocol() {
 
-        List<FunctionSymbol> functionSymbolList = new ArrayList<>();
-
-        functionSymbolList.add(new FunctionSymbol("one", 1));
-        functionSymbolList.add(new FunctionSymbol("two", 2));
-        functionSymbolList.add(new FunctionSymbol("three", 2));
-
-        Collection<NameTerm> pubicNames = new ArrayList<>();
-        pubicNames.add(new NameTerm("a", false));
-        pubicNames.add(new NameTerm("b", false));
-        pubicNames.add(new NameTerm("c", false));
-
-        Signature signature = new Signature(functionSymbolList, pubicNames, new ArrayList<>(), new ArrayList<>());
-
         protocol = new ProtocolBuilder()
                 .metadata(new Metadata("1", 1))
-                .signature(signature)
+                .signature(Simple.SIGNATURE)
                 .safetyProperty(new SafetyProperty(Collections.emptyList(), Apfloat.ONE))
                 .fractionConstants(new HashMap<>())
-                .rewrites(new Rewrites(Collections.emptyList()))
+                .rewrites(Collections.emptyList())
                 .roles(Collections.emptyList())
                 .build();
     }

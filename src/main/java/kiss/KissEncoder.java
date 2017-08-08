@@ -24,7 +24,7 @@ public class KissEncoder {
     public static String encode(Signature signature, Collection<Rewrite> rewrites, State state1, State state2,
                                 List<Term> frame1Secrets, List<Term> frame2Secrets) {
 
-        Joiner joiner = Joiner.on(",");
+        Joiner joiner = Joiner.on(", ");
         StringBuilder sb = new StringBuilder();
 
         sb.append("signature ");
@@ -43,11 +43,11 @@ public class KissEncoder {
         sb.append(joiner.join(signature.getPublicNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
-        sb.append(",");
+        sb.append(", ");
         sb.append(joiner.join(signature.getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
-        sb.append(",");
+        sb.append(", ");
 
         int frameTerms = Math.max(state1.getFrame().size(), state2.getFrame().size()) - 1;
 
@@ -62,6 +62,7 @@ public class KissEncoder {
         sb.append("rewrite\n");
 
         for(Rewrite rewrite : rewrites) {
+            sb.append("\t\t");
             sb.append(rewrite.getLhs().toMathString());
             sb.append(" -> ");
             sb.append(rewrite.getRhs().toMathString());
@@ -70,6 +71,7 @@ public class KissEncoder {
 
         sb.append("frames\n");
 
+        sb.append("\t\t");
         sb.append("phi1 = new ");
         sb.append(joiner.join(getPrivateNames(state1).stream()
                 .map(NameTerm::toMathString)
@@ -80,6 +82,7 @@ public class KissEncoder {
                 .collect(Collectors.toList())));
         sb.append("},\n");
 
+        sb.append("\t\t");
         sb.append("phi2 = new ");
         sb.append(joiner.join(getPrivateNames(state2).stream()
                 .map(NameTerm::toMathString)
@@ -91,26 +94,28 @@ public class KissEncoder {
         sb.append("};\n");
 
         sb.append("questions\n");
+        sb.append("\t\t");
         sb.append("equiv phi1 phi2");
 
         if(frame1Secrets.isEmpty() && frame2Secrets.isEmpty()) {
             sb.append(";");
         } else {
-            sb.append("\n");
+            sb.append(",\n");
             for(Term sec : frame1Secrets) {
-                sb.append("deducible ");
+                sb.append("\t\tdeducible ");
                 sb.append(sec);
                 sb.append(" phi1,\n");
             }
 
             for(Term sec : frame2Secrets) {
-                sb.append("deducible ");
+                sb.append("\t\tdeducible ");
                 sb.append(sec);
                 sb.append(" phi2,\n");
             }
 
-            sb.delete(sb.length()-3, sb.length()-1);
-            sb.append(";");
+            int lastSemi = sb.lastIndexOf(",");
+            sb.replace(lastSemi, lastSemi+1, ";");
+            sb.deleteCharAt(sb.lastIndexOf("\n"));
         }
 
         return sb.toString();
