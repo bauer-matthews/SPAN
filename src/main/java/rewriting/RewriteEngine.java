@@ -14,7 +14,7 @@ import java.util.Optional;
  */
 public class RewriteEngine {
 
-    static Term reduce(Term term, Collection<Rewrite> rewrites) {
+    public static Term reduce(Term term, Collection<Rewrite> rewrites) {
 
         boolean rewrite = true;
         do {

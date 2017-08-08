@@ -5,6 +5,7 @@ import com.google.common.base.MoreObjects;
 import protocol.role.OutputProcess;
 import protocol.role.Role;
 import rewriting.Equality;
+import rewriting.RewriteEngine;
 import rewriting.terms.FrameVariableTerm;
 import rewriting.terms.FunctionSymbol;
 import rewriting.terms.Term;
@@ -42,10 +43,27 @@ public class State {
 
             if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
-                // TODO check that the guard is satisfied (apply substitution, reduce and check for equality)
-
                 Collection<Equality> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
-                actions.add(new Action(null, i));
+                boolean guardPassed = true;
+
+                for (Equality equality : guards) {
+
+                    Equality groundGuard = RewriteUtils.applySubstitution(equality, substitution);
+
+                    Term lhsNormalForm = RewriteEngine.reduce(groundGuard.getLhs(),
+                            GlobalDataCache.getProtocol().getRewrites());
+
+                    Term rhsNormalForm = RewriteEngine.reduce(groundGuard.getRhs(),
+                            GlobalDataCache.getProtocol().getRewrites());
+
+                    if (!lhsNormalForm.equals(rhsNormalForm)) {
+                        guardPassed = false;
+                    }
+                }
+
+                if (guardPassed) {
+                    actions.add(new Action(null, i));
+                }
 
             } else {
                 for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
@@ -77,7 +95,7 @@ public class State {
         newFrame.addAll(frame);
 
         int index = newFrame.size();
-        for(Term term : terms) {
+        for (Term term : terms) {
             newFrame.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), index),
                     RewriteUtils.applySubstitution(term, substitution)));
             index++;

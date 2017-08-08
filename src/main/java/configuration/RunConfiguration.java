@@ -2,6 +2,7 @@ package configuration;
 
 import com.google.common.base.MoreObjects;
 import kiss.DeductionResult;
+import process.EquivalenceChecker;
 
 import java.io.File;
 import java.text.ParseException;
@@ -38,5 +39,9 @@ public class RunConfiguration {
 
     public static File getProtocolFile() {
         return protocolFile;
+    }
+
+    public static EquivalenceChecker.EquivalenceMethod getEquivalenceMethod() {
+        return EquivalenceChecker.EquivalenceMethod.KISS;
     }
 }

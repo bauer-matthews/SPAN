@@ -29,13 +29,13 @@ public class TransitionSystem {
 
         AtomicProcess atomic = state.getRoles().get(action.getRoleIndex()).getHead();
 
-        if(!atomic.isOutput()) {
+        if (!atomic.isOutput()) {
             throw new InvalidActionException(Resources.BAD_ROLE_RECIPE);
         }
 
         Collection<Transition> transitions = new ArrayList<>();
         for (ProbOutput output : ((OutputProcess) atomic).getProbOutputs()) {
-            new Transition(output.getProbability(),
+            new Transition(output.getProbability(), state,
                     state.outputTerms(output.getOutputTerms(), action.getRoleIndex()));
         }
 
@@ -46,12 +46,12 @@ public class TransitionSystem {
 
         AtomicProcess atomic = state.getRoles().get(action.getRoleIndex()).getHead();
 
-        if(!atomic.isInput()) {
+        if (!atomic.isInput()) {
             throw new InvalidActionException(Resources.BAD_ROLE_RECIPE);
         }
 
         Transition transition = new Transition(
-                Apfloat.ONE, state.inputTerm(((InputProcess) atomic).getVariable(),
+                Apfloat.ONE, state, state.inputTerm(((InputProcess) atomic).getVariable(),
                 action.getRecipe(), action.getRoleIndex()));
 
         return Collections.singleton(transition);

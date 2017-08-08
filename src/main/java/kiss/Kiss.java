@@ -13,9 +13,9 @@ import java.util.Optional;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-class Kiss {
+public class Kiss {
 
-    static String invokeKiss(String command, String input) throws InterruptedException, IOException {
+    public static String invokeKiss(String command, String input) throws InterruptedException, IOException {
 
         ProcessBuilder pb = new ProcessBuilder(command);
 
@@ -36,7 +36,7 @@ class Kiss {
         return theString;
     }
 
-    static List<DeductionResult> getDeductionResults(String output) {
+    public static List<DeductionResult> getDeductionResults(String output) {
         List<DeductionResult> results = new ArrayList<>();
 
         String[] pieces = output.split("\n");
@@ -69,7 +69,7 @@ class Kiss {
         return results;
     }
 
-    static List<EquivalenceResult> getEquivalenceResults(String output) {
+    public static List<EquivalenceResult> getEquivalenceResults(String output) {
         List<EquivalenceResult> results = new ArrayList<>();
 
         String[] pieces = output.split("\n");
