@@ -74,7 +74,7 @@ public class FrameVariableTerm implements Term {
     @Override
     public boolean equals(Object o) {
 
-        if(! (o instanceof FrameVariableTerm)) {
+        if (!(o instanceof FrameVariableTerm)) {
             return false;
         }
 

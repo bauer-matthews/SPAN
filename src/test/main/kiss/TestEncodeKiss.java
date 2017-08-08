@@ -8,7 +8,7 @@ import rewriting.terms.VariableTerm;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by mbauer on 8/3/2017.
@@ -34,7 +34,7 @@ public class TestEncodeKiss {
     @Test
     public void encodeKiss() throws Exception {
 
-        Collection<FunctionSymbol> functions = new ArrayList<>();
+        List<FunctionSymbol> functions = new ArrayList<>();
         functions.add(PAIR);
         functions.add(FST);
         functions.add(SND);
