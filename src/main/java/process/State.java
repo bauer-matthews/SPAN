@@ -23,6 +23,7 @@ public class State {
     private final List<Equality> substitution;
     private final List<Equality> frame;
     private final List<Role> roles;
+    private boolean attackState;
 
     public State(List<Equality> substitution, List<Equality> frame, List<Role> roles) {
 
@@ -33,6 +34,7 @@ public class State {
         this.substitution = substitution;
         this.frame = frame;
         this.roles = roles;
+        attackState = false;
     }
 
     public List<Action> getEnabledActions() {
@@ -85,6 +87,14 @@ public class State {
 
     public List<Equality> getSubstitution() {
         return substitution;
+    }
+
+    public boolean isAttackState() {
+        return this.attackState;
+    }
+
+    void setAttackState(boolean attackState) {
+        this.attackState = attackState;
     }
 
     State outputTerms(List<Term> terms, int roleIndex) {

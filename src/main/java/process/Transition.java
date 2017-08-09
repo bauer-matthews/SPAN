@@ -45,6 +45,7 @@ public class Transition {
         }
 
         if (!transitionProbability.equals(((Transition) o).transitionProbability)) return false;
+        if (!originalState.equals(((Transition) o).originalState)) return false;
         if (!newState.equals(((Transition) o).newState)) return false;
 
         return true;
@@ -52,13 +53,14 @@ public class Transition {
 
     @Override
     public int hashCode() {
-        return Objects.hash(transitionProbability, newState);
+        return Objects.hash(transitionProbability, originalState, newState);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("transition probability", transitionProbability.toString(true))
+                .add("original state", originalState.toString())
                 .add("new state", newState.toString())
                 .toString();
     }

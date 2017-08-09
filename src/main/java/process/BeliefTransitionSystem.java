@@ -27,9 +27,17 @@ public class BeliefTransitionSystem {
 
             boolean match = false;
 
+            EquivalenceCheckResult result = null;
+
             innerloop:
             for (int i = 0; i < numObservations; i++) {
-                if (EquivalenceChecker.check(transition.getNewState(), observations.get(i).get(0).getNewState())) {
+
+                result = EquivalenceChecker.check(transition.getNewState(),
+                        observations.get(i).get(0).getNewState());
+
+                transition.getNewState().setAttackState(result.isPhi1Attack());
+
+                if (result.isEquivalent()) {
                     observations.get(i).add(transition);
                     match = true;
                     break innerloop;
@@ -37,6 +45,12 @@ public class BeliefTransitionSystem {
             }
 
             if (!match) {
+
+                if (result == null) {
+                    result = EquivalenceChecker.check(transition.getNewState(), transition.getNewState());
+                    transition.getNewState().setAttackState(result.isPhi1Attack());
+                }
+
                 observations.put(numObservations, Collections.singletonList(transition));
                 numObservations++;
             }

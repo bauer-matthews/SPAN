@@ -13,7 +13,6 @@ public class Belief {
     private final State state;
     private final Apfloat prob;
 
-
     Belief(State state, Apfloat prob) {
 
         Objects.requireNonNull(state);

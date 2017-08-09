@@ -1,7 +1,6 @@
 package process;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apcomplex;
 import org.apfloat.Apfloat;
 
 import java.util.List;
@@ -31,7 +30,20 @@ public class BeliefState {
             }
         }
 
-        return Apcomplex.ZERO;
+        return Apfloat.ZERO;
+    }
+
+    Apfloat getStateAttackProb() {
+
+        Apfloat prob = Apfloat.ZERO;
+
+        for (Belief belief : beliefs) {
+            if (belief.getState().isAttackState()) {
+                prob.add(belief.getProb());
+            }
+        }
+
+        return prob;
     }
 
     @Override
