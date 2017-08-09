@@ -10,10 +10,18 @@ import java.util.*;
  */
 public class BeliefTransitionSystem {
 
-    static Collection<BeliefTransition> applyAction(BeliefState beliefState, Action action)
+
+    public static List<Action> getEnabledActions(BeliefState beliefState) {
+
+        // NOTE: every state in a belief state has the same enabled actions because
+        // enabled actions are part of the observable state.
+        return beliefState.getBeliefs().get(0).getState().getEnabledActions();
+    }
+
+    public static List<BeliefTransition> applyAction(BeliefState beliefState, Action action)
             throws InvalidActionException, IOException, InterruptedException {
 
-        Collection<BeliefTransition> beliefTransitions = new ArrayList<>();
+        List<BeliefTransition> beliefTransitions = new ArrayList<>();
         Collection<Transition> transitions = new ArrayList<>();
 
         for (Belief belief : beliefState.getBeliefs()) {
@@ -63,7 +71,7 @@ public class BeliefTransitionSystem {
 
             Apfloat bottomSum = Apfloat.ZERO;
             observations.get(i).forEach(transition -> bottomSum.add(transition.getTransitionProbability()
-                    .multiply(beliefState.getProb(transition.getOriginalState()))));
+                    .multiply(beliefState.getStateProb(transition.getOriginalState()))));
 
             List<Belief> beliefs = new ArrayList<>();
             for (State state : states) {
@@ -73,7 +81,7 @@ public class BeliefTransitionSystem {
                 Apfloat topSum = Apfloat.ZERO;
                 observations.get(i).stream().filter(transition -> transition.getNewState().equals(state))
                         .forEach(transition -> topSum.add(transition.getTransitionProbability()
-                                .multiply(beliefState.getProb(transition.getOriginalState()))));
+                                .multiply(beliefState.getStateProb(transition.getOriginalState()))));
 
                 if (!bottomSum.equals(Apfloat.ZERO) && !(topSum.equals(Apfloat.ZERO))) {
                     beliefs.add(new Belief(state, topSum.divide(bottomSum)));

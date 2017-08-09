@@ -23,7 +23,7 @@ public class BeliefState {
         return beliefs;
     }
 
-    public Apfloat getProb(State state) {
+    public Apfloat getStateProb(State state) {
         for (Belief belief : beliefs) {
             if (belief.getState().equals(state)) {
                 return belief.getProb();
@@ -33,7 +33,7 @@ public class BeliefState {
         return Apfloat.ZERO;
     }
 
-    Apfloat getStateAttackProb() {
+    public Apfloat getStateAttackProb() {
 
         Apfloat prob = Apfloat.ZERO;
 

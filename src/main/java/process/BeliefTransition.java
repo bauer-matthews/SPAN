@@ -22,6 +22,14 @@ public class BeliefTransition {
         this.beliefState = beliefState;
     }
 
+    public Apfloat getTransitionProbability() {
+        return transitionProbability;
+    }
+
+    public BeliefState getBeliefState() {
+        return beliefState;
+    }
+
     @Override
     public boolean equals(Object o) {
 

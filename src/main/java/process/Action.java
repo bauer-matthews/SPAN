@@ -13,7 +13,7 @@ import java.util.Objects;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-class Action {
+public class Action {
 
     private final Term recipe;
     private final int roleIndex;

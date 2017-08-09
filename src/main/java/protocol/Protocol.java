@@ -62,7 +62,7 @@ public class Protocol {
         return this.fractionConstants;
     }
 
-    public Collection<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
