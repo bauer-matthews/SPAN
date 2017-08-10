@@ -1,0 +1,32 @@
+# Example Protocol
+
+.metadata
+
+    version : 1.0;
+    recipe size : 1;
+
+.constants
+
+    fraction p : 1/2;
+
+.signature
+
+    variables : m, r, k, u, v, y1, y2, y3;
+    functions : enc/2, dec/2;
+    public names : a;
+    private names : m1, m2, k1, k2, km, s;
+
+.rewrites
+
+    rewrite : dec(enc(m,k), k) -> m;
+
+.roles
+
+    role : [T] out(1 -> enc(enc(m1,k1),km));
+    role : [T] out(1 -> enc(enc(m2,k2),km));
+    role : [T] out(1 -> enc(enc(a, a), km));
+    role : in(y1) . in(y2) . [y1 = enc(enc(m2,k2),km) ] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km));
+    role : in(y3) . [ y3 = enc(m2, k2)] out(1 -> s)
+
+.safety
+    secrecy : s >= 1/2;
