@@ -29,9 +29,6 @@ class Resources {
     static final ParametricString INVALID_REWRITE_RULE = new ParametricString("Invalid rewrite rule: " +
             "#1", Collections.singletonList("#1"));
 
-    static final ParametricString INVALID_SECRET_VARIABLE = new ParametricString("Invalid secret variable: " +
-            "#1", Collections.singletonList("#1"));
-
     static final ParametricString INVALID_RECIPE_SIZE = new ParametricString("Unable to parse recipe size: " +
             "#1", Collections.singletonList("#1"));
 
@@ -46,5 +43,5 @@ class Resources {
 
     static final String MISSING_INVALID_SECTIONS = "Missing or invalid sections in protocol definition";
 
-    static final String SECRECY_PROP_DELIMETER = ">=";
+    static final String SECRECY_PROP_DELIMITER = ">=";
 }

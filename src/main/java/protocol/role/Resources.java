@@ -29,4 +29,6 @@ public class Resources {
             " from string: #1", Collections.singletonList("#1"));
 
     static final String NULL_TEST = "T";
+
+    static final String TEST_DELIMITER = "&";
 }

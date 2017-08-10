@@ -10,6 +10,7 @@ import log.Severity;
 import util.rewrite.RewriteUtils;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 /**
@@ -30,7 +31,8 @@ public class EquivalenceChecker {
         method = RunConfiguration.getEquivalenceMethod();
     }
 
-    static EquivalenceCheckResult check(State state1, State state2) throws IOException, InterruptedException {
+    static EquivalenceCheckResult check(State state1, State state2) throws IOException,
+            InterruptedException, ExecutionException {
 
         switch (method) {
             case KISS:
@@ -42,7 +44,7 @@ public class EquivalenceChecker {
     }
 
     private static EquivalenceCheckResult checkKISS(State state1, State state2)
-            throws IOException, InterruptedException {
+            throws IOException, InterruptedException, ExecutionException {
 
         // TODO: Need to handle the cases when one or the other is empty. Can probably just modify the call
         // that invokes kiss. Farm this out in a different method.
@@ -81,9 +83,9 @@ public class EquivalenceChecker {
         return new EquivalenceCheckResult(equivalent, phi1Attack, phi2Attack);
     }
 
-    private static boolean enabledActionsMatch(State state1, State state2) {
+    private static boolean enabledActionsMatch(State state1, State state2) throws ExecutionException {
 
-        // TODO: Make this more efficient!!!
+        // TODO: Make this more efficient!!! Can remove execution exception at that point
         return state1.getEnabledActions().equals(state2.getEnabledActions());
     }
 }

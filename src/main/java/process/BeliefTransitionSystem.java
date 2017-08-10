@@ -4,6 +4,7 @@ import org.apfloat.Apfloat;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by mbauer on 8/8/2017.
@@ -11,7 +12,7 @@ import java.util.*;
 public class BeliefTransitionSystem {
 
 
-    public static List<Action> getEnabledActions(BeliefState beliefState) {
+    public static List<Action> getEnabledActions(BeliefState beliefState) throws ExecutionException {
 
         // NOTE: every state in a belief state has the same enabled actions because
         // enabled actions are part of the observable state.
@@ -19,7 +20,7 @@ public class BeliefTransitionSystem {
     }
 
     public static List<BeliefTransition> applyAction(BeliefState beliefState, Action action)
-            throws InvalidActionException, IOException, InterruptedException {
+            throws InvalidActionException, IOException, InterruptedException, ExecutionException {
 
         List<BeliefTransition> beliefTransitions = new ArrayList<>();
         List<Transition> transitions = new ArrayList<>();

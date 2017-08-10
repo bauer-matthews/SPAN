@@ -1,18 +1,19 @@
 package process;
 
 import cache.GlobalDataCache;
+import cache.RunConfiguration;
 import com.google.common.base.MoreObjects;
 import protocol.role.OutputProcess;
 import protocol.role.Role;
 import rewriting.Equality;
 import rewriting.RewriteEngine;
 import rewriting.terms.FrameVariableTerm;
-import rewriting.terms.FunctionSymbol;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 import util.rewrite.RewriteUtils;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by matt on 7/26/17.
@@ -37,7 +38,7 @@ public class State {
         attackState = false;
     }
 
-    public List<Action> getEnabledActions() {
+    public List<Action> getEnabledActions() throws ExecutionException {
 
         List<Action> actions = new ArrayList<>();
 
@@ -61,6 +62,13 @@ public class State {
                                 GlobalDataCache.getProtocol().getRewrites());
 
                         if (!lhsNormalForm.equals(rhsNormalForm)) {
+
+                            if(RunConfiguration.getDebug()) {
+                                System.out.println("GUARD TEST FAILED: " + lhsNormalForm.toMathString() + " = " +
+                                        rhsNormalForm.toMathString());
+                                System.out.println();
+                            }
+
                             guardPassed = false;
                         }
                     }

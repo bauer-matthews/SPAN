@@ -10,7 +10,7 @@ import protocol.Protocol;
 import protocol.ProtocolBuilder;
 import protocol.SafetyProperty;
 import protocol.role.AtomicProcess;
-import protocol.role.ActionFactory;
+import protocol.role.ProcessFactory;
 import protocol.role.ActionParseException;
 import protocol.role.Role;
 import rewriting.*;
@@ -174,7 +174,7 @@ public class ProtocolParser {
             }
         }
 
-        ActionFactory.initActionBuilder(constantMap);
+        ProcessFactory.initActionBuilder(constantMap);
 
         return constantMap;
     }
@@ -276,7 +276,7 @@ public class ProtocolParser {
         for (Statement statement : statements) {
             if (statement.getCommand().toLowerCase().startsWith(Commands.SECRECY)) {
 
-                String[] pieces = statement.getValue().split(Resources.SECRECY_PROP_DELIMETER);
+                String[] pieces = statement.getValue().split(Resources.SECRECY_PROP_DELIMITER);
 
                 if (pieces.length != 2) {
                     throw new ProtocolParseException(Resources.INVALID_SECRECY_PROPERTY
@@ -313,7 +313,7 @@ public class ProtocolParser {
 
                 String[] actionStrings = statement.getValue().split("\\.");
                 for (int i = 0; i < actionStrings.length; i++) {
-                    actions.add(ActionFactory.buildAction(actionStrings[i].trim()));
+                    actions.add(ProcessFactory.buildAction(actionStrings[i].trim()));
                 }
 
                 roles.add(new Role(actions));

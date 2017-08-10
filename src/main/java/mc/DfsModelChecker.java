@@ -4,10 +4,12 @@ import cache.RunConfiguration;
 import org.apfloat.Apfloat;
 import process.*;
 import protocol.role.Role;
+import rewriting.terms.FunctionTerm;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by mbauer on 8/9/2017.
@@ -15,7 +17,7 @@ import java.util.List;
 public class DfsModelChecker {
 
     public static Apfloat check(State initialState) throws InvalidActionException,
-            InterruptedException, IOException {
+            InterruptedException, IOException, ExecutionException {
 
         Belief initialBelief = new Belief(initialState, Apfloat.ONE);
         BeliefState initialBeliefState = new BeliefState(Collections.singletonList(initialBelief));
@@ -24,7 +26,7 @@ public class DfsModelChecker {
     }
 
     private static Apfloat getMaximumAttackProb(BeliefState beliefState) throws InvalidActionException,
-            InterruptedException, IOException {
+            InterruptedException, IOException, ExecutionException {
 
         Apfloat maxProb = beliefState.getStateAttackProb();
 
@@ -46,10 +48,14 @@ public class DfsModelChecker {
             }
 
             System.out.println("ENABLED ACTIONS: " + enabledActions);
-            System.out.println();
         }
 
         for (Action action : enabledActions) {
+
+            if(RunConfiguration.getDebug()) {
+                System.out.println("CHOSEN ACTION: " + action.getRecipe().toMathString());
+                System.out.println();
+            }
 
             Apfloat maxActionProb = Apfloat.ZERO;
 

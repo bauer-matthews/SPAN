@@ -3,7 +3,7 @@
 .metadata
 
     version : 1.0;
-    recipe size : 1;
+    recipe size : 3;
 
 .constants
 
@@ -12,7 +12,7 @@
 .signature
 
     variables : m, r, k, u, v, f0, f1;
-    functions : enc/2, dec/2, h/1;
+    functions : enc/2, dec/2;
     public names : a, b, c;
     private names : x, y, z;
 
@@ -22,7 +22,7 @@
 
 .roles
 
-    role : in(f0). [ f0 = c ] out (1 -> h(a)) . in(f1) . [T] out(1 -> dec(f1, z));
+    role : in(f0). [ f0 = enc(c,c) ] out (1 -> enc(a,a)) . in(f1) . [T] out(1 -> dec(f1, z));
     role : [T] out(p -> enc(x , z) + p -> x);
 
 .safety

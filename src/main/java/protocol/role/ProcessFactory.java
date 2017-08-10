@@ -14,7 +14,7 @@ import java.util.*;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class ActionFactory {
+public class ProcessFactory {
 
     private static Map<String, Apfloat> FRACTION_CONSTANTS;
 
@@ -51,7 +51,7 @@ public class ActionFactory {
         String outString = actionString.substring(actionString.indexOf("]") + 1);
 
         Collection<Equality> guards = new ArrayList<>();
-        String[] guardStrings = guardString.split(",");
+        String[] guardStrings = guardString.split(Resources.TEST_DELIMITER);
 
         for (String guardString1 : guardStrings) {
             if (!guardString1.trim().equalsIgnoreCase(Resources.NULL_TEST)) {

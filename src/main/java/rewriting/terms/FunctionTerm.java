@@ -116,11 +116,11 @@ public class FunctionTerm implements Term {
             return false;
         }
 
-        if (this.rootSymbol != ((FunctionTerm) o).rootSymbol) {
+        if (!this.rootSymbol.equals(((FunctionTerm) o).rootSymbol)) return false;
+        if (! subterms.equals(((FunctionTerm) o).subterms))
             return false;
-        }
 
-        return subterms.equals(((FunctionTerm) o).subterms);
+        return true;
     }
 
     @Override
