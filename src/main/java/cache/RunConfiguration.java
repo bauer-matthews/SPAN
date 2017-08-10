@@ -1,4 +1,4 @@
-package configuration;
+package cache;
 
 import com.google.common.base.MoreObjects;
 import kiss.DeductionResult;

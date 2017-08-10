@@ -1,5 +1,6 @@
 package kiss;
 
+import cache.GlobalDataCache;
 import com.google.common.base.Joiner;
 import process.State;
 import rewriting.Equality;
@@ -73,9 +74,11 @@ public class KissEncoder {
 
         sb.append("\t\t");
         sb.append("phi1 = new ");
-        sb.append(joiner.join(getPrivateNames(state1).stream()
+
+        sb.append(joiner.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
+
         sb.append(".{");
         sb.append(joiner.join(state1.getFrame().stream()
                 .map(Equality::toMathString)
@@ -84,9 +87,11 @@ public class KissEncoder {
 
         sb.append("\t\t");
         sb.append("phi2 = new ");
-        sb.append(joiner.join(getPrivateNames(state2).stream()
+
+        sb.append(joiner.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
+
         sb.append(".{");
         sb.append(joiner.join(state2.getFrame().stream()
                 .map(Equality::toMathString)
@@ -103,13 +108,13 @@ public class KissEncoder {
             sb.append(",\n");
             for(Term sec : frame1Secrets) {
                 sb.append("\t\tdeducible ");
-                sb.append(sec);
+                sb.append(sec.toMathString());
                 sb.append(" phi1,\n");
             }
 
             for(Term sec : frame2Secrets) {
                 sb.append("\t\tdeducible ");
-                sb.append(sec);
+                sb.append(sec.toMathString());
                 sb.append(" phi2,\n");
             }
 
@@ -118,16 +123,8 @@ public class KissEncoder {
             sb.deleteCharAt(sb.lastIndexOf("\n"));
         }
 
+        //System.out.println(sb.toString());
+
         return sb.toString();
-    }
-
-    private static Collection<NameTerm> getPrivateNames(State state) {
-
-        Collection<NameTerm> names = new ArrayList<>();
-        for(Equality equality : state.getFrame()) {
-            names.addAll(equality.getRhs().getPrivateNames());
-        }
-
-        return names;
     }
 }

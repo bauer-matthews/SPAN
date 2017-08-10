@@ -36,7 +36,7 @@ public class SymmetricKey {
         functionSymbolList.add(DEC_SYMBOL);
         functionSymbolList.add(HASH_SYMBOL);
 
-        Collection<VariableTerm> variableList = new ArrayList<>();
+        List<VariableTerm> variableList = new ArrayList<>();
         variableList.add(VAR_M);
         variableList.add(VAR_K);
 

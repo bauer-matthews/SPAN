@@ -37,7 +37,7 @@ public class Pair {
         functionSymbolList.add(SND_SYMBOL);
 
 
-        Collection<VariableTerm> variableList = new ArrayList<>();
+        List<VariableTerm> variableList = new ArrayList<>();
         variableList.add(VAR_X);
         variableList.add(VAR_Y);
 

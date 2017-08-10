@@ -1,13 +1,12 @@
 package parser.cli;
 
-import configuration.RunConfiguration;
+import cache.RunConfiguration;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * SPAN - Stochastic Protocol Analyzer

@@ -45,17 +45,17 @@ public class Simple {
         functionSymbolList.add(FUNC_TWO);
         functionSymbolList.add(FUNC_THREE);
 
-        Collection<NameTerm> publicNames = new ArrayList<>();
+        List<NameTerm> publicNames = new ArrayList<>();
         publicNames.add(PUB_NAME_A);
         publicNames.add(PUB_NAME_B);
         publicNames.add(PUB_NAME_C);
 
-        Collection<NameTerm> privateNames = new ArrayList<>();
+        List<NameTerm> privateNames = new ArrayList<>();
         privateNames.add(SEC_NAME_D);
         privateNames.add(SEC_NAME_E);
         privateNames.add(SEC_NAME_F);
 
-        Collection<VariableTerm> variables = new ArrayList<>();
+        List<VariableTerm> variables = new ArrayList<>();
         variables.add(VAR_SX);
         variables.add(VAR_SY);
         variables.add(VAR_SZ);

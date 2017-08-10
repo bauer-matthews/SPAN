@@ -9,29 +9,22 @@ import java.util.Objects;
 /**
  * SPAN - Stochastic Protocol Analyzer
  * <p>
- * Created: 7/24/17
+ * Created: 8/10/17
  *
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class VariableTerm implements Term {
+public class SpecialTerm implements Term {
 
-    private final String variable;
+    private final String name;
 
-    public VariableTerm(String termString) {
-
-        Objects.requireNonNull(termString);
-
-        this.variable = termString;
-    }
-
-    public String getName() {
-        return variable;
+    public SpecialTerm(String name) {
+        this.name = name;
     }
 
     @Override
     public Collection<VariableTerm> getVariables() {
-        return Collections.singletonList(this);
+        return Collections.emptyList();
     }
 
     @Override
@@ -41,12 +34,7 @@ public class VariableTerm implements Term {
 
     @Override
     public Term substitute(VariableTerm var, Term term) {
-
-        if (this.equals(var)) {
-            return term;
-        } else {
-            return this;
-        }
+        return this;
     }
 
     @Override
@@ -56,7 +44,7 @@ public class VariableTerm implements Term {
 
     @Override
     public boolean isVariableTerm() {
-        return true;
+        return false;
     }
 
     @Override
@@ -66,28 +54,28 @@ public class VariableTerm implements Term {
 
     @Override
     public String toMathString() {
-        return variable;
+        return name;
     }
 
     @Override
     public boolean equals(Object o) {
 
-        if (!(o instanceof VariableTerm)) {
+        if (!(o instanceof SpecialTerm)) {
             return false;
         }
 
-        return variable.equalsIgnoreCase(((VariableTerm) o).variable);
+        return name.equalsIgnoreCase(((SpecialTerm) o).name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variable);
+        return Objects.hash(name);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("variable", variable)
+                .add("name", name)
                 .toString();
     }
 }

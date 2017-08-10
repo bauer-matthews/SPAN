@@ -9,16 +9,13 @@ import java.util.Objects;
 /**
  * Created by matt on 7/26/17.
  */
-public class FrameVariableTerm implements Term {
+public class FrameVariableTerm extends VariableTerm {
 
-    private final VariableTerm variableTerm;
     private final int index;
 
-    public FrameVariableTerm(VariableTerm variableTerm, int index) {
+    public FrameVariableTerm(String name, int index) {
 
-        Objects.requireNonNull(variableTerm);
-
-        this.variableTerm = variableTerm;
+        super(name);
         this.index = index;
     }
 
@@ -26,48 +23,9 @@ public class FrameVariableTerm implements Term {
         return index;
     }
 
-    public VariableTerm getName() {
-        return variableTerm;
-    }
-
-    @Override
-    public Collection<VariableTerm> getVariables() {
-        return Collections.singletonList(variableTerm);
-    }
-
-    @Override
-    public Collection<NameTerm> getPrivateNames() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public Term substitute(VariableTerm var, Term term) {
-
-        if (variableTerm.equals(var)) {
-            return term;
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public boolean isNameTerm() {
-        return false;
-    }
-
-    @Override
-    public boolean isVariableTerm() {
-        return true;
-    }
-
-    @Override
-    public boolean isCompoundTerm() {
-        return false;
-    }
-
     @Override
     public String toMathString() {
-        return variableTerm.toMathString() + index;
+        return super.toMathString() + index;
     }
 
 
@@ -78,7 +36,7 @@ public class FrameVariableTerm implements Term {
             return false;
         }
 
-        if (!(variableTerm.equals(((FrameVariableTerm) o).variableTerm))) return false;
+        if (!(super.getName().equals(((FrameVariableTerm) o).getName()))) return false;
         if (!(index == ((FrameVariableTerm) o).index)) return false;
 
         return true;
@@ -86,13 +44,13 @@ public class FrameVariableTerm implements Term {
 
     @Override
     public int hashCode() {
-        return Objects.hash(variableTerm, index);
+        return Objects.hash(super.getName(), index);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("variable term", variableTerm.toString())
+                .add("name", super.getName())
                 .add("index", index)
                 .toString();
     }

@@ -1,7 +1,7 @@
 package parser.protocol;
 
 import cache.GlobalDataCache;
-import configuration.RunConfiguration;
+import cache.RunConfiguration;
 import log.Console;
 import log.Severity;
 import org.apfloat.Apfloat;
@@ -182,9 +182,9 @@ public class ProtocolParser {
     private static Signature parseSignature(String text) throws ProtocolParseException {
 
         Collection<Statement> statements = extractStatements(text);
-        Collection<NameTerm> publicNames = new ArrayList<>();
-        Collection<NameTerm> privateNames = new ArrayList<>();
-        Collection<VariableTerm> variables = new ArrayList<>();
+        List<NameTerm> publicNames = new ArrayList<>();
+        List<NameTerm> privateNames = new ArrayList<>();
+        List<VariableTerm> variables = new ArrayList<>();
         List<FunctionSymbol> functions = new ArrayList<>();
 
         for (Statement statement : statements) {
@@ -269,7 +269,7 @@ public class ProtocolParser {
             ProtocolParseException {
 
         Collection<Statement> statements = extractStatements(text);
-        Collection<VariableTerm> variableTerms = new ArrayList<>();
+        List<Term> secretTerms = new ArrayList<>();
 
         Apfloat probability = null;
 
@@ -287,17 +287,10 @@ public class ProtocolParser {
 
                 String[] vars = pieces[0].split(",");
                 for (int i = 0; i < vars.length; i++) {
-                    Term secretVariable = TermFactory.buildTerm(vars[i].trim());
-
-                    if (!(secretVariable instanceof VariableTerm)) {
-                        throw new ProtocolParseException(Resources.INVALID_SECRET_VARIABLE
-                                .evaluate(Collections.singletonList(secretVariable.toString())));
-                    } else {
-                        variableTerms.add((VariableTerm) secretVariable);
-                    }
+                    secretTerms.add(TermFactory.buildTerm(vars[i].trim()));
                 }
 
-                return new SafetyProperty(variableTerms, probability);
+                return new SafetyProperty(secretTerms, probability);
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));

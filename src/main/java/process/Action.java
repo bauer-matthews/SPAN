@@ -24,7 +24,7 @@ public class Action {
         this.roleIndex = roleIndex;
     }
 
-    public int getRoleIndex() {
+    int getRoleIndex() {
         return roleIndex;
     }
 

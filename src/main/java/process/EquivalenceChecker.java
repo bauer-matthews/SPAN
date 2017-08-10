@@ -1,15 +1,15 @@
 package process;
 
 import cache.GlobalDataCache;
-import configuration.RunConfiguration;
+import cache.RunConfiguration;
 import kiss.DeductionResult;
 import kiss.Kiss;
 import kiss.KissEncoder;
 import log.Console;
 import log.Severity;
+import util.rewrite.RewriteUtils;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.stream.Stream;
 
 /**
@@ -41,28 +41,48 @@ public class EquivalenceChecker {
         }
     }
 
-    private static EquivalenceCheckResult checkKISS(State state1, State state2) throws IOException, InterruptedException {
+    private static EquivalenceCheckResult checkKISS(State state1, State state2)
+            throws IOException, InterruptedException {
+
+        // TODO: Need to handle the cases when one or the other is empty. Can probably just modify the call
+        // that invokes kiss. Farm this out in a different method.
+        if(state1.getFrame().isEmpty() && state2.getFrame().isEmpty()) {
+            return new EquivalenceCheckResult(true, false, false);
+        }
+
 
         String resultString = Kiss.invokeKiss(KISS_COMMAND,
                 KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
                         GlobalDataCache.getProtocol().getRewrites(), state1, state2,
-                        Collections.emptyList(), Collections.emptyList()));
+                        RewriteUtils.applySubstitution(GlobalDataCache.getProtocol()
+                                .getSafetyProperty().getSecrets(), state1.getSubstitution()),
+                        RewriteUtils.applySubstitution(GlobalDataCache.getProtocol()
+                                .getSafetyProperty().getSecrets(), state2.getSubstitution())));
 
         boolean equivalent = Kiss.getEquivalenceResults(resultString).get(0).isEquivalent()
                 && enabledActionsMatch(state1, state2);
 
-        Stream<DeductionResult> deductionResultStream = Kiss.getDeductionResults(resultString).stream()
-                .filter(deductionResult -> deductionResult.isDeducible());
+        boolean phi1Attack = false;
+        boolean phi2Attack = false;
 
-        boolean phi1Attack = deductionResultStream.anyMatch(deductionResult ->
-                deductionResult.getFrame().equalsIgnoreCase("phi1"));
-        boolean phi2Attack = deductionResultStream.anyMatch(deductionResult ->
-                deductionResult.getFrame().equalsIgnoreCase("phi2"));
+        for(DeductionResult deductionResult : Kiss.getDeductionResults(resultString)) {
+
+            if(deductionResult.isDeducible()) {
+                if (deductionResult.getFrame().equalsIgnoreCase("phi1")) {
+                    phi1Attack = true;
+                }
+                if (deductionResult.getFrame().equalsIgnoreCase("phi2")) {
+                    phi2Attack = true;
+                }
+            }
+
+        }
 
         return new EquivalenceCheckResult(equivalent, phi1Attack, phi2Attack);
     }
 
     private static boolean enabledActionsMatch(State state1, State state2) {
+
         // TODO: Make this more efficient!!!
         return state1.getEnabledActions().equals(state2.getEnabledActions());
     }

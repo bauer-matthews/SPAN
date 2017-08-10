@@ -20,9 +20,9 @@ import java.util.List;
 public class SignatureBuilder {
 
     private final List<FunctionSymbol> functionSymbols = new ArrayList<>();
-    private final Collection<NameTerm> publicNames = new ArrayList<>();
-    private final Collection<NameTerm> privateNames = new ArrayList<>();
-    private final Collection<VariableTerm> variables = new ArrayList<>();
+    private final List<NameTerm> publicNames = new ArrayList<>();
+    private final List<NameTerm> privateNames = new ArrayList<>();
+    private final List<VariableTerm> variables = new ArrayList<>();
 
     public SignatureBuilder() {
 

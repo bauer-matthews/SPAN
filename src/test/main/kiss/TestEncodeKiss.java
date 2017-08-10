@@ -74,8 +74,8 @@ public class TestEncodeKiss {
         cipher1Subterms.add(Simple.SEC_NAME_E);
         Term cipher1 = new FunctionTerm(SymmetricKey.ENC_SYMBOL, cipher1Subterms);
 
-        frame1.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 0), cipher1));
-        frame1.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 1), Simple.SEC_NAME_D));
+        frame1.add(new Equality(new FrameVariableTerm("W", 0), cipher1));
+        frame1.add(new Equality(new FrameVariableTerm("W", 1), Simple.SEC_NAME_D));
 
         State state1 = new State(Collections.emptyList(), frame1, Collections.emptyList());
 
@@ -87,8 +87,8 @@ public class TestEncodeKiss {
         cipher2Subterms.add(Simple.SEC_NAME_E);
         Term cipher2 = new FunctionTerm(SymmetricKey.ENC_SYMBOL, cipher2Subterms);
 
-        frame2.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 0), cipher2));
-        frame2.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), 1), Simple.PUB_NAME_A));
+        frame2.add(new Equality(new FrameVariableTerm("W", 0), cipher2));
+        frame2.add(new Equality(new FrameVariableTerm("W", 1), Simple.PUB_NAME_A));
 
         State state2 = new State(Collections.emptyList(), frame2, Collections.emptyList());
 

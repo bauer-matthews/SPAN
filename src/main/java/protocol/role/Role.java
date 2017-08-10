@@ -2,6 +2,7 @@ package protocol.role;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -32,8 +33,22 @@ public class Role {
         return atomicProcesses.get(0);
     }
 
-    public void removeHead() {
-        atomicProcesses.remove(0);
+    public Role removeHead() {
+
+        if(atomicProcesses.isEmpty()) {
+            throw new UnsupportedOperationException("Cannot remove head of empty Role.");
+        }
+
+        List<AtomicProcess> newProcesses = new ArrayList<>();
+
+        for(AtomicProcess process : atomicProcesses) {
+
+            // NOTE: AtomicProcess is immutable
+            newProcesses.add(process);
+        }
+
+        newProcesses.remove(0);
+        return new Role(newProcesses);
     }
 
     @Override

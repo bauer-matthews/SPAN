@@ -53,7 +53,7 @@ public class OutputProcess implements AtomicProcess {
 
     @Override
     public boolean isOutput() {
-        return false;
+        return true;
     }
 
     @Override

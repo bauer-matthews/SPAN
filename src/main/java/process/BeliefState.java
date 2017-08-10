@@ -39,7 +39,7 @@ public class BeliefState {
 
         for (Belief belief : beliefs) {
             if (belief.getState().isAttackState()) {
-                prob.add(belief.getProb());
+                prob = prob.add(belief.getProb());
             }
         }
 

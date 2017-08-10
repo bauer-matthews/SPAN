@@ -1,9 +1,9 @@
 package mc;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-import org.apfloat.Apcomplex;
+import cache.RunConfiguration;
 import org.apfloat.Apfloat;
 import process.*;
+import protocol.role.Role;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -26,20 +26,36 @@ public class DfsModelChecker {
     private static Apfloat getMaximumAttackProb(BeliefState beliefState) throws InvalidActionException,
             InterruptedException, IOException {
 
-        if (beliefState.getStateAttackProb().equals(Apfloat.ONE)) {
+        Apfloat maxProb = beliefState.getStateAttackProb();
+
+        if (maxProb.equals(Apfloat.ONE)) {
             return Apfloat.ONE;
         }
 
-        Apfloat maxProb = Apfloat.ZERO;
-
         List<Action> enabledActions = BeliefTransitionSystem.getEnabledActions(beliefState);
+
+        if(RunConfiguration.getDebug()) {
+
+            System.out.println("BELIEF STATE: ");
+            for (Belief belief : beliefState.getBeliefs()) {
+
+                System.out.println("\tBELIEF:");
+                for (Role role : belief.getState().getRoles()) {
+                    System.out.println("\t\tROLE: " + role.toString());
+                }
+            }
+
+            System.out.println("ENABLED ACTIONS: " + enabledActions);
+            System.out.println();
+        }
+
         for (Action action : enabledActions) {
 
             Apfloat maxActionProb = Apfloat.ZERO;
 
             List<BeliefTransition> transitions = BeliefTransitionSystem.applyAction(beliefState, action);
             for (BeliefTransition transition : transitions) {
-                maxActionProb.add((transition.getTransitionProbability().multiply(getMaximumAttackProb(transition.getBeliefState()))));
+                maxActionProb = maxActionProb.add((transition.getTransitionProbability().multiply(getMaximumAttackProb(transition.getBeliefState()))));
             }
 
             if (maxActionProb.equals(Apfloat.ONE)) {

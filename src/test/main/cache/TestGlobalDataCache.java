@@ -47,7 +47,7 @@ public class TestGlobalDataCache {
         assert(recipes.contains(Simple.PUB_NAME_B));
         assert(recipes.contains(Simple.PUB_NAME_C));
 
-        assert(recipes.contains(new FrameVariableTerm(new VariableTerm("W"), 0)));
+        assert(recipes.contains(new FrameVariableTerm("W", 0)));
     }
 
     @Test

@@ -36,7 +36,7 @@ public class InputProcess implements AtomicProcess {
 
     @Override
     public boolean isInput() {
-        return false;
+        return true;
     }
 
     @Override

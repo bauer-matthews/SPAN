@@ -62,7 +62,7 @@ public class GlobalDataCache {
         Collection<Term> baseRecipes = new ArrayList<>();
 
         for (int i = 0; i < numFrameVariables; i++) {
-            baseRecipes.add(new FrameVariableTerm(new VariableTerm("W"), i));
+            baseRecipes.add(new FrameVariableTerm("W", i));
         }
 
         for (NameTerm name : protocol.getSignature().getPublicNames()) {

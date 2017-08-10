@@ -6,6 +6,7 @@ import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,16 +19,24 @@ import java.util.Objects;
  */
 public class SafetyProperty {
 
-    private final Collection<VariableTerm> secrets;
+    private final List<Term> secrets;
     private final Apfloat probability;
 
-    public SafetyProperty(Collection<VariableTerm> secrets, Apfloat probability) {
+    public SafetyProperty(List<Term> secrets, Apfloat probability) {
 
         Objects.requireNonNull(secrets);
         Objects.requireNonNull(probability);
 
         this.secrets = secrets;
         this.probability = probability;
+    }
+
+    public Apfloat getProbability() {
+        return probability;
+    }
+
+    public List<Term> getSecrets() {
+        return secrets;
     }
 
     @Override

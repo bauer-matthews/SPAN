@@ -43,41 +43,48 @@ public class State {
 
         for (int i = 0; i < roles.size(); i++) {
 
-            if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
+            if (!roles.get(i).getAtomicProcesses().isEmpty()) {
 
-                Collection<Equality> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
-                boolean guardPassed = true;
+                if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
-                for (Equality equality : guards) {
+                    Collection<Equality> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
+                    boolean guardPassed = true;
 
-                    Equality groundGuard = RewriteUtils.applySubstitution(equality, substitution);
+                    for (Equality equality : guards) {
 
-                    Term lhsNormalForm = RewriteEngine.reduce(groundGuard.getLhs(),
-                            GlobalDataCache.getProtocol().getRewrites());
+                        Equality groundGuard = RewriteUtils.applySubstitution(equality, substitution);
 
-                    Term rhsNormalForm = RewriteEngine.reduce(groundGuard.getRhs(),
-                            GlobalDataCache.getProtocol().getRewrites());
+                        Term lhsNormalForm = RewriteEngine.reduce(groundGuard.getLhs(),
+                                GlobalDataCache.getProtocol().getRewrites());
 
-                    if (!lhsNormalForm.equals(rhsNormalForm)) {
-                        guardPassed = false;
+                        Term rhsNormalForm = RewriteEngine.reduce(groundGuard.getRhs(),
+                                GlobalDataCache.getProtocol().getRewrites());
+
+                        if (!lhsNormalForm.equals(rhsNormalForm)) {
+                            guardPassed = false;
+                        }
+                    }
+
+                    if (guardPassed) {
+                        actions.add(new Action(Resources.TAU_ACTION, i));
+                    }
+
+                } else {
+                    for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
+                        actions.add(new Action(recipe, i));
                     }
                 }
-
-                if (guardPassed) {
-                    actions.add(new Action(null, i));
-                }
-
-            } else {
-                for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
-                    actions.add(new Action(recipe, i));
-                }
             }
+        }
+
+        if(actions.size() == 1) {
+            int i;
         }
 
         return actions;
     }
 
-    List<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
@@ -99,35 +106,49 @@ public class State {
 
     State outputTerms(List<Term> terms, int roleIndex) {
 
-        roles.get(roleIndex).removeHead();
+        List<Role> newRoles = removeHead(roleIndex);
 
         List<Equality> newFrame = new ArrayList<>();
-        newFrame.addAll(frame);
+        for(Equality equality : frame) {
+            newFrame.add(equality);
+        }
 
         int index = newFrame.size();
         for (Term term : terms) {
-            newFrame.add(new Equality(new FrameVariableTerm(new VariableTerm("W"), index),
+            newFrame.add(new Equality(new FrameVariableTerm("W", index),
                     RewriteUtils.applySubstitution(term, substitution)));
             index++;
         }
 
-        return new State(substitution, newFrame, roles);
+        return new State(substitution, newFrame, newRoles);
     }
 
     State inputTerm(VariableTerm variable, Term value, int roleIndex) {
 
-        roles.get(roleIndex).removeHead();
+        List<Role> newRoles = removeHead(roleIndex);
 
         List<Equality> newSubstitution = new ArrayList<>();
-        newSubstitution.addAll(substitution);
+        for(Equality equality : substitution) {
+            newSubstitution.add(equality);
+        }
 
         newSubstitution.add(new Equality(variable, RewriteUtils.applySubstitution(value, frame)));
 
-        return new State(newSubstitution, frame, roles);
+        return new State(newSubstitution, frame, newRoles);
     }
 
-    public State copy() {
-        return new State(substitution, frame, roles);
+    private List<Role> removeHead(int roleIndex) {
+
+        ArrayList<Role> newRoles = new ArrayList<>();
+        for(int i=0; i < roles.size(); i++) {
+            if(i == roleIndex) {
+                newRoles.add(roles.get(i).removeHead());
+            } else {
+                newRoles.add(roles.get(i));
+            }
+        }
+
+        return newRoles;
     }
 
     @Override

@@ -20,12 +20,12 @@ import java.util.Objects;
 public class Signature {
 
     private final List<FunctionSymbol> functions;
-    private final Collection<NameTerm> publicNames;
-    private final Collection<NameTerm> privateNames;
-    private final Collection<VariableTerm> variables;
+    private final List<NameTerm> publicNames;
+    private final List<NameTerm> privateNames;
+    private final List<VariableTerm> variables;
 
-    public Signature(List<FunctionSymbol> functions, Collection<NameTerm> publicNames,
-                     Collection<NameTerm> privateNames, Collection<VariableTerm> variables) {
+    public Signature(List<FunctionSymbol> functions, List<NameTerm> publicNames,
+                     List<NameTerm> privateNames, List<VariableTerm> variables) {
 
         Objects.requireNonNull(functions);
         Objects.requireNonNull(publicNames);
@@ -42,15 +42,15 @@ public class Signature {
         return functions;
     }
 
-    public Collection<NameTerm> getPublicNames() {
+    public List<NameTerm> getPublicNames() {
         return publicNames;
     }
 
-    public Collection<NameTerm> getPrivateNames() {
+    public List<NameTerm> getPrivateNames() {
         return privateNames;
     }
 
-    public Collection<VariableTerm> getVariables() {
+    public List<VariableTerm> getVariables() {
         return variables;
     }
 

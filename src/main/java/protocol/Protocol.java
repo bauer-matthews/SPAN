@@ -70,6 +70,10 @@ public class Protocol {
         return metadata;
     }
 
+    public SafetyProperty getSafetyProperty() {
+        return safetyProperty;
+    }
+
     @Override
     public boolean equals(Object o) {
 

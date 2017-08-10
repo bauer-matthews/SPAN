@@ -22,13 +22,13 @@ public class BeliefTransitionSystem {
             throws InvalidActionException, IOException, InterruptedException {
 
         List<BeliefTransition> beliefTransitions = new ArrayList<>();
-        Collection<Transition> transitions = new ArrayList<>();
+        List<Transition> transitions = new ArrayList<>();
 
         for (Belief belief : beliefState.getBeliefs()) {
             transitions.addAll(TransitionSystem.applyAction(belief.getState(), action));
         }
 
-        Map<Integer, List<Transition>> observations = new HashMap<>();
+        Map<Integer, ArrayList<Transition>> observations = new HashMap<>();
 
         int numObservations = 0;
         for (Transition transition : transitions) {
@@ -59,7 +59,10 @@ public class BeliefTransitionSystem {
                     transition.getNewState().setAttackState(result.isPhi1Attack());
                 }
 
-                observations.put(numObservations, Collections.singletonList(transition));
+                ArrayList<Transition> newList = new ArrayList<>();
+                newList.add(transition);
+
+                observations.put(numObservations, newList);
                 numObservations++;
             }
         }
@@ -70,8 +73,12 @@ public class BeliefTransitionSystem {
                     .map(Transition::getNewState).distinct().toArray(State[]::new);
 
             Apfloat bottomSum = Apfloat.ZERO;
-            observations.get(i).forEach(transition -> bottomSum.add(transition.getTransitionProbability()
-                    .multiply(beliefState.getStateProb(transition.getOriginalState()))));
+
+            for(Transition transition : observations.get(i)) {
+
+                bottomSum = bottomSum.add(transition.getTransitionProbability()
+                        .multiply(beliefState.getStateProb(transition.getOriginalState())));
+            }
 
             List<Belief> beliefs = new ArrayList<>();
             for (State state : states) {
@@ -79,9 +86,13 @@ public class BeliefTransitionSystem {
                 // Sum of b(s) * P(s,a)(s') for all states s from original belief state b,
                 // where s' (newState) has observation o
                 Apfloat topSum = Apfloat.ZERO;
-                observations.get(i).stream().filter(transition -> transition.getNewState().equals(state))
-                        .forEach(transition -> topSum.add(transition.getTransitionProbability()
-                                .multiply(beliefState.getStateProb(transition.getOriginalState()))));
+
+                for(Transition transition : observations.get(i)) {
+                    if(transition.getNewState().equals(state)) {
+                        topSum = topSum.add(transition.getTransitionProbability()
+                                .multiply(beliefState.getStateProb(transition.getOriginalState())));
+                    }
+                }
 
                 if (!bottomSum.equals(Apfloat.ZERO) && !(topSum.equals(Apfloat.ZERO))) {
                     beliefs.add(new Belief(state, topSum.divide(bottomSum)));

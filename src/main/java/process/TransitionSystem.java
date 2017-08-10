@@ -18,7 +18,7 @@ public class TransitionSystem {
             throw new InvalidActionException(Resources.BAD_ROLE_INDEX);
         }
 
-        if (action.getRecipe() == null) {
+        if (action.getRecipe() == Resources.TAU_ACTION) {
             return executeOutput(state, action);
         } else {
             return executeInput(state, action);
@@ -35,8 +35,8 @@ public class TransitionSystem {
 
         Collection<Transition> transitions = new ArrayList<>();
         for (ProbOutput output : ((OutputProcess) atomic).getProbOutputs()) {
-            new Transition(output.getProbability(), state,
-                    state.outputTerms(output.getOutputTerms(), action.getRoleIndex()));
+            transitions.add(new Transition(output.getProbability(), state,
+                    state.outputTerms(output.getOutputTerms(), action.getRoleIndex())));
         }
 
         return transitions;
