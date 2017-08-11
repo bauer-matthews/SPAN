@@ -23,18 +23,20 @@ public class ActionFactory {
 
         Collection<Term> terms = new ArrayList<>();
 
-        for(int i=1; i <= GlobalDataCache.getProtocol().getMetadata().getRecipeSize(); i++) {
-            if(i==1) {
+        for (int i = 1; i <= GlobalDataCache.getProtocol().getMetadata().getRecipeSize(); i++) {
+            if (i == 1) {
                 terms = getBaseRecipes(numFrameVariables);
             } else {
                 terms.addAll(applyFunctions(terms));
             }
         }
 
-        if(RunConfiguration.getDebug()) {
+        if (RunConfiguration.getTrace()) {
+            System.out.println("ALL ACTIONS: ");
             for (Term term : terms) {
                 System.out.println(term.toMathString());
             }
+            System.out.println();
         }
 
         return terms;
@@ -115,12 +117,12 @@ public class ActionFactory {
 
     private static List<FunctionSymbol> orderByArity(List<FunctionSymbol> functionSymbols) {
 
-        for(int i=0; i< functionSymbols.size(); i++) {
+        for (int i = 0; i < functionSymbols.size(); i++) {
 
-            int length = functionSymbols.size()-2;
-            for(int j=0; j< length; j++) {
-                if(functionSymbols.get(j).getArity() > functionSymbols.get(j+1).getArity()) {
-                    Collections.swap(functionSymbols, j, j+1);
+            int length = functionSymbols.size() - 2;
+            for (int j = 0; j < length; j++) {
+                if (functionSymbols.get(j).getArity() > functionSymbols.get(j + 1).getArity()) {
+                    Collections.swap(functionSymbols, j, j + 1);
                 }
             }
         }

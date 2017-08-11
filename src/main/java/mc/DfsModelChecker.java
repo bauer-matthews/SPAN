@@ -36,7 +36,7 @@ public class DfsModelChecker {
 
         List<Action> enabledActions = BeliefTransitionSystem.getEnabledActions(beliefState);
 
-        if(RunConfiguration.getDebug()) {
+        if (RunConfiguration.getTrace()) {
 
             System.out.println("BELIEF STATE: ");
             for (Belief belief : beliefState.getBeliefs()) {
@@ -52,7 +52,7 @@ public class DfsModelChecker {
 
         for (Action action : enabledActions) {
 
-            if(RunConfiguration.getDebug()) {
+            if (RunConfiguration.getTrace()) {
                 System.out.println("CHOSEN ACTION: " + action.getRecipe().toMathString());
                 System.out.println();
             }

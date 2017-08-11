@@ -19,18 +19,33 @@ import java.util.Objects;
 public class RunConfiguration {
 
     private static boolean debug;
+    private static boolean trace;
+
     private static File protocolFile;
+    private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
+
 
     static {
+        // Defaults
         debug = false;
+        trace = false;
+        equivalenceMethod = EquivalenceChecker.EquivalenceMethod.KISS;
     }
 
-    public static void setDebug(boolean debugValue) {
-        debug = debugValue;
+    public static void enableDebug() {
+        debug = true;
+    }
+
+    public static void enableTrace() {
+        trace = true;
     }
 
     public static boolean getDebug() {
         return debug;
+    }
+
+    public static boolean getTrace() {
+        return trace;
     }
 
     public static void setProtocolFile(File protocolFileValue) {
@@ -42,6 +57,6 @@ public class RunConfiguration {
     }
 
     public static EquivalenceChecker.EquivalenceMethod getEquivalenceMethod() {
-        return EquivalenceChecker.EquivalenceMethod.KISS;
+        return equivalenceMethod;
     }
 }

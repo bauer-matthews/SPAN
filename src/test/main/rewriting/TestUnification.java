@@ -1,5 +1,6 @@
 package rewriting;
 
+import cache.SubstitutionCache;
 import org.junit.Test;
 import resources.rewritting.PairRewrites;
 import resources.signature.Pair;
@@ -43,8 +44,8 @@ public class TestUnification {
         assert (solution.isPresent());
         assert (solution.get().size() == 2);
 
-        Term newLhs = RewriteUtils.applySubstitution(lhs, solution.get());
-        Term newRhs = RewriteUtils.applySubstitution(rhs, solution.get());
+        Term newLhs = SubstitutionCache.applySubstitution(lhs, solution.get());
+        Term newRhs = SubstitutionCache.applySubstitution(rhs, solution.get());
 
         assert (newLhs.equals(newRhs));
     }

@@ -2,6 +2,7 @@ package process;
 
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
+import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
 import protocol.role.OutputProcess;
 import protocol.role.Role;
@@ -53,7 +54,7 @@ public class State {
 
                     for (Equality equality : guards) {
 
-                        Equality groundGuard = RewriteUtils.applySubstitution(equality, substitution);
+                        Equality groundGuard = SubstitutionCache.applySubstitution(equality, substitution);
 
                         Term lhsNormalForm = RewriteEngine.reduce(groundGuard.getLhs(),
                                 GlobalDataCache.getProtocol().getRewrites());
@@ -63,7 +64,7 @@ public class State {
 
                         if (!lhsNormalForm.equals(rhsNormalForm)) {
 
-                            if(RunConfiguration.getDebug()) {
+                            if (RunConfiguration.getTrace()) {
                                 System.out.println("GUARD TEST FAILED: " + lhsNormalForm.toMathString() + " = " +
                                         rhsNormalForm.toMathString());
                                 System.out.println();
@@ -83,10 +84,6 @@ public class State {
                     }
                 }
             }
-        }
-
-        if(actions.size() == 1) {
-            int i;
         }
 
         return actions;
@@ -112,35 +109,35 @@ public class State {
         this.attackState = attackState;
     }
 
-    State outputTerms(List<Term> terms, int roleIndex) {
+    State outputTerms(List<Term> terms, int roleIndex) throws ExecutionException {
 
         List<Role> newRoles = removeHead(roleIndex);
 
         List<Equality> newFrame = new ArrayList<>();
-        for(Equality equality : frame) {
+        for (Equality equality : frame) {
             newFrame.add(equality);
         }
 
         int index = newFrame.size();
         for (Term term : terms) {
             newFrame.add(new Equality(new FrameVariableTerm("W", index),
-                    RewriteUtils.applySubstitution(term, substitution)));
+                    SubstitutionCache.applySubstitution(term, substitution)));
             index++;
         }
 
         return new State(substitution, newFrame, newRoles);
     }
 
-    State inputTerm(VariableTerm variable, Term value, int roleIndex) {
+    State inputTerm(VariableTerm variable, Term value, int roleIndex) throws ExecutionException {
 
         List<Role> newRoles = removeHead(roleIndex);
 
         List<Equality> newSubstitution = new ArrayList<>();
-        for(Equality equality : substitution) {
+        for (Equality equality : substitution) {
             newSubstitution.add(equality);
         }
 
-        newSubstitution.add(new Equality(variable, RewriteUtils.applySubstitution(value, frame)));
+        newSubstitution.add(new Equality(variable, SubstitutionCache.applySubstitution(value, frame)));
 
         return new State(newSubstitution, frame, newRoles);
     }
@@ -148,8 +145,8 @@ public class State {
     private List<Role> removeHead(int roleIndex) {
 
         ArrayList<Role> newRoles = new ArrayList<>();
-        for(int i=0; i < roles.size(); i++) {
-            if(i == roleIndex) {
+        for (int i = 0; i < roles.size(); i++) {
+            if (i == roleIndex) {
                 newRoles.add(roles.get(i).removeHead());
             } else {
                 newRoles.add(roles.get(i));

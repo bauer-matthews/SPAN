@@ -1,5 +1,6 @@
 package rewriting;
 
+import cache.SubstitutionCache;
 import rewriting.terms.FunctionTerm;
 import rewriting.terms.Term;
 import rewriting.unification.Unify;
@@ -8,13 +9,14 @@ import util.rewrite.RewriteUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by mbauer on 8/1/2017.
  */
 public class RewriteEngine {
 
-    public static Term reduce(Term term, Collection<Rewrite> rewrites) {
+    public static Term reduce(Term term, Collection<Rewrite> rewrites) throws ExecutionException {
 
         boolean rewrite = true;
         do {
@@ -30,12 +32,12 @@ public class RewriteEngine {
         return term;
     }
 
-    private static Term rewrite(Term term, Collection<Rewrite> rewrites) {
+    private static Term rewrite(Term term, Collection<Rewrite> rewrites) throws ExecutionException {
 
         for (Rewrite rewrite : rewrites) {
             Optional<Collection<Equality>> unifier = Unify.unify(term, rewrite.getLhs());
             if (unifier.isPresent()) {
-                return RewriteUtils.applySubstitution(rewrite.getRhs(), unifier.get());
+                return SubstitutionCache.applySubstitution(rewrite.getRhs(), unifier.get());
             }
         }
 
@@ -45,7 +47,7 @@ public class RewriteEngine {
                 for (Rewrite rewrite : rewrites) {
                     Optional<Collection<Equality>> unifier = Unify.unify(subterms.get(i), rewrite.getLhs());
                     if (unifier.isPresent()) {
-                        subterms.set(i, RewriteUtils.applySubstitution(rewrite.getRhs(), unifier.get()));
+                        subterms.set(i, SubstitutionCache.applySubstitution(rewrite.getRhs(), unifier.get()));
                     }
                 }
             }

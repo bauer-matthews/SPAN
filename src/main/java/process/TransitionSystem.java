@@ -6,13 +6,15 @@ import protocol.role.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by matt on 7/26/17.
  */
 public class TransitionSystem {
 
-    static Collection<Transition> applyAction(State state, Action action) throws InvalidActionException {
+    static Collection<Transition> applyAction(State state, Action action)
+            throws InvalidActionException, ExecutionException {
 
         if (!(action.getRoleIndex() < state.getRoles().size())) {
             throw new InvalidActionException(Resources.BAD_ROLE_INDEX);
@@ -25,7 +27,8 @@ public class TransitionSystem {
         }
     }
 
-    private static Collection<Transition> executeOutput(State state, Action action) throws InvalidActionException {
+    private static Collection<Transition> executeOutput(State state, Action action)
+            throws InvalidActionException, ExecutionException {
 
         AtomicProcess atomic = state.getRoles().get(action.getRoleIndex()).getHead();
 
@@ -42,7 +45,8 @@ public class TransitionSystem {
         return transitions;
     }
 
-    private static Collection<Transition> executeInput(State state, Action action) throws InvalidActionException {
+    private static Collection<Transition> executeInput(State state, Action action)
+            throws InvalidActionException, ExecutionException {
 
         AtomicProcess atomic = state.getRoles().get(action.getRoleIndex()).getHead();
 

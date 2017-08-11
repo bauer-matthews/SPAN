@@ -2,6 +2,7 @@ package process;
 
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
+import cache.SubstitutionCache;
 import kiss.DeductionResult;
 import kiss.Kiss;
 import kiss.KissEncoder;
@@ -31,7 +32,7 @@ public class EquivalenceChecker {
         method = RunConfiguration.getEquivalenceMethod();
     }
 
-    static EquivalenceCheckResult check(State state1, State state2) throws IOException,
+    public static EquivalenceCheckResult check(State state1, State state2) throws IOException,
             InterruptedException, ExecutionException {
 
         switch (method) {
@@ -48,7 +49,7 @@ public class EquivalenceChecker {
 
         // TODO: Need to handle the cases when one or the other is empty. Can probably just modify the call
         // that invokes kiss. Farm this out in a different method.
-        if(state1.getFrame().isEmpty() && state2.getFrame().isEmpty()) {
+        if (state1.getFrame().isEmpty() && state2.getFrame().isEmpty()) {
             return new EquivalenceCheckResult(true, false, false);
         }
 
@@ -56,9 +57,9 @@ public class EquivalenceChecker {
         String resultString = Kiss.invokeKiss(KISS_COMMAND,
                 KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
                         GlobalDataCache.getProtocol().getRewrites(), state1, state2,
-                        RewriteUtils.applySubstitution(GlobalDataCache.getProtocol()
+                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state1.getSubstitution()),
-                        RewriteUtils.applySubstitution(GlobalDataCache.getProtocol()
+                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state2.getSubstitution())));
 
         boolean equivalent = Kiss.getEquivalenceResults(resultString).get(0).isEquivalent()
@@ -67,9 +68,9 @@ public class EquivalenceChecker {
         boolean phi1Attack = false;
         boolean phi2Attack = false;
 
-        for(DeductionResult deductionResult : Kiss.getDeductionResults(resultString)) {
+        for (DeductionResult deductionResult : Kiss.getDeductionResults(resultString)) {
 
-            if(deductionResult.isDeducible()) {
+            if (deductionResult.isDeducible()) {
                 if (deductionResult.getFrame().equalsIgnoreCase("phi1")) {
                     phi1Attack = true;
                 }

@@ -6,6 +6,7 @@ import org.apache.commons.cli.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -67,7 +68,12 @@ class CLIOptions {
         // Debug Option
         Option debug = new Option("debug", "print debugging information");
         options.addOption(debug);
-        optionMap.put(debug, (debugOpt) -> RunConfiguration.setDebug(true));
+        optionMap.put(debug, (debugOpt) -> RunConfiguration.enableDebug());
+
+        // Trace Option
+        Option trace = new Option("trace", "print excessive debugging information");
+        options.addOption(trace);
+        optionMap.put(trace, (traceOpt) -> RunConfiguration.enableTrace());
 
         // Protocol Option
         Option protocol = Option.builder("protocol")

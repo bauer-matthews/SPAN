@@ -1,5 +1,6 @@
 package process;
 
+import cache.EquivalenceCache;
 import org.apfloat.Apfloat;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ public class BeliefTransitionSystem {
             innerloop:
             for (int i = 0; i < numObservations; i++) {
 
-                result = EquivalenceChecker.check(transition.getNewState(),
+                result = EquivalenceCache.checkEquivalence(transition.getNewState(),
                         observations.get(i).get(0).getNewState());
 
                 transition.getNewState().setAttackState(result.isPhi1Attack());
@@ -56,7 +57,7 @@ public class BeliefTransitionSystem {
             if (!match) {
 
                 if (result == null) {
-                    result = EquivalenceChecker.check(transition.getNewState(), transition.getNewState());
+                    result = EquivalenceCache.checkEquivalence(transition.getNewState(), transition.getNewState());
                     transition.getNewState().setAttackState(result.isPhi1Attack());
                 }
 
@@ -75,7 +76,7 @@ public class BeliefTransitionSystem {
 
             Apfloat bottomSum = Apfloat.ZERO;
 
-            for(Transition transition : observations.get(i)) {
+            for (Transition transition : observations.get(i)) {
 
                 bottomSum = bottomSum.add(transition.getTransitionProbability()
                         .multiply(beliefState.getStateProb(transition.getOriginalState())));
@@ -88,8 +89,8 @@ public class BeliefTransitionSystem {
                 // where s' (newState) has observation o
                 Apfloat topSum = Apfloat.ZERO;
 
-                for(Transition transition : observations.get(i)) {
-                    if(transition.getNewState().equals(state)) {
+                for (Transition transition : observations.get(i)) {
+                    if (transition.getNewState().equals(state)) {
                         topSum = topSum.add(transition.getTransitionProbability()
                                 .multiply(beliefState.getStateProb(transition.getOriginalState())));
                     }

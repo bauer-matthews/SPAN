@@ -91,7 +91,6 @@ public class ProcessFactory {
             }
         }
 
-        // TODO: localize symbol below
         String[] outPieces = probPieces[1].split("\\|");
 
         for (String outPiece : outPieces) {

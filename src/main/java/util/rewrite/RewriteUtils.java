@@ -21,17 +21,10 @@ public class RewriteUtils {
         return term;
     }
 
-
-
     public static Equality applySubstitution(Equality equality, Collection<Equality> equalities) {
 
-        Term subLhs = equality.getLhs();
-        Term subRhs = equality.getRhs();
-
-        for (Equality subEquality : equalities) {
-            subLhs = subLhs.substitute((VariableTerm) subEquality.getLhs(), subEquality.getRhs());
-            subRhs = subRhs.substitute((VariableTerm) subEquality.getLhs(), subEquality.getRhs());
-        }
+        Term subLhs = applySubstitution(equality.getLhs(), equalities);
+        Term subRhs = applySubstitution(equality.getRhs(), equalities);
 
         return new Equality(subLhs, subRhs);
     }
@@ -40,7 +33,7 @@ public class RewriteUtils {
 
         List<Term> newTerms = new ArrayList<>();
 
-        for(Term term : terms) {
+        for (Term term : terms) {
             newTerms.add(applySubstitution(term, equalities));
         }
 
