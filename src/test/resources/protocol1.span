@@ -22,8 +22,8 @@
 
 .roles
 
-    role : in(u) . [u = v, v = h(v)] out(1 -> enc(u,a,b));
-    role : in(v) . [u = v, T] out(p -> h(u) | h(v) + p -> h(v));
+    role : in(u) . [u == v, v == h(v)] out(1 -> enc(u,a,b));
+    role : in(v) . [u == v, T] out(p -> h(u) | h(v) + p -> h(v));
 
 .safety
     secrecy : m, r >= 1/2;

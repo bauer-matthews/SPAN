@@ -22,7 +22,7 @@
 
 .roles
 
-    role : in(f0). [ f0 = enc(c,c) ] out (1 -> enc(a,a)) . in(f1) . [T] out(1 -> dec(f1, z));
+    role : in(f0). [ f0 == enc(c,c) ] out (1 -> enc(a,a)) . in(f1) . [T] out(1 -> dec(f1, z));
     role : [T] out(p -> enc(x , z) + p -> x);
 
 .safety

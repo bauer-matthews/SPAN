@@ -50,12 +50,12 @@ public class ProcessFactory {
         String guardString = actionString.substring(actionString.indexOf("[") + 1, actionString.indexOf("]"));
         String outString = actionString.substring(actionString.indexOf("]") + 1);
 
-        Collection<Equality> guards = new ArrayList<>();
+        Collection<Guard> guards = new ArrayList<>();
         String[] guardStrings = guardString.split(Resources.TEST_DELIMITER);
 
         for (String guardString1 : guardStrings) {
             if (!guardString1.trim().equalsIgnoreCase(Resources.NULL_TEST)) {
-                guards.add(parseEquality(guardString1.trim()));
+                guards.add(parseGuard(guardString1.trim()));
             }
         }
 
@@ -100,16 +100,33 @@ public class ProcessFactory {
         return new ProbOutput(fraction, outputTerms);
     }
 
-    private static Equality parseEquality(String guard) throws TermParseException, ActionParseException {
-        String[] pieces = guard.split("=");
+    private static Guard parseGuard(String guard) throws TermParseException, ActionParseException {
 
-        if (pieces.length != 2) {
-            throw new ActionParseException(Resources.BAD_EQUALITY.evaluate(Collections.singletonList(guard)));
+        if (guard.contains("==")) {
+
+            String[] pieces = guard.split("==");
+
+            if (pieces.length != 2) {
+                throw new ActionParseException(Resources.BAD_EQUALITY.evaluate(Collections.singletonList(guard)));
+            }
+
+            Term lhs = TermFactory.buildTerm(pieces[0].trim());
+            Term rhs = TermFactory.buildTerm(pieces[1].trim());
+
+            return new Guard(new Equality(lhs, rhs), true);
+
+        } else {
+
+            String[] pieces = guard.split("!=");
+
+            if (pieces.length != 2) {
+                throw new ActionParseException(Resources.BAD_EQUALITY.evaluate(Collections.singletonList(guard)));
+            }
+
+            Term lhs = TermFactory.buildTerm(pieces[0].trim());
+            Term rhs = TermFactory.buildTerm(pieces[1].trim());
+
+            return new Guard(new Equality(lhs, rhs), false);
         }
-
-        Term lhs = TermFactory.buildTerm(pieces[0].trim());
-        Term rhs = TermFactory.buildTerm(pieces[1].trim());
-
-        return new Equality(lhs, rhs);
     }
 }

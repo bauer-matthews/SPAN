@@ -13,7 +13,7 @@
 
     variables : m, r, k, u, v, y1, y2, y3;
     functions : enc/2, dec/2;
-    public names : a, b;
+    public names : a;
     private names : m1, m2, k1, k2, km, s;
 
 .rewrites
@@ -24,8 +24,8 @@
 
     role : [T] out(1 -> enc(enc(m1,k1),km));
     role : [T] out(1 -> enc(enc(m2,k2),km));
-    role : in(y1) . in(y2) . [y1 = enc(enc(m1,k1),km)] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km));
-    role : in(y3) . [ y3 = enc(m2, k2)] out(1 -> s)
+    role : in(y1) . in(y2) . [y1 != y2] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km));
+    role : in(y3) . [ y3 == enc(m2, k2)] out(1 -> s)
 
 .safety
     secrecy : s >= 1/2;

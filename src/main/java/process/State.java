@@ -4,6 +4,7 @@ import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
+import protocol.role.Guard;
 import protocol.role.OutputProcess;
 import protocol.role.Role;
 import rewriting.Equality;
@@ -49,28 +50,13 @@ public class State {
 
                 if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
-                    Collection<Equality> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
+                    Collection<Guard> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
                     boolean guardPassed = true;
 
-                    for (Equality equality : guards) {
-
-                        Equality groundGuard = SubstitutionCache.applySubstitution(equality, substitution);
-
-                        Term lhsNormalForm = RewriteEngine.reduce(groundGuard.getLhs(),
-                                GlobalDataCache.getProtocol().getRewrites());
-
-                        Term rhsNormalForm = RewriteEngine.reduce(groundGuard.getRhs(),
-                                GlobalDataCache.getProtocol().getRewrites());
-
-                        if (!lhsNormalForm.equals(rhsNormalForm)) {
-
-                            if (RunConfiguration.getTrace()) {
-                                System.out.println("GUARD TEST FAILED: " + lhsNormalForm.toMathString() + " = " +
-                                        rhsNormalForm.toMathString());
-                                System.out.println();
-                            }
-
+                    for (Guard guard : guards) {
+                        if (!guard.check(substitution)) {
                             guardPassed = false;
+                            break;
                         }
                     }
 

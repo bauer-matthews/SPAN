@@ -22,10 +22,10 @@ import java.util.Objects;
  */
 public class OutputProcess implements AtomicProcess {
 
-    private final Collection<Equality> guards;
+    private final Collection<Guard> guards;
     private final Collection<ProbOutput> probOutputs;
 
-    OutputProcess(Collection<Equality> guards, Collection<ProbOutput> probOutputs) {
+    OutputProcess(Collection<Guard> guards, Collection<ProbOutput> probOutputs) {
 
         Objects.requireNonNull(guards);
         Objects.requireNonNull(probOutputs);
@@ -43,9 +43,10 @@ public class OutputProcess implements AtomicProcess {
         }
     }
 
-    public Collection<Equality> getGuards() {
+    public Collection<Guard> getGuards() {
         return guards;
     }
+
 
     public Collection<ProbOutput> getProbOutputs() {
         return probOutputs;

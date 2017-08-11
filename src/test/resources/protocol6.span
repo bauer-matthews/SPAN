@@ -11,7 +11,7 @@
 
 .signature
 
-    variables : m, r, k, u, v, y1, y2, y3;
+    variables : m, r, k, u, v, y1, y2, y3, y4,y5;
     functions : enc/2, dec/2;
     public names : a;
     private names : m1, m2, k1, k2, km, s;
@@ -23,8 +23,8 @@
 .roles
 
     role : [T] out(1 -> enc(enc(m1,k1),km)). [T] out(1 -> enc(enc(m2,k2),km)) . in(y1) . in(y2) .
-            [y1 = enc(enc(m1,k1),km)] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km)) .
-            in(y3) . [ y3 = enc(m2, k2)] out(1 -> s)
+            [enc(dec(y1,km),km) == y1 & enc(dec(y2,km),km) == y2 ] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km)) .
+            in(y3) . [ y3 == enc(m2, k2)] out(1 -> s)
 
 .safety
     secrecy : s >= 1/2;
