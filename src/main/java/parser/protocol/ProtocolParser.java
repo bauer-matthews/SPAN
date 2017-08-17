@@ -133,7 +133,7 @@ public class ProtocolParser {
 
             if (statement.getCommand().equalsIgnoreCase(Commands.VERSION)) {
                 version = statement.getValue();
-            } else if (statement.getCommand().equalsIgnoreCase(Commands.RECIPE_SIZE)) {
+            } else if (statement.getCommand().equalsIgnoreCase(Commands.RECIPE_DEPTH)) {
                 try {
                     recipeSize = Integer.parseInt(statement.getValue().trim());
                 } catch (NumberFormatException ex) {
@@ -189,7 +189,7 @@ public class ProtocolParser {
 
         for (Statement statement : statements) {
 
-            if (statement.getCommand().toLowerCase().startsWith(Commands.FUNCTIONS)) {
+            if (statement.getCommand().toLowerCase().startsWith(Commands.FUNCTION)) {
 
                 for (String symbolArityPair : statement.getValue().split(",")) {
 

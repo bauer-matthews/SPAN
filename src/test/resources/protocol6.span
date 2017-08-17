@@ -11,12 +11,26 @@
 
 .signature
 
-    sort Key, Nonce, Message;
-    subsort Key Nonce < Message;
-    variables : m/Message, r/Nonce, k/Key, y1/Message, y2/Message, y3/Message, x1/Message, x2/Nonce;
-    functions : enc/3, dec/2, pk/1, sk/1;
-    public names : a/Message;
-    private names : m1/Message, m2/Message, k1/Key, k2/Key, s/Nonce, km/Key, r1/Nonce, r2/Nonce, r3/Nonce, r4/Nonce;
+    // Need to parse sorts first / Check other orders
+    // T, W are reserved strings for names/functions/types/variables;
+
+    sort : Key, Nonce, Message;
+    subsort : Key Nonce < Message;
+
+    variables : m, y1, y2, y3, x1 | Message;
+    variables : r, x2 | Nonce;
+    variables : k | Key;
+
+    function : enc | Message Nonce Key -> Message;
+    function : dec | Message Key -> Message;
+    function : pk | Key -> Key;
+    function : sk | key -> key;
+
+    public names : a | Message;
+
+    private names : m1 , m2 | Message;
+    private names : k1, k2, km | Key;
+    private names : s, r1, r2, r3, r4 | Nonce;
 
 .rewrites
 
@@ -24,9 +38,9 @@
 
 .roles
 
-    role : [T] out(1 -> enc(enc(m1,r1, pk(k1)),r2, pk(km))). [T] out(1 -> enc(enc(m2,r3, pk(k2)),r4, pk(km))) .
+    role : [T] out(1 -> enc(enc(m1,r1, pk(k1)),r2, pk(km))) . [T] out(1 -> enc(enc(m2,r3, pk(k2)),r4, pk(km))) .
              in(y1{enc(x1,x2, pk(km))}) . in(y2{enc(x1, x2, pk(km))}) .
-             [y1 != y2] out(p -> dec(y1, sk(km)) | dec(y2, sk(km)) + p -> dec(y2, sk(km)) | dec(y1, sk(km))) .
+             [y1 != y2] out(p -> dec(y1, sk(km)) # dec(y2, sk(km)) + p -> dec(y2, sk(km)) # dec(y1, sk(km))) .
              in(y3{enc(m2,r3, pk(k2))}) . [ y3 == enc(m2,r3, pk(k2))  ] out(1 -> s)
 
 .safety
