@@ -34,14 +34,29 @@ public class ProcessFactory {
     }
 
     private static AtomicProcess parseInput(String actionString) throws TermParseException, ActionParseException {
-        String variable = actionString.substring(actionString.indexOf("(") + 1, actionString.length() - 1);
+        String inp = actionString.substring(actionString.indexOf("(") + 1, actionString.length() - 1);
 
-        Term var = TermFactory.buildTerm(variable);
+        if(!(inp.contains("{") && inp.contains("}"))) {
+            throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
+        }
+
+        String[] pieces = inp.split("\\{");
+        Term var = TermFactory.buildTerm(pieces[0].trim());
+
+        Optional<Term> guard;
+        String guardString = pieces[1].substring(0, pieces[1].length() -1).trim();
+
+        if(guardString.isEmpty()) {
+            guard = Optional.empty();
+        } else {
+            guard = Optional.of(TermFactory.buildTerm(guardString));
+        }
+
 
         if (!(var instanceof VariableTerm)) {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         } else {
-            return new InputProcess((VariableTerm) var);
+            return new InputProcess((VariableTerm) var, guard);
         }
     }
 

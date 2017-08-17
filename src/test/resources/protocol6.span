@@ -3,7 +3,7 @@
 .metadata
 
     version : 1.0;
-    recipe size : 2;
+    recipe depth : 2;
 
 .constants
 
@@ -11,20 +11,23 @@
 
 .signature
 
-    variables : m, r, k, u, v, y1, y2, y3, y4,y5;
-    functions : enc/2, dec/2;
-    public names : a;
-    private names : m1, m2, k1, k2, km, s;
+    sort Key, Nonce, Message;
+    subsort Key Nonce < Message;
+    variables : m/Message, r/Nonce, k/Key, y1/Message, y2/Message, y3/Message, x1/Message, x2/Nonce;
+    functions : enc/3, dec/2, pk/1, sk/1;
+    public names : a/Message;
+    private names : m1/Message, m2/Message, k1/Key, k2/Key, s/Nonce, km/Key, r1/Nonce, r2/Nonce, r3/Nonce, r4/Nonce;
 
 .rewrites
 
-    rewrite : dec(enc(m,k), k) -> m;
+    rewrite : dec(enc(m,r,pk(k)), sk(k)) -> m;
 
 .roles
 
-    role : [T] out(1 -> enc(enc(m1,k1),km)). [T] out(1 -> enc(enc(m2,k2),km)) . in(y1) . in(y2) .
-            [enc(dec(y1,km),km) == y1 & enc(dec(y2,km),km) == y2 ] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km)) .
-            in(y3) . [ y3 == enc(m2, k2)] out(1 -> s)
+    role : [T] out(1 -> enc(enc(m1,r1, pk(k1)),r2, pk(km))). [T] out(1 -> enc(enc(m2,r3, pk(k2)),r4, pk(km))) .
+             in(y1{enc(x1,x2, pk(km))}) . in(y2{enc(x1, x2, pk(km))}) .
+             [y1 != y2] out(p -> dec(y1, sk(km)) | dec(y2, sk(km)) + p -> dec(y2, sk(km)) | dec(y1, sk(km))) .
+             in(y3{enc(m2,r3, pk(k2))}) . [ y3 == enc(m2,r3, pk(k2))  ] out(1 -> s)
 
 .safety
     secrecy : s >= 1/2;

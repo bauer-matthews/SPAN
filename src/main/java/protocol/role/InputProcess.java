@@ -1,9 +1,11 @@
 package protocol.role;
 
 import com.google.common.base.MoreObjects;
+import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.base.Objects.equal;
 
@@ -18,15 +20,23 @@ import static com.google.common.base.Objects.equal;
 public class InputProcess implements AtomicProcess {
 
     private final VariableTerm variable;
+    private final Optional<Term> inputGuard;
 
-    InputProcess(VariableTerm variable) {
+    InputProcess(VariableTerm variable, Optional<Term> inputGuard) {
 
         Objects.requireNonNull(variable);
+        Objects.requireNonNull(inputGuard);
+
         this.variable = variable;
+        this.inputGuard = inputGuard;
     }
 
     public VariableTerm getVariable() {
         return variable;
+    }
+
+    public Optional<Term> getInputGuard() {
+        return inputGuard;
     }
 
     @Override
@@ -46,18 +56,22 @@ public class InputProcess implements AtomicProcess {
             return false;
         }
 
-        return equal(variable, ((InputProcess) o).variable);
+        if(!variable.equals(((InputProcess) o).variable)) return false;
+        if(!inputGuard.equals(((InputProcess) o).inputGuard)) return false;
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variable);
+        return Objects.hash(variable, inputGuard);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("variable", variable)
+                .add("input guard", inputGuard)
                 .toString();
     }
 }

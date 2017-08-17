@@ -2,13 +2,11 @@ package rewriting;
 
 import cache.SubstitutionCache;
 import org.junit.Test;
-import resources.rewritting.PairRewrites;
 import resources.signature.Pair;
 import rewriting.terms.FunctionTerm;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 import rewriting.unification.Unify;
-import util.rewrite.RewriteUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,7 +37,7 @@ public class TestUnification {
 
         Term rhs = new FunctionTerm(Pair.PAIR_SYMBOL, rhsSubterms);
 
-        Optional<Collection<Equality>> solution = Unify.unify(new Equality(lhs, rhs));
+        Optional<Collection<Equality>> solution = Unify.unify(lhs, rhs);
 
         assert (solution.isPresent());
         assert (solution.get().size() == 2);

@@ -8,11 +8,9 @@ import kiss.Kiss;
 import kiss.KissEncoder;
 import log.Console;
 import log.Severity;
-import util.rewrite.RewriteUtils;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
 
 /**
  * Created by mbauer on 8/8/2017.
@@ -85,8 +83,6 @@ public class EquivalenceChecker {
     }
 
     private static boolean enabledActionsMatch(State state1, State state2) throws ExecutionException {
-
-        // TODO: Make this more efficient!!! Can remove execution exception at that point
-        return state1.getEnabledActions().equals(state2.getEnabledActions());
+        return state1.getRoleViews().equals(state2.getRoleViews());
     }
 }

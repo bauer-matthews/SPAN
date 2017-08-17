@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class GlobalDataCache {
 
-    private static final LoadingCache<Integer, Collection<Term>> recipes ;
+    private static final LoadingCache<Integer, Collection<Term>> recipes;
     private static Protocol protocol;
 
     static {

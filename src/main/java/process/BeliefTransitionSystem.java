@@ -15,9 +15,13 @@ public class BeliefTransitionSystem {
 
     public static List<Action> getEnabledActions(BeliefState beliefState) throws ExecutionException {
 
-        // NOTE: every state in a belief state has the same enabled actions because
-        // enabled actions are part of the observable state.
-        return beliefState.getBeliefs().get(0).getState().getEnabledActions();
+        List<Action> enabledActions = new ArrayList<>();
+
+        for(Belief belief : beliefState.getBeliefs()) {
+            enabledActions.addAll(belief.getState().getEnabledActions());
+        }
+
+        return enabledActions;
     }
 
     public static List<BeliefTransition> applyAction(BeliefState beliefState, Action action)

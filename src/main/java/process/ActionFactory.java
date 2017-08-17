@@ -1,13 +1,11 @@
 package process;
 
-import cache.GlobalDataCache;
-import cache.RunConfiguration;
+import cache.*;
+import rewriting.Equality;
 import rewriting.terms.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -32,7 +30,7 @@ public class ActionFactory {
         }
 
         if (RunConfiguration.getTrace()) {
-            System.out.println("ALL ACTIONS: ");
+            System.out.println("ALL ACTIONS(" + numFrameVariables + "): ");
             for (Term term : terms) {
                 System.out.println(term.toMathString());
             }
@@ -120,7 +118,7 @@ public class ActionFactory {
         for (int i = 0; i < functionSymbols.size(); i++) {
 
             int length = functionSymbols.size() - 2;
-            for (int j = 0; j < length; j++) {
+            for (int j = 0; j <= length; j++) {
                 if (functionSymbols.get(j).getArity() > functionSymbols.get(j + 1).getArity()) {
                     Collections.swap(functionSymbols, j, j + 1);
                 }
@@ -128,5 +126,30 @@ public class ActionFactory {
         }
 
         return functionSymbols;
+    }
+
+    public static Collection<Term> getRecipesWithGuard(int numFrameVariables, Term guard, List<Equality> frame)
+            throws ExecutionException {
+
+        Collection<Term> filteredRecipes = new ArrayList<>();
+
+        for (Term recipe : GlobalDataCache.getRecipes(numFrameVariables)) {
+
+            Term evaluatedRecipe = RewritingCache.reduce(SubstitutionCache.applySubstitution(recipe, frame));
+
+            if (UnificationCache.unify(guard, evaluatedRecipe).isPresent()) {
+                filteredRecipes.add(recipe);
+            }
+        }
+
+        if (RunConfiguration.getTrace() || RunConfiguration.getDebug()) {
+            System.out.println("FILTERED ACTIONS(" + numFrameVariables + "): " + guard.toMathString());
+            for (Term term : filteredRecipes) {
+                System.out.println(term.toMathString());
+            }
+            System.out.println();
+        }
+
+        return filteredRecipes;
     }
 }

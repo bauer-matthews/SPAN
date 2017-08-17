@@ -16,7 +16,7 @@ public class Unify {
         return unify(new Equality(term1, term2));
     }
 
-    public static Optional<Collection<Equality>> unify(Equality unifyTerms) {
+    private static Optional<Collection<Equality>> unify(Equality unifyTerms) {
 
         Collection<Equality> solvedEqualities = computeSolvedForm(unifyTerms);
 

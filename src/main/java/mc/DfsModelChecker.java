@@ -4,7 +4,6 @@ import cache.RunConfiguration;
 import org.apfloat.Apfloat;
 import process.*;
 import protocol.role.Role;
-import rewriting.terms.FunctionTerm;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -41,10 +40,11 @@ public class DfsModelChecker {
             System.out.println("BELIEF STATE: ");
             for (Belief belief : beliefState.getBeliefs()) {
 
-                System.out.println("\tBELIEF:");
+                System.out.println("\tBELIEF: " + belief.getProb().toString(true));
                 for (Role role : belief.getState().getRoles()) {
                     System.out.println("\t\tROLE: " + role.toString());
                 }
+                System.out.println("\t\tFRAME: " + belief.getState().getFrame().toString());
             }
 
             System.out.println("ENABLED ACTIONS: " + enabledActions);

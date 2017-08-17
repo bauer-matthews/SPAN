@@ -1,18 +1,13 @@
 package process;
 
 import cache.GlobalDataCache;
-import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
-import protocol.role.Guard;
-import protocol.role.OutputProcess;
-import protocol.role.Role;
+import protocol.role.*;
 import rewriting.Equality;
-import rewriting.RewriteEngine;
 import rewriting.terms.FrameVariableTerm;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
-import util.rewrite.RewriteUtils;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +35,27 @@ public class State {
         attackState = false;
     }
 
+    public List<RoleView> getRoleViews() throws ExecutionException {
+
+        List<RoleView> roleViews = new ArrayList<>();
+
+        for (int i = 0; i < roles.size(); i++) {
+            if(roles.get(i).getAtomicProcesses().isEmpty()) {
+                roleViews.add(new RoleView(i, RoleView.Status.NONE));
+            } else if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
+                if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
+                    roleViews.add(new RoleView(i, RoleView.Status.OUTPUT));
+                } else {
+                    roleViews.add(new RoleView(i, RoleView.Status.NONE));
+                }
+            } else {
+                roleViews.add(new RoleView(i, RoleView.Status.INPUT));
+            }
+        }
+
+        return roleViews;
+    }
+
     public List<Action> getEnabledActions() throws ExecutionException {
 
         List<Action> actions = new ArrayList<>();
@@ -50,29 +66,42 @@ public class State {
 
                 if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
-                    Collection<Guard> guards = ((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards();
-                    boolean guardPassed = true;
-
-                    for (Guard guard : guards) {
-                        if (!guard.check(substitution)) {
-                            guardPassed = false;
-                            break;
-                        }
-                    }
-
-                    if (guardPassed) {
+                    if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
                         actions.add(new Action(Resources.TAU_ACTION, i));
                     }
 
                 } else {
-                    for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
-                        actions.add(new Action(recipe, i));
+
+                    Optional<Term> guard = ((InputProcess) roles.get(i).getAtomicProcesses().get(0)).getInputGuard();
+
+                    if(guard.isPresent()) {
+
+                        for (Term recipe : ActionFactory.getRecipesWithGuard(frame.size(), guard.get(), frame)) {
+                            actions.add(new Action(recipe, i));
+                        }
+                    } else {
+                        for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
+                            actions.add(new Action(recipe, i));
+                        }
                     }
                 }
             }
         }
 
         return actions;
+    }
+
+    private boolean checkGuards(Collection<Guard> guards) throws ExecutionException {
+
+        boolean guardPassed = true;
+
+        for (Guard guard : guards) {
+            if (!guard.check(substitution)) {
+                guardPassed = false;
+                break;
+            }
+        }
+        return guardPassed;
     }
 
     public List<Role> getRoles() {
