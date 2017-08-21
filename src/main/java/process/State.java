@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutionException;
  */
 public class State {
 
-
     private final List<Equality> substitution;
     private final List<Equality> frame;
     private final List<Role> roles;
@@ -35,7 +34,11 @@ public class State {
         attackState = false;
     }
 
-    public List<RoleView> getRoleViews() throws ExecutionException {
+    public Observation getObservation() throws ExecutionException {
+        return new Observation(getRoleViews(), frame);
+    }
+
+    List<RoleView> getRoleViews() throws ExecutionException {
 
         List<RoleView> roleViews = new ArrayList<>();
 

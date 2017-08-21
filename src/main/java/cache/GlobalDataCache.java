@@ -27,9 +27,12 @@ public class GlobalDataCache {
     private static Protocol protocol;
 
     private static final List<Interleaving> interleavings;
+    private static int interleavingsExplored;
 
     static {
+
         interleavings = new ArrayList<>();
+        interleavingsExplored = 0;
 
         recipes = CacheBuilder.newBuilder()
                 .maximumSize(1000)
@@ -43,7 +46,17 @@ public class GlobalDataCache {
     }
 
     public static void addInterleaving(Interleaving interleaving) {
+
+        interleavingsExplored++;
         interleavings.add(interleaving);
+    }
+
+    public static int getInterleavingsExplored() {
+        return interleavingsExplored;
+    }
+
+    public static int getInterleavingsReduction() {
+        return interleavings.size();
     }
 
     public static Optional<Apfloat> hasPartialOrderReduction(Interleaving interleaving) {
@@ -59,6 +72,8 @@ public class GlobalDataCache {
 
                         if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
                                 explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
+
+                            interleavingsExplored++;
                             return Optional.of(explored.getAttackProb());
                         }
                     }
@@ -70,6 +85,8 @@ public class GlobalDataCache {
                         // NOTE: This only allows swapping of identical recipes.
                         if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
                                 explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
+
+                            interleavingsExplored++;
                             return Optional.of(explored.getAttackProb());
                         }
                     }

@@ -1,4 +1,5 @@
 import cache.GlobalDataCache;
+import cache.RunConfiguration;
 import log.Console;
 import log.Severity;
 import mc.DfsModelChecker;
@@ -37,6 +38,12 @@ public class CLI {
 
             long stopTime = System.currentTimeMillis();
             System.out.println("Running Time: " + (stopTime - startTime) + " milliseconds");
+            System.out.println("Interleavings explored: " + GlobalDataCache.getInterleavingsExplored());
+
+            if(RunConfiguration.getDebug()) {
+                System.out.println("Partial order reduction on interleavings: " +
+                        GlobalDataCache.getInterleavingsReduction());
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();
