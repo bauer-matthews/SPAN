@@ -18,13 +18,16 @@ public class NameTerm implements Term {
 
     private final String name;
     private final boolean protocolPrivate;
+    private final Sort sort;
 
-    public NameTerm(String termString, boolean protocolPrivate) {
+    public NameTerm(String termString, boolean protocolPrivate, Sort sort) {
 
         Objects.requireNonNull(termString);
+        Objects.requireNonNull(sort);
 
         this.name = termString;
         this.protocolPrivate = protocolPrivate;
+        this.sort = sort;
     }
 
     public String getName() {
@@ -39,7 +42,7 @@ public class NameTerm implements Term {
     @Override
     public Collection<NameTerm> getPrivateNames() {
 
-        if(protocolPrivate) {
+        if (protocolPrivate) {
             return Collections.singletonList(this);
         } else {
             return Collections.emptyList();
@@ -67,8 +70,18 @@ public class NameTerm implements Term {
     }
 
     @Override
+    public boolean hasSort(Sort sort) {
+        return SortFactory.hasSort(this.sort, sort);
+    }
+
+    @Override
     public String toMathString() {
         return name;
+    }
+
+    @Override
+    public Sort getSort() {
+        return this.sort;
     }
 
     @Override
@@ -78,16 +91,15 @@ public class NameTerm implements Term {
             return false;
         }
 
-        if (this.protocolPrivate != ((NameTerm) o).protocolPrivate) {
-            return false;
-        }
+        if (this.protocolPrivate != ((NameTerm) o).protocolPrivate) return false;
+        if (!(sort.equals(((NameTerm) o).sort))) return false;
 
         return name.equalsIgnoreCase(((NameTerm) o).name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, protocolPrivate);
+        return Objects.hash(name, protocolPrivate, sort);
     }
 
     @Override
@@ -95,6 +107,7 @@ public class NameTerm implements Term {
         return MoreObjects.toStringHelper(this)
                 .add("name", name)
                 .add("private", protocolPrivate)
+                .add("sort", sort)
                 .toString();
     }
 }

@@ -53,8 +53,18 @@ public class SpecialTerm implements Term {
     }
 
     @Override
+    public boolean hasSort(Sort sort) {
+        return sort.equals(SortFactory.SPECIAL);
+    }
+
+    @Override
     public String toMathString() {
         return name;
+    }
+
+    @Override
+    public Sort getSort() {
+        return SortFactory.SPECIAL;
     }
 
     @Override

@@ -24,6 +24,9 @@ public interface Term {
 
     boolean isCompoundTerm();
 
+    boolean hasSort(Sort sort);
+
     String toMathString();
 
+    Sort getSort();
 }

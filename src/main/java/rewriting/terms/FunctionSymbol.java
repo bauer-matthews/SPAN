@@ -2,6 +2,7 @@ package rewriting.terms;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -15,22 +16,34 @@ import java.util.Objects;
 public class FunctionSymbol {
 
     private final String symbol;
-    private final int arity;
+    private final List<Sort> sortParameters;
+    private final Sort sortResult;
 
-    public FunctionSymbol(String symbol, int arity) {
+    public FunctionSymbol(String symbol, List<Sort> sortParameters, Sort sortResult) {
 
         Objects.requireNonNull(symbol);
+        Objects.requireNonNull(sortParameters);
+        Objects.requireNonNull(sortResult);
 
         this.symbol = symbol;
-        this.arity = arity;
+        this.sortParameters = sortParameters;
+        this.sortResult = sortResult;
     }
 
     public int getArity() {
-        return arity;
+        return sortParameters.size();
     }
 
     public String getSymbol() {
         return symbol;
+    }
+
+    public List<Sort> getParameterType() {
+        return sortParameters;
+    }
+
+    public Sort getReturnType() {
+        return sortResult;
     }
 
     @Override
@@ -40,23 +53,24 @@ public class FunctionSymbol {
             return false;
         }
 
-        if (this.arity != ((FunctionSymbol) o).arity) {
-            return false;
-        }
+        if (!(this.symbol.equals(((FunctionSymbol) o).symbol))) return false;
+        if (!(this.sortParameters.equals(((FunctionSymbol) o).sortParameters))) return false;
+        if (!(this.sortResult.equals(((FunctionSymbol) o).sortResult))) return false;
 
-        return symbol.equalsIgnoreCase(((FunctionSymbol) o).symbol);
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(symbol, arity);
+        return Objects.hash(symbol, sortParameters, sortResult);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("symbol", symbol)
-                .add("arity", arity)
+                .add("parameter type", sortParameters)
+                .add("return type", sortResult)
                 .toString();
     }
 }

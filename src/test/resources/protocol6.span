@@ -1,4 +1,5 @@
 # Example Protocol
+# TODO: fix the need for this guardf (union is enabled....)
 
 .metadata
 
@@ -14,23 +15,21 @@
     // Need to parse sorts first / Check other orders
     // T, W are reserved strings for names/functions/types/variables;
 
-    sort : Key, Nonce, Message;
-    subsort : Key Nonce < Message;
+    sort : PKey, SKey, Nonce, Message;
+    subsort : PKey, SKey, Nonce < Message;
 
     variables : m, y1, y2, y3, x1 | Message;
-    variables : r, x2 | Nonce;
-    variables : k | Key;
+    variables : r, k, x2 | Nonce;
 
-    function : enc | Message Nonce Key -> Message;
-    function : dec | Message Key -> Message;
-    function : pk | Key -> Key;
-    function : sk | key -> key;
+    function : enc | Message Nonce PKey -> Message;
+    function : dec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
 
     public names : a | Message;
 
     private names : m1 , m2 | Message;
-    private names : k1, k2, km | Key;
-    private names : s, r1, r2, r3, r4 | Nonce;
+    private names : s, r1, r2, r3, r4, k1, k2, k3 | Nonce;
 
 .rewrites
 

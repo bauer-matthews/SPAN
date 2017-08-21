@@ -90,6 +90,11 @@ public class FunctionTerm implements Term {
     }
 
     @Override
+    public boolean hasSort(Sort sort) {
+        return SortFactory.hasSort(this.getSort(), sort);
+    }
+
+    @Override
     public String toMathString() {
 
         StringBuilder sb = new StringBuilder();
@@ -107,6 +112,11 @@ public class FunctionTerm implements Term {
 
         sb.append(")");
         return sb.toString();
+    }
+
+    @Override
+    public Sort getSort() {
+        return this.rootSymbol.getReturnType();
     }
 
     @Override

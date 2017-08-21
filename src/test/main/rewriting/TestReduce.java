@@ -1,6 +1,5 @@
 package rewriting;
 
-import org.junit.Test;
 import resources.rewritting.SymmetricKeyRewrites;
 import resources.signature.SymmetricKey;
 import rewriting.terms.*;
@@ -8,13 +7,15 @@ import rewriting.terms.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static rewriting.terms.SortFactory.KIND;
+
 /**
  * Created by mbauer on 8/1/2017.
  */
 public class TestReduce {
 
-    private static final NameTerm MESSAGE = new NameTerm("mes", true);
-    private static final NameTerm KEY = new NameTerm("key", true);
+    private static final NameTerm MESSAGE = new NameTerm("mes", true, KIND);
+    private static final NameTerm KEY = new NameTerm("key", true, KIND);
 
     @Test
     public void TestReduce1() throws Exception {

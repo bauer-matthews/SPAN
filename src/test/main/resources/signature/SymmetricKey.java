@@ -2,11 +2,10 @@ package resources.signature;
 
 import rewriting.Signature;
 import rewriting.terms.FunctionSymbol;
-import rewriting.terms.NameTerm;
+import rewriting.terms.Sort;
 import rewriting.terms.VariableTerm;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,16 +19,27 @@ import java.util.List;
  */
 public class SymmetricKey {
 
-    public static final VariableTerm VAR_M = new VariableTerm("m");
-    public static final VariableTerm VAR_K = new VariableTerm("k");
+    public static final Sort MESSAGE = new Sort("Message");
+    public static final Sort NONCE = new Sort("Nonce");
 
-    public static final FunctionSymbol ENC_SYMBOL = new FunctionSymbol("enc", 2);
-    public static final FunctionSymbol DEC_SYMBOL = new FunctionSymbol("dec", 2);
-    public static final FunctionSymbol HASH_SYMBOL = new FunctionSymbol("hash", 1);
+    public static final VariableTerm VAR_M = new VariableTerm("m", MESSAGE);
+    public static final VariableTerm VAR_K = new VariableTerm("k", NONCE);
+
+    public static final FunctionSymbol ENC_SYMBOL;
+    public static final FunctionSymbol DEC_SYMBOL;
+    public static final FunctionSymbol HASH_SYMBOL;
 
     public static final Signature SIGNATURE;
 
     static {
+
+        List<Sort> params = new ArrayList<>();
+        params.add(MESSAGE);
+        params.add(NONCE);
+
+        ENC_SYMBOL = new FunctionSymbol("senc", params, MESSAGE);
+        DEC_SYMBOL = new FunctionSymbol("sdec", params, MESSAGE);
+        HASH_SYMBOL = new FunctionSymbol("hash", Collections.singletonList(MESSAGE), MESSAGE);
 
         List<FunctionSymbol> functionSymbolList = new ArrayList<>();
         functionSymbolList.add(ENC_SYMBOL);
@@ -40,6 +50,7 @@ public class SymmetricKey {
         variableList.add(VAR_M);
         variableList.add(VAR_K);
 
-        SIGNATURE = new Signature(functionSymbolList, Collections.emptyList(), Collections.emptyList(), variableList);
+        SIGNATURE = new Signature(functionSymbolList, Collections.emptyList(), Collections.emptyList(),
+                variableList, params, Collections.emptyList());
     }
 }

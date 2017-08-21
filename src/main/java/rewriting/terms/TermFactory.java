@@ -16,44 +16,33 @@ import java.util.function.Function;
  */
 public class TermFactory {
 
-    private static Collection<String> PRIVATE_NAMES = new ArrayList<>();
-    private static Collection<String> PUBLIC_NAMES = new ArrayList<>();
-    private static Collection<String> VARIABLES = new ArrayList<>();
+    private static Collection<NameTerm> PRIVATE_NAMES = new ArrayList<>();
+    private static Collection<NameTerm> PUBLIC_NAMES = new ArrayList<>();
+    private static Collection<VariableTerm> VARIABLES = new ArrayList<>();
     private static Collection<FunctionSymbol> FUNCTIONS = new ArrayList<>();
 
     public static void initTermBuilder(Signature signature) {
 
-        for (NameTerm name : signature.getPrivateNames()) {
-            PRIVATE_NAMES.add(name.getName());
-        }
-
-        for (NameTerm name : signature.getPublicNames()) {
-            PUBLIC_NAMES.add(name.getName());
-        }
-
-        for (VariableTerm var : signature.getVariables()) {
-            VARIABLES.add(var.getName());
-        }
-
-        for (FunctionSymbol functionSymbol : signature.getFunctions()) {
-            FUNCTIONS.add(functionSymbol);
-        }
+        PRIVATE_NAMES = signature.getPrivateNames();
+        PUBLIC_NAMES = signature.getPublicNames();
+        VARIABLES = signature.getVariables();
+        FUNCTIONS = signature.getFunctions();
     }
 
     public static Term buildTerm(String termString) throws TermParseException {
 
         if (!termString.contains("(")) {
 
-            if (VARIABLES.contains(termString)) {
-                return new VariableTerm(termString);
+            for (VariableTerm variableTerm : VARIABLES) {
+                if (termString.equals(variableTerm.getName())) return variableTerm;
             }
 
-            if (PRIVATE_NAMES.contains(termString)) {
-                return new NameTerm(termString, true);
+            for (NameTerm nameTerm : PRIVATE_NAMES) {
+                if (termString.equals(nameTerm.getName())) return nameTerm;
             }
 
-            if (PUBLIC_NAMES.contains(termString)) {
-                return new NameTerm(termString, false);
+            for (NameTerm nameTerm : PUBLIC_NAMES) {
+                if (termString.equals(nameTerm.getName())) return nameTerm;
             }
 
             throw new TermParseException(Resources.BAD_PARSE.evaluate(Collections.singletonList(termString)));
@@ -98,21 +87,26 @@ public class TermFactory {
                             .evaluate(Collections.singletonList(termString)));
                 }
 
-                FunctionSymbol root = new FunctionSymbol(functionSymbol, subterms.size());
+                FunctionSymbol root = null;
+                for (FunctionSymbol fs : FUNCTIONS) {
+                    if (fs.getSymbol().equals(functionSymbol)) {
+                        root = fs;
+                        break;
+                    }
+                }
 
-                if (!FUNCTIONS.contains(root)) {
+                if (root == null) {
                     throw new TermParseException(Resources.UNKNOWN_ROOT_SYMBOL
                             .evaluate(new ArrayList<>(Arrays.asList(termString, functionSymbol))));
-                } else {
-
-                    List<Term> parsedSubterms = new ArrayList<>();
-
-                    for (String subterm : subterms) {
-                        parsedSubterms.add(buildTerm(subterm));
-                    }
-
-                    return new FunctionTerm(root, parsedSubterms);
                 }
+
+                List<Term> parsedSubterms = new ArrayList<>();
+
+                for (String subterm : subterms) {
+                    parsedSubterms.add(buildTerm(subterm));
+                }
+
+                return new FunctionTerm(root, parsedSubterms);
             }
         }
     }

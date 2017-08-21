@@ -10,7 +10,7 @@ package parser.protocol;
  */
 public class ProtocolParseException extends Exception {
 
-    ProtocolParseException(String message) {
+    public ProtocolParseException(String message) {
         super(message);
     }
 }

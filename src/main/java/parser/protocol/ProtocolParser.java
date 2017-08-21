@@ -179,50 +179,126 @@ public class ProtocolParser {
         return constantMap;
     }
 
+    private static List<Sort> parseSorts(Collection<Statement> statements) {
+
+        List<Sort> sorts = new ArrayList<>();
+
+        for (Statement statement : statements) {
+
+            if (statement.getCommand().toLowerCase().startsWith(Commands.SORT)) {
+                for (String sortName : statement.getValue().split(",")) {
+                    sorts.add(new Sort(sortName.trim()));
+                }
+            }
+        }
+
+        SortFactory.setSorts(sorts);
+        return sorts;
+    }
+
+    private static List<SortOrder> parseSubsorts(Collection<Statement> statements) throws ProtocolParseException {
+
+        List<SortOrder> sortOrders = new ArrayList<>();
+
+        for (Statement statement : statements) {
+
+            if (statement.getCommand().toLowerCase().startsWith(Commands.SUBSORT)) {
+
+                String[] pieces = statement.getValue().split("<");
+
+                if (pieces.length != 2) {
+                    throw new ProtocolParseException("Invalid format for subsort statement: " + statement.getValue());
+                } else {
+
+                    Sort supersort = SortFactory.fromString(pieces[1].trim());
+                    for (String subsortString : pieces[0].split(",")) {
+
+                        Sort subsort = SortFactory.fromString(subsortString.trim());
+                        sortOrders.add(new SortOrder(subsort, supersort));
+                    }
+                }
+            }
+        }
+
+        return sortOrders;
+    }
+
     private static Signature parseSignature(String text) throws ProtocolParseException {
 
         Collection<Statement> statements = extractStatements(text);
+
         List<NameTerm> publicNames = new ArrayList<>();
         List<NameTerm> privateNames = new ArrayList<>();
         List<VariableTerm> variables = new ArrayList<>();
         List<FunctionSymbol> functions = new ArrayList<>();
 
+        // NOTE: sorts must be parsed before the rest of the signature
+        List<Sort> sorts = parseSorts(statements);
+        List<SortOrder> sortOrders = parseSubsorts(statements);
+
         for (Statement statement : statements) {
 
             if (statement.getCommand().toLowerCase().startsWith(Commands.FUNCTION)) {
 
-                for (String symbolArityPair : statement.getValue().split(",")) {
+                String[] pieces = statement.getValue().split("\\|");
+                String[] typePieces = pieces[1].split("->");
 
-                    String[] split = symbolArityPair.split("/");
-
-                    if (split.length != 2) {
-                        throw new ProtocolParseException(Resources.INVALID_FUNCTION_SYMBOL
-                                .evaluate(Collections.singletonList(symbolArityPair)));
-                    }
-
-                    try {
-                        functions.add(new FunctionSymbol(split[0].trim(), Integer.parseInt(split[1])));
-                    } catch (NumberFormatException ex) {
-                        throw new ProtocolParseException(Resources.INVALID_FUNCTION_SYMBOL
-                                .evaluate(Collections.singletonList(symbolArityPair)));
-                    }
+                if (pieces.length != 2 || typePieces.length != 2) {
+                    throw new ProtocolParseException(Resources.INVALID_FUNCTION_SYMBOL
+                            .evaluate(Collections.singletonList(statement.getValue())));
                 }
 
+                String[] sortPieces = typePieces[0].split(" ");
+                List<Sort> sortParameters = new ArrayList<>();
+
+                for(String sortString : sortPieces) {
+                    sortParameters.add(SortFactory.fromString(sortString.trim()));
+                }
+
+                Sort sortResult = SortFactory.fromString(typePieces[1].trim());
+
+                functions.add(new FunctionSymbol(pieces[0].trim(), sortParameters, sortResult));
+
             } else if (statement.getCommand().toLowerCase().startsWith(Commands.PRIVATE_NAMES)) {
-                for (String name : statement.getValue().split(",")) {
-                    privateNames.add(new NameTerm(name.trim(), true));
+
+                String[] pieces = statement.getValue().split("\\|");
+
+                if(pieces.length != 2) {
+                    throw new ProtocolParseException("Invalid private name declaration: " + statement.getValue());
+                }
+
+                Sort sort = SortFactory.fromString(pieces[1].trim());
+
+                for (String name : pieces[0].split(",")) {
+                    privateNames.add(new NameTerm(name.trim(), true, sort));
                 }
 
             } else if (statement.getCommand().toLowerCase().startsWith(Commands.VARIABLES)) {
 
-                for (String var : statement.getValue().split(",")) {
-                    variables.add(new VariableTerm(var.trim()));
+                String[] pieces = statement.getValue().split("\\|");
+
+                if(pieces.length != 2) {
+                    throw new ProtocolParseException("Invalid variable declaration: " + statement.getValue());
+                }
+
+                Sort sort = SortFactory.fromString(pieces[1].trim());
+
+                for (String var : pieces[0].split(",")) {
+                    variables.add(new VariableTerm(var.trim(), sort));
                 }
 
             } else if (statement.getCommand().toLowerCase().startsWith(Commands.PUBLIC_NAMES)) {
 
-                for (String name : statement.getValue().split(",")) {
-                    publicNames.add(new NameTerm(name.trim(), false));
+                String[] pieces = statement.getValue().split("\\|");
+
+                if(pieces.length != 2) {
+                    throw new ProtocolParseException("Invalid public name declaration: " + statement.getValue());
+                }
+
+                Sort sort = SortFactory.fromString(pieces[1].trim());
+
+                for (String name : pieces[0].split(",")) {
+                    publicNames.add(new NameTerm(name.trim(), false, sort));
                 }
 
             } else {
@@ -231,7 +307,7 @@ public class ProtocolParser {
             }
         }
 
-        Signature signature = new Signature(functions, publicNames, privateNames, variables);
+        Signature signature = new Signature(functions, publicNames, privateNames, variables, sorts, sortOrders);
         TermFactory.initTermBuilder(signature);
         return signature;
     }

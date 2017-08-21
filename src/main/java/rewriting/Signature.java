@@ -1,11 +1,8 @@
 package rewriting;
 
 import com.google.common.base.MoreObjects;
-import rewriting.terms.FunctionSymbol;
-import rewriting.terms.NameTerm;
-import rewriting.terms.VariableTerm;
+import rewriting.terms.*;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,19 +20,26 @@ public class Signature {
     private final List<NameTerm> publicNames;
     private final List<NameTerm> privateNames;
     private final List<VariableTerm> variables;
+    private final List<Sort> sorts;
+    private final List<SortOrder> sortOrders;
 
     public Signature(List<FunctionSymbol> functions, List<NameTerm> publicNames,
-                     List<NameTerm> privateNames, List<VariableTerm> variables) {
+                     List<NameTerm> privateNames, List<VariableTerm> variables,
+                     List<Sort> sorts, List<SortOrder> sortOrders) {
 
         Objects.requireNonNull(functions);
         Objects.requireNonNull(publicNames);
         Objects.requireNonNull(privateNames);
         Objects.requireNonNull(variables);
+        Objects.requireNonNull(sorts);
+        Objects.requireNonNull(sortOrders);
 
         this.functions = functions;
         this.publicNames = publicNames;
         this.privateNames = privateNames;
         this.variables = variables;
+        this.sorts = sorts;
+        this.sortOrders = sortOrders;
     }
 
     public List<FunctionSymbol> getFunctions() {
@@ -54,6 +58,14 @@ public class Signature {
         return variables;
     }
 
+    public List<Sort> getSorts() {
+        return sorts;
+    }
+
+    public List<SortOrder> getSortOrders() {
+        return sortOrders;
+    }
+
     @Override
     public boolean equals(Object o) {
 
@@ -65,13 +77,15 @@ public class Signature {
         if (!publicNames.equals(((Signature) o).publicNames)) return false;
         if (!privateNames.equals(((Signature) o).privateNames)) return false;
         if (!variables.equals(((Signature) o).variables)) return false;
+        if (!sorts.equals(((Signature) o).sorts)) return false;
+        if (!sortOrders.equals(((Signature) o).sortOrders)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(functions, publicNames, privateNames);
+        return Objects.hash(functions, publicNames, privateNames, sorts, sortOrders);
     }
 
     @Override
@@ -81,6 +95,8 @@ public class Signature {
                 .add("public names", publicNames.toString())
                 .add("private names", privateNames.toString())
                 .add("variables", variables.toString())
+                .add("sorts", sorts.toString())
+                .add("sort orders", sortOrders.toString())
                 .toString();
     }
 }

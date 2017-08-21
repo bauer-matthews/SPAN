@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class ActionFactory {
 
-    public static Collection<Term> getRecipes(int numFrameVariables) {
+    public static Collection<Term> getAllRecipes(int numFrameVariables) {
 
         Collection<Term> terms = new ArrayList<>();
 
@@ -37,7 +37,43 @@ public class ActionFactory {
             System.out.println();
         }
 
+        terms = filterByTypeCompliance(terms);
+
         return terms;
+    }
+
+    private static Collection<Term> filterByTypeCompliance(Collection<Term> recipes) {
+
+        ArrayList<Term> terms = new ArrayList<>();
+
+        for (Term term : recipes) {
+            if (typeCompliant(term)) {
+                terms.add(term);
+            }
+        }
+
+        return terms;
+    }
+
+    private static boolean typeCompliant(Term recipe) {
+
+        if (recipe.isCompoundTerm()) {
+            FunctionTerm term = ((FunctionTerm) recipe);
+
+            for (int i = 0; i < term.getRootSymbol().getArity(); i++) {
+                if (!term.getSubterms().get(i).hasSort(term.getRootSymbol().getParameterType().get(i))) {
+                    return false;
+                }
+            }
+
+            for (Term subterm : term.getSubterms()) {
+                if (!typeCompliant(subterm)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     private static Collection<Term> getBaseRecipes(int numFrameVariables) {
@@ -135,10 +171,13 @@ public class ActionFactory {
 
         for (Term recipe : GlobalDataCache.getRecipes(numFrameVariables)) {
 
-            Term evaluatedRecipe = RewritingCache.reduce(SubstitutionCache.applySubstitution(recipe, frame));
+            Term groundTerm = SubstitutionCache.applySubstitution(recipe, frame);
 
-            if (UnificationCache.unify(guard, evaluatedRecipe).isPresent()) {
-                filteredRecipes.add(recipe);
+            if (typeCompliant(groundTerm)) {
+
+                if (UnificationCache.unify(guard, RewritingCache.reduce(groundTerm)).isPresent()) {
+                    filteredRecipes.add(recipe);
+                }
             }
         }
 

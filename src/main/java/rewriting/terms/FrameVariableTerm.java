@@ -15,7 +15,7 @@ public class FrameVariableTerm extends VariableTerm {
 
     public FrameVariableTerm(String name, int index) {
 
-        super(name);
+        super(name, SortFactory.FRAME);
         this.index = index;
     }
 
@@ -24,10 +24,19 @@ public class FrameVariableTerm extends VariableTerm {
     }
 
     @Override
+    public Sort getSort() {
+        return SortFactory.FRAME;
+    }
+
+    @Override
+    public boolean hasSort(Sort sort) {
+        return sort.equals(SortFactory.FRAME);
+    }
+
+    @Override
     public String toMathString() {
         return super.toMathString() + index;
     }
-
 
     @Override
     public boolean equals(Object o) {

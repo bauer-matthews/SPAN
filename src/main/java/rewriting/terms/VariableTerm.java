@@ -17,16 +17,24 @@ import java.util.Objects;
 public class VariableTerm implements Term {
 
     private final String variable;
+    private final Sort sort;
 
-    public VariableTerm(String termString) {
+    public VariableTerm(String termString, Sort sort) {
 
         Objects.requireNonNull(termString);
+        Objects.requireNonNull(sort);
 
         this.variable = termString;
+        this.sort = sort;
     }
 
     public String getName() {
         return variable;
+    }
+
+    @Override
+    public Sort getSort() {
+        return sort;
     }
 
     @Override
@@ -65,6 +73,11 @@ public class VariableTerm implements Term {
     }
 
     @Override
+    public boolean hasSort(Sort sort) {
+        return SortFactory.hasSort(this.sort, sort);
+    }
+
+    @Override
     public String toMathString() {
         return variable;
     }
@@ -76,18 +89,21 @@ public class VariableTerm implements Term {
             return false;
         }
 
+        if(!(sort.equals(((VariableTerm) o).sort))) return false;
+
         return variable.equalsIgnoreCase(((VariableTerm) o).variable);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variable);
+        return Objects.hash(variable, sort);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("variable", variable)
+                .add("sort", sort)
                 .toString();
     }
 }

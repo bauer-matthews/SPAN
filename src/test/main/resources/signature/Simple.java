@@ -1,13 +1,14 @@
 package resources.signature;
 
 import rewriting.Signature;
-import rewriting.terms.FunctionSymbol;
-import rewriting.terms.NameTerm;
-import rewriting.terms.VariableTerm;
+import rewriting.terms.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import static rewriting.terms.SortFactory.*;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -20,25 +21,40 @@ import java.util.List;
 public class Simple {
 
 
-    public static final NameTerm PUB_NAME_A = new NameTerm("a", false);
-    public static final NameTerm PUB_NAME_B = new NameTerm("b", false);
-    public static final NameTerm PUB_NAME_C = new NameTerm("c", false);
+    public static final NameTerm PUB_NAME_A = new NameTerm("a", false, KIND);
+    public static final NameTerm PUB_NAME_B = new NameTerm("b", false, KIND);
+    public static final NameTerm PUB_NAME_C = new NameTerm("c", false, KIND);
 
-    public static final NameTerm SEC_NAME_D = new NameTerm("d", true);
-    public static final NameTerm SEC_NAME_E = new NameTerm("e", true);
-    public static final NameTerm SEC_NAME_F = new NameTerm("f", true);
+    public static final NameTerm SEC_NAME_D = new NameTerm("d", true, KIND);
+    public static final NameTerm SEC_NAME_E = new NameTerm("e", true, KIND);
+    public static final NameTerm SEC_NAME_F = new NameTerm("f", true, KIND);
 
-    public static final FunctionSymbol FUNC_ONE = new FunctionSymbol("one", 1);
-    public static final FunctionSymbol FUNC_TWO = new FunctionSymbol("two", 2);
-    public static final FunctionSymbol FUNC_THREE = new FunctionSymbol("three", 3);
+    public static final FunctionSymbol FUNC_ONE;
+    public static final FunctionSymbol FUNC_TWO;
+    public static final FunctionSymbol FUNC_THREE;
 
-    public static final VariableTerm VAR_SX = new VariableTerm("sx");
-    public static final VariableTerm VAR_SY = new VariableTerm("sy");
-    public static final VariableTerm VAR_SZ = new VariableTerm("sz");
+    public static final VariableTerm VAR_SX = new VariableTerm("sx", KIND);
+    public static final VariableTerm VAR_SY = new VariableTerm("sy", KIND);
+    public static final VariableTerm VAR_SZ = new VariableTerm("sz", KIND);
 
     public static final Signature SIGNATURE;
 
     static {
+
+        FUNC_ONE = new FunctionSymbol("one", Collections.singletonList(KIND), KIND);
+
+        List<Sort> twoParamSorts = new ArrayList<>();
+        twoParamSorts.add(KIND);
+        twoParamSorts.add(KIND);
+
+        FUNC_TWO = new FunctionSymbol("two", twoParamSorts, KIND);
+
+        List<Sort> threeParamSorts = new ArrayList<>();
+        threeParamSorts.add(KIND);
+        threeParamSorts.add(KIND);
+        threeParamSorts.add(KIND);
+
+        FUNC_THREE = new FunctionSymbol("three", threeParamSorts, KIND);
 
         List<FunctionSymbol> functionSymbolList = new ArrayList<>();
         functionSymbolList.add(FUNC_ONE);
@@ -60,6 +76,7 @@ public class Simple {
         variables.add(VAR_SY);
         variables.add(VAR_SZ);
 
-        SIGNATURE = new Signature(functionSymbolList, publicNames, privateNames, variables);
+        SIGNATURE = new Signature(functionSymbolList, publicNames, privateNames,
+                variables, Collections.singletonList(KIND), Collections.emptyList());
     }
 }
