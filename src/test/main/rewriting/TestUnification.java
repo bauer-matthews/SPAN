@@ -1,6 +1,7 @@
 package rewriting;
 
 import cache.SubstitutionCache;
+import org.junit.Test;
 import resources.signature.Pair;
 import rewriting.terms.FunctionTerm;
 import rewriting.terms.Term;

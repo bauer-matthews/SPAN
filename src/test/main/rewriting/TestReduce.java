@@ -1,5 +1,6 @@
 package rewriting;
 
+import org.junit.Test;
 import resources.rewritting.SymmetricKeyRewrites;
 import resources.signature.SymmetricKey;
 import rewriting.terms.*;
