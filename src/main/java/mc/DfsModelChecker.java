@@ -1,13 +1,16 @@
 package mc;
 
+import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import org.apfloat.Apfloat;
 import process.*;
+import protocol.Interleaving;
 import protocol.role.Role;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -19,7 +22,8 @@ public class DfsModelChecker {
             InterruptedException, IOException, ExecutionException {
 
         Belief initialBelief = new Belief(initialState, Apfloat.ONE);
-        BeliefState initialBeliefState = new BeliefState(Collections.singletonList(initialBelief));
+        BeliefState initialBeliefState = new BeliefState(
+                Collections.singletonList(initialBelief), Collections.emptyList());
 
         return getMaximumAttackProb(initialBeliefState);
     }
@@ -27,9 +31,18 @@ public class DfsModelChecker {
     private static Apfloat getMaximumAttackProb(BeliefState beliefState) throws InvalidActionException,
             InterruptedException, IOException, ExecutionException {
 
+        Optional<Apfloat> attackProb = GlobalDataCache.hasPartialOrderReduction(
+                new Interleaving(beliefState.getActionHistory(), beliefState.getStateAttackProb()));
+
+        if (attackProb.isPresent()) {
+            return attackProb.get();
+        }
+
         Apfloat maxProb = beliefState.getStateAttackProb();
 
         if (maxProb.equals(Apfloat.ONE)) {
+            GlobalDataCache.addInterleaving(new Interleaving(beliefState.getActionHistory(),
+                    beliefState.getStateAttackProb()));
             return Apfloat.ONE;
         }
 
@@ -72,6 +85,9 @@ public class DfsModelChecker {
                 }
             }
         }
+
+        GlobalDataCache.addInterleaving(new Interleaving(beliefState.getActionHistory(),
+                beliefState.getStateAttackProb()));
 
         return maxProb;
     }

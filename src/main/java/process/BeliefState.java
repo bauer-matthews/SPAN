@@ -12,15 +12,22 @@ import java.util.Objects;
 public class BeliefState {
 
     private final List<Belief> beliefs;
+    private final List<Action> actionHistory;
 
-    public BeliefState(List<Belief> beliefs) {
+    public BeliefState(List<Belief> beliefs, List<Action> actionHistory) {
 
         Objects.requireNonNull(beliefs);
+
         this.beliefs = beliefs;
+        this.actionHistory = actionHistory;
     }
 
     public List<Belief> getBeliefs() {
         return beliefs;
+    }
+
+    public List<Action> getActionHistory() {
+        return actionHistory;
     }
 
     public Apfloat getStateProb(State state) {
@@ -54,19 +61,21 @@ public class BeliefState {
         }
 
         if (!beliefs.equals(((BeliefState) o).beliefs)) return false;
+        if (!actionHistory.equals(((BeliefState) o).actionHistory)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(beliefs);
+        return Objects.hash(beliefs, actionHistory);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("beliefs", beliefs.toString())
+                .add("action history", actionHistory)
                 .toString();
     }
 }

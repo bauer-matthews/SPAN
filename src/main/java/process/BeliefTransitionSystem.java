@@ -12,12 +12,11 @@ import java.util.concurrent.ExecutionException;
  */
 public class BeliefTransitionSystem {
 
-
     public static List<Action> getEnabledActions(BeliefState beliefState) throws ExecutionException {
 
         List<Action> enabledActions = new ArrayList<>();
 
-        for(Belief belief : beliefState.getBeliefs()) {
+        for (Belief belief : beliefState.getBeliefs()) {
             enabledActions.addAll(belief.getState().getEnabledActions());
         }
 
@@ -105,7 +104,10 @@ public class BeliefTransitionSystem {
                 }
             }
 
-            beliefTransitions.add(new BeliefTransition(bottomSum, new BeliefState(beliefs)));
+            List<Action> actionHistory = beliefState.getActionHistory();
+            actionHistory.add(action);
+
+            beliefTransitions.add(new BeliefTransition(bottomSum, new BeliefState(beliefs, actionHistory)));
         }
 
         return beliefTransitions;
