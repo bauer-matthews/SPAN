@@ -8,7 +8,7 @@ import rewriting.terms.SpecialTerm;
  */
 public class Resources {
 
-    static final SpecialTerm TAU_ACTION = new SpecialTerm("T");
+    public static final SpecialTerm TAU_ACTION = new SpecialTerm("T");
 
     static final String BAD_ROLE_INDEX = "Role index out of bounds";
 

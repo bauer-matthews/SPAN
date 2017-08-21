@@ -4,7 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.apfloat.Apfloat;
-import process.ActionFactory;
+import process.*;
+import process.Resources;
 import protocol.Interleaving;
 import protocol.Protocol;
 import rewriting.terms.*;
@@ -51,9 +52,26 @@ public class GlobalDataCache {
             if (explored.getInterleaving().size() >= interleaving.getInterleaving().size()) {
 
                 for (int i = 1; i < interleaving.getInterleaving().size(); i++) {
-                    if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
-                            explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
-                        return Optional.of(explored.getAttackProb());
+
+                    // Back-to-back outputs can be swapped
+                    if (interleaving.getInterleaving().get(i).getRecipe().equals(Resources.TAU_ACTION) &&
+                            interleaving.getInterleaving().get(i - 1).getRecipe().equals(Resources.TAU_ACTION)) {
+
+                        if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
+                                explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
+                            return Optional.of(explored.getAttackProb());
+                        }
+                    }
+
+                    // Back-to-back inputs can be swapped
+                    if ((!interleaving.getInterleaving().get(i).getRecipe().equals(Resources.TAU_ACTION)) &&
+                            (!interleaving.getInterleaving().get(i - 1).getRecipe().equals(Resources.TAU_ACTION))) {
+
+                        // NOTE: This only allows swapping of identical recipes.
+                        if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
+                                explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
+                            return Optional.of(explored.getAttackProb());
+                        }
                     }
                 }
             }
