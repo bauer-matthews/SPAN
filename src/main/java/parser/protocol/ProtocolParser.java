@@ -220,6 +220,7 @@ public class ProtocolParser {
             }
         }
 
+        SortFactory.setSortOrders(sortOrders);
         return sortOrders;
     }
 
@@ -248,10 +249,10 @@ public class ProtocolParser {
                             .evaluate(Collections.singletonList(statement.getValue())));
                 }
 
-                String[] sortPieces = typePieces[0].split(" ");
+                String[] sortPieces = typePieces[0].trim().split(" ");
                 List<Sort> sortParameters = new ArrayList<>();
 
-                for(String sortString : sortPieces) {
+                for (String sortString : sortPieces) {
                     sortParameters.add(SortFactory.fromString(sortString.trim()));
                 }
 
@@ -263,7 +264,7 @@ public class ProtocolParser {
 
                 String[] pieces = statement.getValue().split("\\|");
 
-                if(pieces.length != 2) {
+                if (pieces.length != 2) {
                     throw new ProtocolParseException("Invalid private name declaration: " + statement.getValue());
                 }
 
@@ -277,7 +278,7 @@ public class ProtocolParser {
 
                 String[] pieces = statement.getValue().split("\\|");
 
-                if(pieces.length != 2) {
+                if (pieces.length != 2) {
                     throw new ProtocolParseException("Invalid variable declaration: " + statement.getValue());
                 }
 
@@ -291,16 +292,19 @@ public class ProtocolParser {
 
                 String[] pieces = statement.getValue().split("\\|");
 
-                if(pieces.length != 2) {
+                if (pieces.length != 2) {
                     throw new ProtocolParseException("Invalid public name declaration: " + statement.getValue());
                 }
 
                 Sort sort = SortFactory.fromString(pieces[1].trim());
 
-                for (String name : pieces[1].split(",")) {
+                for (String name : pieces[0].split(",")) {
                     publicNames.add(new NameTerm(name.trim(), false, sort));
                 }
 
+            } else if (statement.getCommand().toLowerCase().startsWith(Commands.SORT) ||
+                    statement.getCommand().toLowerCase().startsWith(Commands.SUBSORT)) {
+                // Already handled
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));

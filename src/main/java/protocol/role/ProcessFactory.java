@@ -31,12 +31,15 @@ public class ProcessFactory {
 
         int delimiter = actionString.indexOf("}") + 1;
 
-        parsePhase(actionString.substring(0, delimiter).trim());
+        int phase = parsePhase(actionString.substring(0, delimiter).trim());
 
-        if (actionString.startsWith("in")) {
-            return parseInput(actionString.substring(delimiter));
-        } else if (actionString.startsWith("[")) {
-            return parseOutput(actionString.substring(delimiter));
+
+        String processActionString = actionString.substring(delimiter).trim();
+
+        if (processActionString.startsWith("in")) {
+            return parseInput(processActionString, phase);
+        } else if (processActionString.startsWith("[")) {
+            return parseOutput(processActionString, phase);
         } else {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         }
@@ -44,7 +47,7 @@ public class ProcessFactory {
 
     private static int parsePhase(String phaseString) throws ActionParseException {
 
-        String number = phaseString.substring(phaseString.indexOf("{"), phaseString.indexOf("}"));
+        String number = phaseString.substring(phaseString.indexOf("{")+1, phaseString.indexOf("}"));
 
         try {
             return Integer.parseInt(number);
@@ -53,7 +56,9 @@ public class ProcessFactory {
         }
     }
 
-    private static AtomicProcess parseInput(String actionString) throws TermParseException, ActionParseException {
+    private static AtomicProcess parseInput(String actionString, int phase)
+            throws TermParseException, ActionParseException {
+
         String inp = actionString.substring(actionString.indexOf("(") + 1, actionString.length() - 1);
 
         if (!(inp.contains("{") && inp.contains("}"))) {
@@ -76,11 +81,11 @@ public class ProcessFactory {
         if (!(var instanceof VariableTerm)) {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         } else {
-            return new InputProcess((VariableTerm) var, guard);
+            return new InputProcess((VariableTerm) var, guard, phase);
         }
     }
 
-    private static AtomicProcess parseOutput(String actionString) throws TermParseException, ActionParseException {
+    private static AtomicProcess parseOutput(String actionString, int phase) throws TermParseException, ActionParseException {
 
         String guardString = actionString.substring(actionString.indexOf("[") + 1, actionString.indexOf("]"));
         String outString = actionString.substring(actionString.indexOf("]") + 1);
@@ -102,7 +107,7 @@ public class ProcessFactory {
             probOutputs.add(parseProbOutputs(probOutString));
         }
 
-        return new OutputProcess(guards, probOutputs);
+        return new OutputProcess(guards, probOutputs, phase);
     }
 
     private static ProbOutput parseProbOutputs(String probOutput) throws TermParseException, ActionParseException {
@@ -126,7 +131,7 @@ public class ProcessFactory {
             }
         }
 
-        String[] outPieces = probPieces[1].split("\\|");
+        String[] outPieces = probPieces[1].split("\\#");
 
         for (String outPiece : outPieces) {
             outputTerms.add(TermFactory.buildTerm(outPiece.trim()));

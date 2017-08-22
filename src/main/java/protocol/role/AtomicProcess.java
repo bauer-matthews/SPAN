@@ -14,4 +14,6 @@ public interface AtomicProcess {
 
     boolean isInput();
 
+    int getPhase();
+
 }

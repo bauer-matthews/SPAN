@@ -15,7 +15,7 @@ public class SortFactory {
 
     static List<Sort> sorts;
     static List<SortOrder> sortOrders;
-    static Map<Sort, List<Sort>> subsortMap;
+    static Map<Sort, ArrayList<Sort>> subsortMap;
 
     static {
         sorts = new ArrayList<>();
@@ -37,14 +37,19 @@ public class SortFactory {
 
     public static void setSortOrders(List<SortOrder> sortOrders) {
         SortFactory.sortOrders = sortOrders;
+        resetSubsortLists();
         computeSubsortLists();
     }
 
-    private static void computeSubsortLists() {
+    private static void resetSubsortLists() {
 
+        subsortMap.clear();
         for (Sort sort : sorts) {
-            subsortMap.put(sort, Collections.emptyList());
+            subsortMap.put(sort, new ArrayList<>());
         }
+    }
+
+    private static void computeSubsortLists() {
 
         for (SortOrder order : sortOrders) {
             subsortMap.get(order.getSuperSort()).add(order.getSubSort());

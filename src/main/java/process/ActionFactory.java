@@ -29,7 +29,7 @@ public class ActionFactory {
             }
         }
 
-        if (RunConfiguration.getTrace()) {
+        if (RunConfiguration.getTrace() ) {
             System.out.println("ALL ACTIONS(" + numFrameVariables + "): ");
             for (Term term : terms) {
                 System.out.println(term.toMathString());
@@ -38,6 +38,15 @@ public class ActionFactory {
         }
 
         terms = filterByTypeCompliance(terms);
+
+
+        if (RunConfiguration.getTrace()) {
+            System.out.println("TYPE COMPLIANT ACTIONS(" + numFrameVariables + "): ");
+            for (Term term : terms) {
+                System.out.println(term.toMathString());
+            }
+            System.out.println();
+        }
 
         return terms;
     }
@@ -61,7 +70,9 @@ public class ActionFactory {
             FunctionTerm term = ((FunctionTerm) recipe);
 
             for (int i = 0; i < term.getRootSymbol().getArity(); i++) {
-                if (!term.getSubterms().get(i).hasSort(term.getRootSymbol().getParameterType().get(i))) {
+
+                if ((!term.getSubterms().get(i).hasSort(term.getRootSymbol().getParameterType().get(i)))
+                        && (!(term.getSubterms().get(i) instanceof FrameVariableTerm))) {
                     return false;
                 }
             }

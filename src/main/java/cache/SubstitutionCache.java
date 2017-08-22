@@ -32,7 +32,7 @@ public class SubstitutionCache {
 
     static {
         solvedTerms = CacheBuilder.newBuilder()
-                .maximumSize(1000)
+                .maximumSize(30000)
                 .build(
                         new CacheLoader<Pair<Term, Collection<Equality>>, Term>() {
                             // TODO: tighten exception

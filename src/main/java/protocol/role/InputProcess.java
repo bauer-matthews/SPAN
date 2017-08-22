@@ -21,14 +21,16 @@ public class InputProcess implements AtomicProcess {
 
     private final VariableTerm variable;
     private final Optional<Term> inputGuard;
+    private final int phase;
 
-    InputProcess(VariableTerm variable, Optional<Term> inputGuard) {
+    InputProcess(VariableTerm variable, Optional<Term> inputGuard, int phase) {
 
         Objects.requireNonNull(variable);
         Objects.requireNonNull(inputGuard);
 
         this.variable = variable;
         this.inputGuard = inputGuard;
+        this.phase = phase;
     }
 
     public VariableTerm getVariable() {
@@ -37,6 +39,11 @@ public class InputProcess implements AtomicProcess {
 
     public Optional<Term> getInputGuard() {
         return inputGuard;
+    }
+
+    @Override
+    public int getPhase() {
+        return phase;
     }
 
     @Override
@@ -52,19 +59,20 @@ public class InputProcess implements AtomicProcess {
     @Override
     public boolean equals(Object o) {
 
-        if (! (o instanceof InputProcess)) {
+        if (!(o instanceof InputProcess)) {
             return false;
         }
 
-        if(!variable.equals(((InputProcess) o).variable)) return false;
-        if(!inputGuard.equals(((InputProcess) o).inputGuard)) return false;
+        if (!variable.equals(((InputProcess) o).variable)) return false;
+        if (!inputGuard.equals(((InputProcess) o).inputGuard)) return false;
+        if (phase != ((InputProcess) o).phase) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(variable, inputGuard);
+        return Objects.hash(variable, inputGuard, phase);
     }
 
     @Override
@@ -72,6 +80,7 @@ public class InputProcess implements AtomicProcess {
         return MoreObjects.toStringHelper(this)
                 .add("variable", variable)
                 .add("input guard", inputGuard)
+                .add("phase", phase)
                 .toString();
     }
 }

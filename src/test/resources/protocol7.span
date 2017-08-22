@@ -1,9 +1,12 @@
 # Example Protocol
+# TODO: fix the need for this guard (union is enabled....)
+# TODO: Need to parse sorts first / Check other orders
+# TODO: T, W are reserved strings for names/functions/types/variables;
 
 .metadata
 
     version : 1.0;
-    recipe size : 2;
+    recipe depth : 2;
 
 .constants
 
@@ -11,22 +14,39 @@
 
 .signature
 
-    variables : m, r, k, u, v, y1, y2, y3;
-    functions : enc/2, dec/2;
-    public names : a;
-    private names : m1, m2, k1, k2, km, s;
+    sort : PKey, SKey, Nonce, Message;
+    subsort : PKey, SKey, Nonce < Message;
+
+    variables : m, y1, y2, y3, x1 | Message;
+    variables : r, k, x2, x3, t | Nonce;
+
+    function : enc | Message Nonce PKey -> Message;
+    function : dec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+
+    public names : a | Nonce;
+
+    private names : m1 , m2 | Message;
+    private names : s, r1, r2, r3, r4, k1, k2, k3, km | Nonce;
 
 .rewrites
 
-    rewrite : dec(enc(m,k), k) -> m;
+    rewrite : dec(enc(m,r,pk(k)), sk(k)) -> m;
 
 .roles
 
-    role : [T] out(1 -> enc(enc(m1,k1),km));
-    role : [T] out(1 -> enc(enc(m2,k2),km));
-    role : [T] out(1 -> enc(enc(a, a), km));
-    role : in(y1) . in(y2) . [y1 == enc(enc(m2,k2),km) ] out(p -> dec(y1, km) | dec(y2, km) + p -> dec(y2, km) | dec(y1, km));
-    role : in(y3) . [ y3 == enc(m2, k2)] out(1 -> s)
+    role:   {2} in(y1{enc(enc(x1, x2, pk(t)),x3, pk(km))}) .
+            {2} in(y2{enc(enc(x1, x2, pk(t)),x3, pk(km))}) .
+            {2} [y1 != y2] out(p -> dec(y1, sk(km)) # dec(y2, sk(km)) + p -> dec(y2, sk(km)) # dec(y1, sk(km)));
+
+    role :  {0} [T] out(1 -> pk(km));
+
+    role :  {1} [T] out(1 -> enc(enc(m1,r1, pk(k1)),r2, pk(km))) .
+            {1} [T] out(1 -> enc(enc(m2,r3, pk(k2)),r4, pk(km)));
+
+    role:   {3} in(y3{enc(m2,r3, pk(k2))}) .
+            {3} [ y3 == enc(m2,r3, pk(k2))  ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

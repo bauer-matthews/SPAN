@@ -59,32 +59,53 @@ public class State {
         return roleViews;
     }
 
+    private int getMinPhase() {
+
+        int minPhase = Integer.MAX_VALUE;
+
+        for(Role role : roles) {
+
+            if(!role.getAtomicProcesses().isEmpty()) {
+
+                if (role.getHead().getPhase() < minPhase) {
+                    minPhase = role.getHead().getPhase();
+                }
+            }
+        }
+
+        return  minPhase;
+    }
+
     public List<Action> getEnabledActions() throws ExecutionException {
 
+        int minPhase = getMinPhase();
         List<Action> actions = new ArrayList<>();
 
         for (int i = 0; i < roles.size(); i++) {
 
             if (!roles.get(i).getAtomicProcesses().isEmpty()) {
 
-                if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
+                if(roles.get(i).getHead().getPhase() == minPhase) {
 
-                    if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
-                        actions.add(new Action(Resources.TAU_ACTION, i));
-                    }
+                    if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
-                } else {
-
-                    Optional<Term> guard = ((InputProcess) roles.get(i).getAtomicProcesses().get(0)).getInputGuard();
-
-                    if(guard.isPresent()) {
-
-                        for (Term recipe : ActionFactory.getRecipesWithGuard(frame.size(), guard.get(), frame)) {
-                            actions.add(new Action(recipe, i));
+                        if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
+                            actions.add(new Action(Resources.TAU_ACTION, i));
                         }
+
                     } else {
-                        for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
-                            actions.add(new Action(recipe, i));
+
+                        Optional<Term> guard = ((InputProcess) roles.get(i).getAtomicProcesses().get(0)).getInputGuard();
+
+                        if (guard.isPresent()) {
+
+                            for (Term recipe : ActionFactory.getRecipesWithGuard(frame.size(), guard.get(), frame)) {
+                                actions.add(new Action(recipe, i));
+                            }
+                        } else {
+                            for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
+                                actions.add(new Action(recipe, i));
+                            }
                         }
                     }
                 }

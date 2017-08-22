@@ -12,20 +12,20 @@ import java.util.Objects;
  */
 public class Interleaving {
 
-    private final List<Action> interleaving;
+    private final List<Action> actionList;
     private final Apfloat attackProb;
 
-    public Interleaving(List<Action> interleaving, Apfloat attackProb) {
+    public Interleaving(List<Action> actionList, Apfloat attackProb) {
 
-        Objects.requireNonNull(interleaving);
+        Objects.requireNonNull(actionList);
         Objects.requireNonNull(attackProb);
 
-        this.interleaving = interleaving;
+        this.actionList = actionList;
         this.attackProb = attackProb;
     }
 
-    public List<Action> getInterleaving() {
-        return interleaving;
+    public List<Action> getActionList() {
+        return actionList;
     }
 
     public Apfloat getAttackProb() {
@@ -36,7 +36,7 @@ public class Interleaving {
     public boolean equals(Object o) {
 
         if (!(o instanceof Interleaving)) return false;
-        if (!(this.interleaving.equals(((Interleaving) o).interleaving))) return false;
+        if (!(this.actionList.equals(((Interleaving) o).actionList))) return false;
         if (!(this.attackProb.equals(((Interleaving) o).attackProb))) return false;
 
         return true;
@@ -44,13 +44,13 @@ public class Interleaving {
 
     @Override
     public int hashCode() {
-        return Objects.hash(interleaving, attackProb);
+        return Objects.hash(actionList, attackProb);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("interleaving", interleaving)
+                .add("action list", actionList)
                 .add("attack prob", attackProb.toString(true))
                 .toString();
     }

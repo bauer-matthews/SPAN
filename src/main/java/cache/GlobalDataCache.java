@@ -61,34 +61,34 @@ public class GlobalDataCache {
 
     public static Optional<Apfloat> hasPartialOrderReduction(Interleaving interleaving) {
 
+        int size = interleaving.getActionList().size();
+
         for (Interleaving explored : interleavings) {
-            if (explored.getInterleaving().size() >= interleaving.getInterleaving().size()) {
+            if (explored.getActionList().size() == size && size >= 2) {
 
-                for (int i = 1; i < interleaving.getInterleaving().size(); i++) {
 
-                    // Back-to-back outputs can be swapped
-                    if (interleaving.getInterleaving().get(i).getRecipe().equals(Resources.TAU_ACTION) &&
-                            interleaving.getInterleaving().get(i - 1).getRecipe().equals(Resources.TAU_ACTION)) {
+                // Back-to-back outputs can be swapped
+                if (interleaving.getActionList().get(size-1).getRecipe().equals(Resources.TAU_ACTION) &&
+                        interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION)) {
 
-                        if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
-                                explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
+                    if (explored.getActionList().get(size-1).equals(interleaving.getActionList().get(size - 2)) &&
+                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size-1))) {
 
-                            interleavingsExplored++;
-                            return Optional.of(explored.getAttackProb());
-                        }
+                        interleavingsExplored++;
+                        return Optional.of(explored.getAttackProb());
                     }
+                }
 
-                    // Back-to-back inputs can be swapped
-                    if ((!interleaving.getInterleaving().get(i).getRecipe().equals(Resources.TAU_ACTION)) &&
-                            (!interleaving.getInterleaving().get(i - 1).getRecipe().equals(Resources.TAU_ACTION))) {
+                // Back-to-back inputs can be swapped
+                if ((!interleaving.getActionList().get(size-1).getRecipe().equals(Resources.TAU_ACTION)) &&
+                        (!interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION))) {
 
-                        // NOTE: This only allows swapping of identical recipes.
-                        if (explored.getInterleaving().get(i).equals(interleaving.getInterleaving().get(i - 1)) &&
-                                explored.getInterleaving().get(i - 1).equals(interleaving.getInterleaving().get(i))) {
+                    // NOTE: This only allows swapping of identical recipes.
+                    if (explored.getActionList().get(size-1).equals(interleaving.getActionList().get(size - 2)) &&
+                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size-1))) {
 
-                            interleavingsExplored++;
-                            return Optional.of(explored.getAttackProb());
-                        }
+                        interleavingsExplored++;
+                        return Optional.of(explored.getAttackProb());
                     }
                 }
             }

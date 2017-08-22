@@ -24,14 +24,16 @@ public class OutputProcess implements AtomicProcess {
 
     private final Collection<Guard> guards;
     private final Collection<ProbOutput> probOutputs;
+    private final int phase;
 
-    OutputProcess(Collection<Guard> guards, Collection<ProbOutput> probOutputs) {
+    OutputProcess(Collection<Guard> guards, Collection<ProbOutput> probOutputs, int phase) {
 
         Objects.requireNonNull(guards);
         Objects.requireNonNull(probOutputs);
 
         this.guards = guards;
         this.probOutputs = probOutputs;
+        this.phase = phase;
 
         Apfloat sum = Apfloat.ZERO;
         for (ProbOutput pout : probOutputs) {
@@ -53,6 +55,11 @@ public class OutputProcess implements AtomicProcess {
     }
 
     @Override
+    public int getPhase() {
+        return phase;
+    }
+
+    @Override
     public boolean isOutput() {
         return true;
     }
@@ -71,13 +78,14 @@ public class OutputProcess implements AtomicProcess {
 
         if (!guards.equals(((OutputProcess) o).guards)) return false;
         if (!probOutputs.equals(((OutputProcess) o).probOutputs)) return false;
+        if (phase != (((OutputProcess) o).phase)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(guards, probOutputs);
+        return Objects.hash(guards, probOutputs, phase);
     }
 
     @Override
@@ -85,6 +93,7 @@ public class OutputProcess implements AtomicProcess {
         return MoreObjects.toStringHelper(this)
                 .add("guards", guards.toString())
                 .add("probabilistic outputs", probOutputs.toString())
+                .add("phase", phase)
                 .toString();
     }
 }

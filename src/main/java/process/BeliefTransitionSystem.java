@@ -104,10 +104,11 @@ public class BeliefTransitionSystem {
                 }
             }
 
-            List<Action> actionHistory = beliefState.getActionHistory();
-            actionHistory.add(action);
+            List<Action> newActionHistory = new ArrayList<>();
+            newActionHistory.addAll(beliefState.getActionHistory());
+            newActionHistory.add(action);
 
-            beliefTransitions.add(new BeliefTransition(bottomSum, new BeliefState(beliefs, actionHistory)));
+            beliefTransitions.add(new BeliefTransition(bottomSum, new BeliefState(beliefs, newActionHistory)));
         }
 
         return beliefTransitions;
