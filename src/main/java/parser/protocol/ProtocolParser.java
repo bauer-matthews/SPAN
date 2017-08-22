@@ -297,7 +297,7 @@ public class ProtocolParser {
 
                 Sort sort = SortFactory.fromString(pieces[1].trim());
 
-                for (String name : pieces[0].split(",")) {
+                for (String name : pieces[1].split(",")) {
                     publicNames.add(new NameTerm(name.trim(), false, sort));
                 }
 

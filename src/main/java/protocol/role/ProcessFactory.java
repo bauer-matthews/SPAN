@@ -1,6 +1,7 @@
 package protocol.role;
 
 import org.apfloat.Apfloat;
+import parser.protocol.ProtocolParseException;
 import rewriting.Equality;
 import rewriting.terms.*;
 
@@ -24,19 +25,38 @@ public class ProcessFactory {
 
     public static AtomicProcess buildAction(String actionString) throws TermParseException, ActionParseException {
 
+        if ((!actionString.contains("}")) || (!actionString.startsWith("{"))) {
+            throw new ActionParseException("Phase is not valid for action: " + actionString);
+        }
+
+        int delimiter = actionString.indexOf("}") + 1;
+
+        parsePhase(actionString.substring(0, delimiter).trim());
+
         if (actionString.startsWith("in")) {
-            return parseInput(actionString);
+            return parseInput(actionString.substring(delimiter));
         } else if (actionString.startsWith("[")) {
-            return parseOutput(actionString);
+            return parseOutput(actionString.substring(delimiter));
         } else {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
+        }
+    }
+
+    private static int parsePhase(String phaseString) throws ActionParseException {
+
+        String number = phaseString.substring(phaseString.indexOf("{"), phaseString.indexOf("}"));
+
+        try {
+            return Integer.parseInt(number);
+        } catch (NumberFormatException ex) {
+            throw new ActionParseException("Unable to parse phase: " + phaseString);
         }
     }
 
     private static AtomicProcess parseInput(String actionString) throws TermParseException, ActionParseException {
         String inp = actionString.substring(actionString.indexOf("(") + 1, actionString.length() - 1);
 
-        if(!(inp.contains("{") && inp.contains("}"))) {
+        if (!(inp.contains("{") && inp.contains("}"))) {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         }
 
@@ -44,9 +64,9 @@ public class ProcessFactory {
         Term var = TermFactory.buildTerm(pieces[0].trim());
 
         Optional<Term> guard;
-        String guardString = pieces[1].substring(0, pieces[1].length() -1).trim();
+        String guardString = pieces[1].substring(0, pieces[1].length() - 1).trim();
 
-        if(guardString.isEmpty()) {
+        if (guardString.isEmpty()) {
             guard = Optional.empty();
         } else {
             guard = Optional.of(TermFactory.buildTerm(guardString));

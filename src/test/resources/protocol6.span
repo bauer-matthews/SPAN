@@ -37,10 +37,13 @@
 
 .roles
 
-    role : [T] out(1 -> enc(enc(m1,r1, pk(k1)),r2, pk(km))) . [T] out(1 -> enc(enc(m2,r3, pk(k2)),r4, pk(km))) .
-             in(y1{enc(x1,x2, pk(km))}) . in(y2{enc(x1, x2, pk(km))}) .
-             [y1 != y2] out(p -> dec(y1, sk(km)) # dec(y2, sk(km)) + p -> dec(y2, sk(km)) # dec(y1, sk(km))) .
-             in(y3{enc(m2,r3, pk(k2))}) . [ y3 == enc(m2,r3, pk(k2))  ] out(1 -> s)
+    role :  {1} [T] out(1 -> enc(enc(m1,r1, pk(k1)),r2, pk(km))) .
+            {1} [T] out(1 -> enc(enc(m2,r3, pk(k2)),r4, pk(km))) .
+            {2} in(y1{enc(x1,x2, pk(km))}) .
+            {2} in(y2{enc(x1, x2, pk(km))}) .
+            {2} [y1 != y2] out(p -> dec(y1, sk(km)) # dec(y2, sk(km)) + p -> dec(y2, sk(km)) # dec(y1, sk(km))) .
+            {3} in(y3{enc(m2,r3, pk(k2))}) .
+            {3} [ y3 == enc(m2,r3, pk(k2))  ] out(1 -> s)
 
 .safety
     secrecy : s >= 1/2;
