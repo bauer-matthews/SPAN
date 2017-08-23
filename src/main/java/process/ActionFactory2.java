@@ -25,7 +25,25 @@ public class ActionFactory2 {
         terms.addAll(getBaseRecipes(frameVariables, frameValues, sort, guard));
 
         if (guard.isPresent() && (!guard.get().isCompoundTerm())) {
-            return terms;
+
+            if(guard.get().isNameTerm()) {
+                return terms;
+            } else {
+                for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+
+                    if (functionSymbol.getReturnType().equals(sort)) {
+
+                        Collection<List<Term>> parameterLists = getParameterLists(frameVariables, frameValues,
+                                functionSymbol.getParameterType(), depth - 1, Optional.empty());
+
+                        for (List<Term> parameterList : parameterLists) {
+                            terms.add(new FunctionTerm(functionSymbol, parameterList));
+                        }
+                    }
+                }
+
+                return terms;
+            }
         }
 
         if (depth == 1) {
