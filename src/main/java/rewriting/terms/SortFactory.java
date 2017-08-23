@@ -73,6 +73,11 @@ public class SortFactory {
      * @return true if sort1 has sort2
      */
     public static boolean hasSort(Sort sort1, Sort sort2) {
+
+        if(sort2.equals(KIND)) {
+            return true;
+        }
+
         return subsortMap.get(sort2).contains(sort1) || sort1.equals(sort2);
     }
 

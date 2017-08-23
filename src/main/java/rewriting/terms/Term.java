@@ -20,6 +20,8 @@ public interface Term {
 
     boolean isNameTerm();
 
+    boolean isGroundTerm();
+
     boolean isVariableTerm();
 
     boolean isCompoundTerm();

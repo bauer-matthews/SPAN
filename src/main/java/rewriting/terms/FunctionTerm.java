@@ -80,6 +80,18 @@ public class FunctionTerm implements Term {
     }
 
     @Override
+    public boolean isGroundTerm() {
+
+        for (Term subterm : subterms) {
+            if (!subterm.isGroundTerm()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean isVariableTerm() {
         return false;
     }
@@ -127,7 +139,7 @@ public class FunctionTerm implements Term {
         }
 
         if (!this.rootSymbol.equals(((FunctionTerm) o).rootSymbol)) return false;
-        if (! subterms.equals(((FunctionTerm) o).subterms))
+        if (!subterms.equals(((FunctionTerm) o).subterms))
             return false;
 
         return true;

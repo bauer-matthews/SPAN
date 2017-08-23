@@ -53,7 +53,7 @@ public class TestGlobalDataCache {
     @Test
     public void generateRecipes_Depth2() throws Exception {
 
-        protocol.getMetadata().setRecipeSize(2);
+        protocol.getMetadata().setRecipeDepth(2);
         GlobalDataCache.setProtocol(protocol);
 
         Collection<Term> recipes = GlobalDataCache.getRecipes(1);

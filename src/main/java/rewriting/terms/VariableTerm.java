@@ -63,6 +63,11 @@ public class VariableTerm implements Term {
     }
 
     @Override
+    public boolean isGroundTerm() {
+        return false;
+    }
+
+    @Override
     public boolean isVariableTerm() {
         return true;
     }

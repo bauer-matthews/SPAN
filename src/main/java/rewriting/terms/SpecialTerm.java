@@ -43,6 +43,11 @@ public class SpecialTerm implements Term {
     }
 
     @Override
+    public boolean isGroundTerm() {
+        return true;
+    }
+
+    @Override
     public boolean isVariableTerm() {
         return false;
     }

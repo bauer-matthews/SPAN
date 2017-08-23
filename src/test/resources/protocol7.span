@@ -6,7 +6,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 2;
+    recipe depth : 3;
 
 .constants
 
@@ -24,7 +24,6 @@
     function : dec | Message SKey -> Message;
     function : pk | Nonce -> PKey;
     function : sk | Nonce -> SKey;
-
     public names : a | Nonce;
 
     private names : m1 , m2 | Message;

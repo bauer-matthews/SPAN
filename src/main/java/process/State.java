@@ -1,13 +1,12 @@
 package process;
 
 import cache.GlobalDataCache;
+import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
 import protocol.role.*;
 import rewriting.Equality;
-import rewriting.terms.FrameVariableTerm;
-import rewriting.terms.Term;
-import rewriting.terms.VariableTerm;
+import rewriting.terms.*;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -43,7 +42,7 @@ public class State {
         List<RoleView> roleViews = new ArrayList<>();
 
         for (int i = 0; i < roles.size(); i++) {
-            if(roles.get(i).getAtomicProcesses().isEmpty()) {
+            if (roles.get(i).getAtomicProcesses().isEmpty()) {
                 roleViews.add(new RoleView(i, RoleView.Status.NONE));
             } else if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
                 if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
@@ -63,9 +62,9 @@ public class State {
 
         int minPhase = Integer.MAX_VALUE;
 
-        for(Role role : roles) {
+        for (Role role : roles) {
 
-            if(!role.getAtomicProcesses().isEmpty()) {
+            if (!role.getAtomicProcesses().isEmpty()) {
 
                 if (role.getHead().getPhase() < minPhase) {
                     minPhase = role.getHead().getPhase();
@@ -73,7 +72,7 @@ public class State {
             }
         }
 
-        return  minPhase;
+        return minPhase;
     }
 
     public List<Action> getEnabledActions() throws ExecutionException {
@@ -85,7 +84,7 @@ public class State {
 
             if (!roles.get(i).getAtomicProcesses().isEmpty()) {
 
-                if(roles.get(i).getHead().getPhase() == minPhase) {
+                if (roles.get(i).getHead().getPhase() == minPhase) {
 
                     if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
 
@@ -97,19 +96,53 @@ public class State {
 
                         Optional<Term> guard = ((InputProcess) roles.get(i).getAtomicProcesses().get(0)).getInputGuard();
 
-                        if (guard.isPresent()) {
-
-                            for (Term recipe : ActionFactory.getRecipesWithGuard(frame.size(), guard.get(), frame)) {
-                                actions.add(new Action(recipe, i));
-                            }
-                        } else {
-                            for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
-                                actions.add(new Action(recipe, i));
-                            }
+                        // TODO: move this code to action factory
+                        List<FrameVariableTerm> frameVariableTerms = new ArrayList<>();
+                        Map<FrameVariableTerm, Term> frameVariableTermMap = new HashMap<>();
+                        for (Equality equality : frame) {
+                            // TODO: Tighten type
+                            frameVariableTerms.add((FrameVariableTerm) equality.getLhs());
+                            frameVariableTermMap.put((FrameVariableTerm) equality.getLhs(),
+                                    SubstitutionCache.applySubstitution(equality.getRhs(), substitution));
                         }
+
+                        Sort guardSort = SortFactory.KIND;
+                        if (guard.isPresent()) {
+                            guardSort = guard.get().getSort();
+                        }
+
+
+                        for (Term recipe : ActionFactory2.getAllRecipes(frameVariableTerms, frameVariableTermMap,
+                                guardSort, GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(), guard)) {
+
+                            actions.add(new Action(recipe, i));
+                        }
+
+                        // OLD ACTION FACTORY CODE
+//                        if (guard.isPresent()) {
+//
+//                            for (Term recipe : ActionFactory.getRecipesWithGuard(frame.size(), guard.get(), frame)) {
+//                                actions.add(new Action(recipe, i));
+//                            }
+//
+//
+//
+//                        } else {
+//                            for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
+//                                actions.add(new Action(recipe, i));
+//                            }
+//                        }
                     }
                 }
             }
+        }
+
+        if (RunConfiguration.getTrace() || RunConfiguration.getDebug()) {
+            System.out.println("FILTERED ACTIONS: " + actions.size());
+            for (Action action : actions) {
+                System.out.println(action.getRecipe().toMathString());
+            }
+            System.out.println();
         }
 
         return actions;

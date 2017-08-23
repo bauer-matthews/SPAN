@@ -19,27 +19,27 @@ import static com.google.common.base.Objects.equal;
 public class Metadata {
 
     private final String version;
-    private int recipeSize;
+    private int recipeDepth;
 
-    public Metadata(String version, int recipeSize) {
+    public Metadata(String version, int recipeDepth) {
 
         Objects.requireNonNull(version);
 
         this.version = version;
-        this.recipeSize = recipeSize;
+        this.recipeDepth = recipeDepth;
     }
 
     public String getVersion() {
         return this.version;
     }
 
-    public int getRecipeSize() {
-        return recipeSize;
+    public int getRecipeDepth() {
+        return recipeDepth;
     }
 
     @VisibleForTesting
-    public void setRecipeSize(int recipeSize) {
-        this.recipeSize = recipeSize;
+    public void setRecipeDepth(int recipeDepth) {
+        this.recipeDepth = recipeDepth;
     }
 
     @Override
@@ -49,21 +49,21 @@ public class Metadata {
             return false;
         }
 
-        if (!(recipeSize == ((Metadata) o).recipeSize)) return false;
+        if (!(recipeDepth == ((Metadata) o).recipeDepth)) return false;
 
         return equal(version, ((Metadata) o).getVersion());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(version, recipeSize);
+        return Objects.hash(version, recipeDepth);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("version", version)
-                .add("recipe size", recipeSize)
+                .add("recipe size", recipeDepth)
                 .toString();
     }
 }

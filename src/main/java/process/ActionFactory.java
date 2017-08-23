@@ -21,7 +21,7 @@ public class ActionFactory {
 
         Collection<Term> terms = new ArrayList<>();
 
-        for (int i = 1; i <= GlobalDataCache.getProtocol().getMetadata().getRecipeSize(); i++) {
+        for (int i = 1; i <= GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(); i++) {
             if (i == 1) {
                 terms = getBaseRecipes(numFrameVariables);
             } else {
@@ -107,13 +107,13 @@ public class ActionFactory {
         return baseRecipes;
     }
 
-    private static Collection<Term> applyFunctions(Collection<Term> recipies) {
+    private static Collection<Term> applyFunctions(Collection<Term> recipes) {
 
         Collection<Term> newRecipies = new ArrayList<>();
 
         Collection<List<Term>> lists = new ArrayList<>();
-        for (Term recipie : recipies) {
-            lists.add(Collections.singletonList(recipie));
+        for (Term recipe : recipes) {
+            lists.add(Collections.singletonList(recipe));
         }
 
         int currentArity = 1;
@@ -128,7 +128,7 @@ public class ActionFactory {
 
                 int diff = functionSymbol.getArity() - currentArity;
                 for (int i = 0; i < diff; i++) {
-                    lists = extendLists(lists, recipies);
+                    lists = extendLists(lists, recipes);
                 }
 
                 currentArity = functionSymbol.getArity();
