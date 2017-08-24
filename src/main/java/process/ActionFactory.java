@@ -29,7 +29,7 @@ public class ActionFactory {
             }
         }
 
-        if (RunConfiguration.getTrace() ) {
+        if (RunConfiguration.getTrace()) {
             System.out.println("ALL ACTIONS(" + numFrameVariables + "): ");
             for (Term term : terms) {
                 System.out.println(term.toMathString());
@@ -192,7 +192,7 @@ public class ActionFactory {
             }
         }
 
-        if (RunConfiguration.getTrace() || RunConfiguration.getDebug()) {
+        if (RunConfiguration.getTrace()) {
             System.out.println("FILTERED ACTIONS(" + numFrameVariables + "): " + guard.toMathString());
             for (Term term : filteredRecipes) {
                 System.out.println(term.toMathString());

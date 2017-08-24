@@ -19,21 +19,51 @@ import java.util.concurrent.ExecutionException;
  */
 public class RewritingCache {
 
+    private static final int DEFAULT_CACHE_SIZE = 20000;
+
+    private static long cacheLoads;
+    private static long cacheCalls;
+    private static int cacheSize;
+
     private static final LoadingCache<Term, Term> reducedTerms;
 
     static {
+
+        cacheLoads = 0;
+        cacheCalls = 0;
+
+        if (RunConfiguration.getRewritingCacheSize().isPresent()) {
+            cacheSize = RunConfiguration.getRewritingCacheSize().get().intValue();
+        } else {
+            cacheSize = DEFAULT_CACHE_SIZE;
+        }
+
         reducedTerms = CacheBuilder.newBuilder()
-                .maximumSize(20000)
+                .maximumSize(cacheSize)
                 .build(
                         new CacheLoader<Term, Term>() {
                             // TODO: tighten exception
                             public Term load(Term term) throws Exception {
+                                cacheLoads++;
                                 return RewriteEngine.reduce(term, GlobalDataCache.getProtocol().getRewrites());
                             }
                         });
     }
 
     public static Term reduce(Term term) throws ExecutionException {
+        cacheCalls++;
         return reducedTerms.get(term);
+    }
+
+    public static long getCacheLoads() {
+        return cacheLoads;
+    }
+
+    public static long getCacheCalls() {
+        return cacheCalls;
+    }
+
+    public static int getCacheSize() {
+        return cacheSize;
     }
 }

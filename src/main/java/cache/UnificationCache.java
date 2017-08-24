@@ -22,15 +22,33 @@ import java.util.concurrent.ExecutionException;
  */
 public class UnificationCache {
 
+    private static final int DEFAULT_CACHE_SIZE = 20000;
+
+    private static long cacheLoads;
+    private static long cacheCalls;
+    private static long cacheSize;
+
     private static final LoadingCache<Pair<Term, Term>, Optional<Collection<Equality>>> unifiedTerms;
 
     static {
+
+        cacheLoads = 0;
+        cacheCalls = 0;
+
+        if (RunConfiguration.getUnificationCacheSize().isPresent()) {
+            cacheSize = RunConfiguration.getUnificationCacheSize().get().intValue();
+        } else {
+            cacheSize = DEFAULT_CACHE_SIZE;
+        }
+
         unifiedTerms = CacheBuilder.newBuilder()
-                .maximumSize(100000)
+                .maximumSize(cacheSize)
                 .build(
                         new CacheLoader<Pair<Term, Term>, Optional<Collection<Equality>>>() {
                             // TODO: tighten exception
                             public Optional<Collection<Equality>> load(Pair<Term, Term> pair) throws Exception {
+
+                                cacheLoads++;
                                 return Unify.unify(pair.getKey(), pair.getValue());
                             }
                         });
@@ -38,6 +56,19 @@ public class UnificationCache {
 
     public static Optional<Collection<Equality>> unify(Term term1, Term term2) throws ExecutionException {
 
+        cacheCalls++;
         return unifiedTerms.get(new Pair<>(term1, term2));
+    }
+
+    public static long getCacheLoads() {
+        return cacheLoads;
+    }
+
+    public static long getCacheCalls() {
+        return cacheCalls;
+    }
+
+    public static long getCacheSize() {
+        return cacheSize;
     }
 }

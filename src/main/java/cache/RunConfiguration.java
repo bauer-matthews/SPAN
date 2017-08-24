@@ -1,12 +1,9 @@
 package cache;
 
-import com.google.common.base.MoreObjects;
-import kiss.DeductionResult;
 import process.EquivalenceChecker;
 
 import java.io.File;
-import java.text.ParseException;
-import java.util.Objects;
+import java.util.Optional;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -24,6 +21,10 @@ public class RunConfiguration {
     private static File protocolFile;
     private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
 
+    private static Integer equivalenceCacheSize;
+    private static Integer RewritingCacheSize;
+    private static Integer SubstitutionCacheSize;
+    private static Integer UnificationCacheSize;
 
     static {
         // Defaults
@@ -58,5 +59,37 @@ public class RunConfiguration {
 
     public static EquivalenceChecker.EquivalenceMethod getEquivalenceMethod() {
         return equivalenceMethod;
+    }
+
+    public static void setEquivalenceCacheSize(Integer equivalenceCacheSize) {
+        RunConfiguration.equivalenceCacheSize = equivalenceCacheSize;
+    }
+
+    static Optional<Integer> getDefaultEquivalenceCacheSize() {
+        return Optional.ofNullable(equivalenceCacheSize);
+    }
+
+    static Optional<Integer> getRewritingCacheSize() {
+        return Optional.ofNullable(RewritingCacheSize);
+    }
+
+    public static void setRewritingCacheSize(Integer rewritingCacheSize) {
+        RewritingCacheSize = rewritingCacheSize;
+    }
+
+    static Optional<Integer> getSubstitutionCacheSize() {
+        return Optional.ofNullable(SubstitutionCacheSize);
+    }
+
+    public static void setSubstitutionCacheSize(Integer substitutionCacheSize) {
+        SubstitutionCacheSize = substitutionCacheSize;
+    }
+
+    static Optional<Integer> getUnificationCacheSize() {
+        return Optional.ofNullable(UnificationCacheSize);
+    }
+
+    public static void setUnificationCacheSize(Integer unificationCacheSize) {
+        UnificationCacheSize = unificationCacheSize;
     }
 }

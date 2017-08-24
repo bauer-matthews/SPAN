@@ -4,15 +4,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import javafx.util.Pair;
-import kiss.EquivalenceResult;
-import process.ActionFactory;
 import process.EquivalenceCheckResult;
 import process.EquivalenceChecker;
 import process.State;
-import protocol.Protocol;
-import rewriting.terms.Term;
 
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -25,15 +20,33 @@ import java.util.concurrent.ExecutionException;
  */
 public class EquivalenceCache {
 
+    private static final int DEFAULT_CACHE_SIZE = 20000;
+
+    private static long cacheLoads;
+    private static long cacheCalls;
+    private static int cacheSize;
+
     private static final LoadingCache<Pair<State, State>, EquivalenceCheckResult> equivalenceChecks;
 
     static {
+
+        cacheLoads = 0;
+        cacheCalls = 0;
+
+        if (RunConfiguration.getDefaultEquivalenceCacheSize().isPresent()) {
+            cacheSize = RunConfiguration.getDefaultEquivalenceCacheSize().get().intValue();
+        } else {
+            cacheSize = DEFAULT_CACHE_SIZE;
+        }
+
         equivalenceChecks = CacheBuilder.newBuilder()
-                .maximumSize(1000)
+                .maximumSize(cacheSize)
                 .build(
                         new CacheLoader<Pair<State, State>, EquivalenceCheckResult>() {
                             // TODO: tighten exception
                             public EquivalenceCheckResult load(Pair<State, State> statePair) throws Exception {
+
+                                cacheLoads++;
                                 return EquivalenceChecker.check(statePair.getKey(), statePair.getValue());
                             }
                         });
@@ -41,6 +54,20 @@ public class EquivalenceCache {
 
 
     public static EquivalenceCheckResult checkEquivalence(State state1, State state2) throws ExecutionException {
+
+        cacheCalls++;
         return equivalenceChecks.get(new Pair<>(state1, state2));
+    }
+
+    public static long getCacheCalls() {
+        return cacheCalls;
+    }
+
+    public static long getCacheLoads() {
+        return cacheLoads;
+    }
+
+    public static int getCacheSize() {
+        return cacheSize;
     }
 }

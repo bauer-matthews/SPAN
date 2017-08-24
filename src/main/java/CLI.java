@@ -1,5 +1,4 @@
-import cache.GlobalDataCache;
-import cache.RunConfiguration;
+import cache.*;
 import log.Console;
 import log.Severity;
 import mc.DfsModelChecker;
@@ -33,17 +32,44 @@ public class CLI {
         State initialState = new State(Collections.emptyList(), Collections.emptyList(),
                 GlobalDataCache.getProtocol().getRoles());
         try {
+
             Apfloat maxAttackProb = DfsModelChecker.check(initialState);
-            System.out.println("Max attack Prob: " + maxAttackProb.toString(true));
+
+            System.out.println("------------------Results------------------");
+            System.out.println();
+
+            System.out.println("Maximum attack Probability: " + maxAttackProb.toString(true));
 
             long stopTime = System.currentTimeMillis();
-            System.out.println("Running Time: " + (stopTime - startTime) + " milliseconds");
+            System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
             System.out.println("Interleavings explored: " + GlobalDataCache.getInterleavingsExplored());
 
             if(RunConfiguration.getDebug()) {
+
+                System.out.println();
+                System.out.println("----------------Debug Info-----------------");
+                System.out.println();
+
                 System.out.println("Partial order reduction on interleavings: " +
                         GlobalDataCache.getInterleavingsReduction());
+
+                System.out.println("Equivalence cache (Call/Load): "
+                        + EquivalenceCache.getCacheCalls() + " / " + EquivalenceCache.getCacheLoads());
+
+                System.out.println("Rewriting cache (Call/Load): "
+                        + RewritingCache.getCacheCalls() + " / " + RewritingCache.getCacheLoads());
+
+                System.out.println("Substitution cache (Call/Load): "
+                        + SubstitutionCache.getCacheCalls() + " / " + SubstitutionCache.getCacheLoads());
+
+                System.out.println("Unification cache (Call/Load): "
+                        + UnificationCache.getCacheCalls() + " / " + UnificationCache.getCacheLoads());
+
             }
+
+            System.out.println();
+            System.out.println("-------------------------------------------");
+
 
         } catch (Exception ex) {
             ex.printStackTrace();

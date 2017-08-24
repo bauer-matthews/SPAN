@@ -137,7 +137,7 @@ public class State {
             }
         }
 
-        if (RunConfiguration.getTrace() || RunConfiguration.getDebug()) {
+        if (RunConfiguration.getTrace()) {
             System.out.println("FILTERED ACTIONS: " + actions.size());
             for (Action action : actions) {
                 System.out.println(action.getRecipe().toMathString());

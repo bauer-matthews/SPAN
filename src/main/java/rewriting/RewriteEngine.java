@@ -1,6 +1,7 @@
 package rewriting;
 
 import cache.SubstitutionCache;
+import cache.UnificationCache;
 import rewriting.terms.FunctionTerm;
 import rewriting.terms.Term;
 import rewriting.unification.Unify;
@@ -35,7 +36,7 @@ public class RewriteEngine {
     private static Term rewrite(Term term, Collection<Rewrite> rewrites) throws ExecutionException {
 
         for (Rewrite rewrite : rewrites) {
-            Optional<Collection<Equality>> unifier = Unify.unify(term, rewrite.getLhs());
+            Optional<Collection<Equality>> unifier = UnificationCache.unify(term, rewrite.getLhs());
             if (unifier.isPresent()) {
                 return SubstitutionCache.applySubstitution(rewrite.getRhs(), unifier.get());
             }
@@ -45,7 +46,7 @@ public class RewriteEngine {
             List<Term> subterms = ((FunctionTerm) term).getSubterms();
             for (int i = 0; i < subterms.size(); i++) {
                 for (Rewrite rewrite : rewrites) {
-                    Optional<Collection<Equality>> unifier = Unify.unify(subterms.get(i), rewrite.getLhs());
+                    Optional<Collection<Equality>> unifier = UnificationCache.unify(subterms.get(i), rewrite.getLhs());
                     if (unifier.isPresent()) {
                         subterms.set(i, SubstitutionCache.applySubstitution(rewrite.getRhs(), unifier.get()));
                     }

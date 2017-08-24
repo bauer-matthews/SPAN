@@ -28,15 +28,33 @@ import java.util.concurrent.ExecutionException;
  */
 public class SubstitutionCache {
 
+    private static final int DEFAULT_CACHE_SIZE = 30000;
+
+    private static long cacheLoads;
+    private static long cacheCalls;
+    private static int cacheSize;
+
     private static final LoadingCache<Pair<Term, Collection<Equality>>, Term> solvedTerms;
 
     static {
+
+        cacheLoads = 0;
+        cacheCalls = 0;
+
+        if (RunConfiguration.getSubstitutionCacheSize().isPresent()) {
+            cacheSize = RunConfiguration.getSubstitutionCacheSize().get().intValue();
+        } else {
+            cacheSize = DEFAULT_CACHE_SIZE;
+        }
+
         solvedTerms = CacheBuilder.newBuilder()
-                .maximumSize(30000)
+                .maximumSize(cacheSize)
                 .build(
                         new CacheLoader<Pair<Term, Collection<Equality>>, Term>() {
                             // TODO: tighten exception
                             public Term load(Pair<Term, Collection<Equality>> sub) throws Exception {
+
+                                cacheLoads++;
                                 return RewriteUtils.applySubstitution(sub.getKey(), sub.getValue());
                             }
                         });
@@ -44,6 +62,7 @@ public class SubstitutionCache {
 
     public static Term applySubstitution(Term term, Collection<Equality> equalities) throws ExecutionException {
 
+        cacheCalls++;
         return solvedTerms.get(new Pair<>(term, equalities));
     }
 
@@ -66,5 +85,17 @@ public class SubstitutionCache {
         }
 
         return newTerms;
+    }
+
+    public static long getCacheCalls() {
+        return cacheCalls;
+    }
+
+    public static long getCacheLoads() {
+        return cacheLoads;
+    }
+
+    public static int getCacheSize() {
+        return cacheSize;
     }
 }

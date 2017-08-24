@@ -134,12 +134,46 @@ public class ProtocolParser {
             if (statement.getCommand().equalsIgnoreCase(Commands.VERSION)) {
                 version = statement.getValue();
             } else if (statement.getCommand().equalsIgnoreCase(Commands.RECIPE_DEPTH)) {
+
                 try {
                     recipeSize = Integer.parseInt(statement.getValue().trim());
                 } catch (NumberFormatException ex) {
                     throw new ProtocolParseException(Resources.INVALID_RECIPE_SIZE
                             .evaluate(Collections.singletonList(statement.getValue().trim())));
                 }
+
+            } else if (statement.getCommand().equalsIgnoreCase(Commands.REWRITING_CACHE)) {
+
+                try {
+                    RunConfiguration.setRewritingCacheSize(Integer.parseInt(statement.getValue().trim()));
+                } catch (NumberFormatException ex) {
+                    throw new ProtocolParseException("Invalid Rewriting Cache Size: " + statement.getValue().trim());
+                }
+
+            } else if (statement.getCommand().equalsIgnoreCase(Commands.EQUIVALENCE_CACHE)) {
+
+                try {
+                    RunConfiguration.setEquivalenceCacheSize(Integer.parseInt(statement.getValue().trim()));
+                } catch (NumberFormatException ex) {
+                    throw new ProtocolParseException("Invalid Equivalence Cache Size: " + statement.getValue().trim());
+                }
+
+            } else if (statement.getCommand().equalsIgnoreCase(Commands.UNIFICATION_CACHE)) {
+
+                try {
+                    RunConfiguration.setUnificationCacheSize(Integer.parseInt(statement.getValue().trim()));
+                } catch (NumberFormatException ex) {
+                    throw new ProtocolParseException("Invalid Unification Cache Size: " + statement.getValue().trim());
+                }
+
+            } else if (statement.getCommand().equalsIgnoreCase(Commands.SUBSTITUTION_CACHE)) {
+
+                try {
+                    RunConfiguration.setSubstitutionCacheSize(Integer.parseInt(statement.getValue().trim()));
+                } catch (NumberFormatException ex) {
+                    throw new ProtocolParseException("Invalid Substitution Cache Size: " + statement.getValue().trim());
+                }
+
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));
