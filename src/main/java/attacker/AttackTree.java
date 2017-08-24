@@ -1,5 +1,7 @@
 package attacker;
 
+import org.apfloat.Apfloat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,11 +27,18 @@ public class AttackTree implements Tree {
 
         this.rootNode = rootNode;
         this.nodes.addAll(nodes);
+
+        rootNode.setIndex(0);
     }
 
     @Override
     public Node getRoot() {
         return rootNode;
+    }
+
+    @Override
+    public Apfloat getAttackProbability() {
+        return rootNode.getAttackProbability();
     }
 
     public Collection<Node> getNodes() {

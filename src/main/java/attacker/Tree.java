@@ -1,5 +1,7 @@
 package attacker;
 
+import org.apfloat.Apfloat;
+
 /**
  * SPAN - Stochastic Protocol Analyzer
  * <p>
@@ -11,5 +13,7 @@ package attacker;
 public interface Tree {
 
     Node getRoot();
+
+    Apfloat getAttackProbability();
 
 }

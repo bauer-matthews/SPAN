@@ -57,6 +57,10 @@ public class DfsModelChecker {
 
         List<Action> enabledActions = BeliefTransitionSystem.getEnabledActions(beliefState);
 
+        if(enabledActions.size() == 0) {
+            return maxProb;
+        }
+
         if (RunConfiguration.getTrace()) {
 
             System.out.println("BELIEF STATE: ");
@@ -78,8 +82,8 @@ public class DfsModelChecker {
 
         for (Action action : enabledActions) {
 
-            attackNodes.clear();
-            attackNodeProbMap.clear();
+            List<Node> actionNodes = new ArrayList<>();
+            Map<Node, Apfloat> actionNodeProbMap = new HashMap<>();
 
             if (RunConfiguration.getTrace()) {
                 System.out.println("CHOSEN ACTION: " + action.getRecipe().toMathString());
@@ -93,8 +97,8 @@ public class DfsModelChecker {
 
                 ViewNode node = new ViewNode(transition.getBeliefState().getObservation());
                 node.setAttackProb(transition.getBeliefState().getStateAttackProb());
-                attackNodes.add(node);
-                attackNodeProbMap.put(node, transition.getTransitionProbability());
+                actionNodes.add(node);
+                actionNodeProbMap.put(node, transition.getTransitionProbability());
 
                 maxActionProb = maxActionProb.add((transition.getTransitionProbability()
                         .multiply(getMaximumAttackProb(transition.getBeliefState(), node))));
@@ -102,13 +106,15 @@ public class DfsModelChecker {
 
             if (maxActionProb.equals(Apfloat.ONE)) {
 
-                storeAttack(parentAttackNode, attackNodes, action, attackNodeProbMap);
+                storeAttack(parentAttackNode, actionNodes, action, actionNodeProbMap);
                 return Apfloat.ONE;
 
             } else {
                 if (maxActionProb.compareTo(maxProb) > 0) {
                     attackAction = action;
                     maxProb = maxActionProb;
+                    attackNodes = actionNodes;
+                    attackNodeProbMap = actionNodeProbMap;
                 }
             }
         }
@@ -117,6 +123,13 @@ public class DfsModelChecker {
 
         GlobalDataCache.addInterleaving(new Interleaving(beliefState.getActionHistory(),
                 beliefState.getStateAttackProb()));
+
+        // TODO: Enable this in the correct spot
+        //if(GlobalDataCache.getAttackTree().getAttackProbability()
+        //        .compareTo(Apfloat.ONE.subtract(
+        //                GlobalDataCache.getProtocol().getSafetyProperty().getProbability())) > 0) {
+              // TODO: Terminate model checking
+        //}
 
         return maxProb;
     }

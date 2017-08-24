@@ -1,13 +1,11 @@
 package attacker;
 
-import com.google.common.base.MoreObjects;
 import org.apfloat.Apfloat;
 import process.Observation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -49,6 +47,22 @@ public class ViewNode implements Node {
     @Override
     public Node getRoot() {
         return this;
+    }
+
+    @Override
+    public Apfloat getAttackProbability() {
+
+        if(children.size() == 0) {
+            return attackProb;
+        } else {
+
+            Apfloat attackProb = Apfloat.ZERO;
+            for(Node child : children) {
+                attackProb = attackProb.add(child.getAttackProbability());
+            }
+
+            return  attackProb;
+        }
     }
 
     @Override

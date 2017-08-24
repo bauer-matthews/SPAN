@@ -82,6 +82,18 @@ public class TransitionNode implements Node {
     }
 
     @Override
+    public Apfloat getAttackProbability() {
+
+        Apfloat attackProb = Apfloat.ZERO;
+
+        for(Node child : children) {
+            attackProb = attackProb.add(transitionProb.multiply(child.getAttackProbability()));
+        }
+
+        return attackProb;
+    }
+
+    @Override
     public boolean equals(Object o) {
 
         if (!(o instanceof TransitionNode)) {

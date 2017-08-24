@@ -1,7 +1,4 @@
 # Example Protocol
-# TODO: fix the need for this guard (union is enabled....)
-# TODO: Need to parse sorts first / Check other orders
-# TODO: T, W are reserved strings for names/functions/types/variables;
 
 .metadata
 
@@ -24,7 +21,9 @@
     function : dec | Message SKey -> Message;
     function : pk | Nonce -> PKey;
     function : sk | Nonce -> SKey;
+
     public names : a | Nonce;
+    public names : b | Message;
 
     private names : m1 , m2 | Message;
     private names : s, r1, r2, r3, r4, k1, k2, k3, km | Nonce;
@@ -46,7 +45,7 @@
             {2} [y1 != y2] out(p -> dec(y1, sk(km)) # dec(y2, sk(km)) + p -> dec(y2, sk(km)) # dec(y1, sk(km)));
 
     role:   {3} in(y3{enc(m2,r3, pk(k2))}) .
-            {3} [ y3 == k2 ] out(1 -> s);
+            {3} [ y3 == enc(m2,r3, pk(k2)) ] out(1 -> s);
 
 .safety
-    secrecy : s >= 1/2;
+    secrecy : s >= 1/3;
