@@ -18,6 +18,7 @@ public class RunConfiguration {
     private static boolean debug;
     private static boolean trace;
     private static boolean printAttack;
+    private static boolean findMaxAttack;
 
     private static File protocolFile;
     private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
@@ -32,6 +33,7 @@ public class RunConfiguration {
         debug = false;
         trace = false;
         printAttack = false;
+        findMaxAttack = false;
         equivalenceMethod = EquivalenceChecker.EquivalenceMethod.KISS;
     }
 
@@ -101,5 +103,13 @@ public class RunConfiguration {
 
     public static boolean printAttack() {
         return printAttack;
+    }
+
+    public static void enableMaxAttack() {
+        findMaxAttack = true;
+    }
+
+    public static boolean findMaxAttack() {
+        return findMaxAttack;
     }
 }

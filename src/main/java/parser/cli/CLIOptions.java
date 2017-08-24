@@ -1,12 +1,14 @@
 package parser.cli;
 
 import cache.RunConfiguration;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -75,10 +77,15 @@ class CLIOptions {
         options.addOption(trace);
         optionMap.put(trace, (traceOpt) -> RunConfiguration.enableTrace());
 
-        // Attack Option
-        Option attack = new Option("attack", "print the attack tree");
-        options.addOption(attack);
-        optionMap.put(attack, (attackOpt) -> RunConfiguration.enableAttackPrinting());
+        // Attack Tree Option
+        Option attackTree = new Option("attackTree", "print the attack tree");
+        options.addOption(attackTree);
+        optionMap.put(attackTree, (attackOpt) -> RunConfiguration.enableAttackPrinting());
+
+        // Maximum Attack Prob Option
+        Option maxAttack = new Option("maxAttack", "find the maximum attack probability");
+        options.addOption(maxAttack);
+        optionMap.put(maxAttack, (attackOpt) -> RunConfiguration.enableMaxAttack());
 
         // Protocol Option
         Option protocol = Option.builder("protocol")

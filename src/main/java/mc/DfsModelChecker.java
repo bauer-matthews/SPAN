@@ -18,9 +18,21 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by mbauer on 8/9/2017.
  */
-public class DfsModelChecker {
+public class DfsModelChecker extends AbstractModelChecker {
 
-    public static Aprational check(State initialState) throws InvalidActionException,
+    private final boolean max;
+
+    public DfsModelChecker(boolean max) {
+        this.max = max;
+    }
+
+    @Override
+    public boolean findMaximum() {
+        return max;
+    }
+
+    @Override
+    public Aprational check(State initialState) throws InvalidActionException,
             InterruptedException, IOException, ExecutionException {
 
         Belief initialBelief = new Belief(initialState, Aprational.ONE);
@@ -36,7 +48,7 @@ public class DfsModelChecker {
         return getMaximumAttackProb(initialBeliefState, root);
     }
 
-    private static Aprational getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
+    private Aprational getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
         Optional<Aprational> attackProb = GlobalDataCache.hasPartialOrderReduction(
@@ -56,7 +68,7 @@ public class DfsModelChecker {
 
         List<Action> enabledActions = BeliefTransitionSystem.getEnabledActions(beliefState);
 
-        if(enabledActions.size() == 0) {
+        if (enabledActions.size() == 0) {
             return maxProb;
         }
 
@@ -123,12 +135,15 @@ public class DfsModelChecker {
         GlobalDataCache.addInterleaving(new Interleaving(beliefState.getActionHistory(),
                 beliefState.getStateAttackProb()));
 
-        // TODO: Enable this in the correct spot
-        //if(GlobalDataCache.getAttackTree().getAttackProbability()
-        //        .compareTo(Aprational.ONE.subtract(
-        //                GlobalDataCache.getProtocol().getSafetyProperty().getProbability())) > 0) {
-              // TODO: Terminate model checking
-        //}
+        if (!findMaximum()) {
+            if (GlobalDataCache.getAttackTree().getAttackProbability()
+                    .compareTo(Aprational.ONE.subtract(GlobalDataCache.getProtocol()
+                            .getSafetyProperty().getProbability())) > 0) {
+
+                this.setStopTime(System.currentTimeMillis());
+                printResults();
+            }
+        }
 
         return maxProb;
     }
