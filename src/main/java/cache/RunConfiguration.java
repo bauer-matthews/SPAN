@@ -17,6 +17,7 @@ public class RunConfiguration {
 
     private static boolean debug;
     private static boolean trace;
+    private static boolean printAttack;
 
     private static File protocolFile;
     private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
@@ -30,6 +31,7 @@ public class RunConfiguration {
         // Defaults
         debug = false;
         trace = false;
+        printAttack = false;
         equivalenceMethod = EquivalenceChecker.EquivalenceMethod.KISS;
     }
 
@@ -91,5 +93,13 @@ public class RunConfiguration {
 
     public static void setUnificationCacheSize(Integer unificationCacheSize) {
         UnificationCacheSize = unificationCacheSize;
+    }
+
+    public static void enableAttackPrinting() {
+        printAttack = true;
+    }
+
+    public static boolean printAttack() {
+        return printAttack;
     }
 }

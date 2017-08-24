@@ -5,6 +5,7 @@ import org.apfloat.Apfloat;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by mbauer on 8/8/2017.
@@ -28,6 +29,10 @@ public class BeliefState {
 
     public List<Action> getActionHistory() {
         return actionHistory;
+    }
+
+    public Observation getObservation() throws ExecutionException {
+        return beliefs.get(0).getState().getObservation();
     }
 
     public Apfloat getStateProb(State state) {

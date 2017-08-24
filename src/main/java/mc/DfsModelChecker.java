@@ -1,16 +1,19 @@
 package mc;
 
+import attacker.AttackTree;
+import attacker.Node;
+import attacker.TransitionNode;
+import attacker.ViewNode;
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
+import org.apfloat.Apcomplex;
 import org.apfloat.Apfloat;
 import process.*;
 import protocol.Interleaving;
 import protocol.role.Role;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -25,11 +28,17 @@ public class DfsModelChecker {
         BeliefState initialBeliefState = new BeliefState(
                 Collections.singletonList(initialBelief), Collections.emptyList());
 
-        return getMaximumAttackProb(initialBeliefState);
+        ViewNode root = new ViewNode(initialBeliefState.getObservation());
+        root.setAttackProb(Apcomplex.ZERO);
+
+        AttackTree attackTree = new AttackTree(root, Collections.singletonList(root));
+        GlobalDataCache.initializeAttackTree(attackTree);
+
+        return getMaximumAttackProb(initialBeliefState, root);
     }
 
-    private static Apfloat getMaximumAttackProb(BeliefState beliefState) throws InvalidActionException,
-            InterruptedException, IOException, ExecutionException {
+    private static Apfloat getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
+            throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
         Optional<Apfloat> attackProb = GlobalDataCache.hasPartialOrderReduction(
                 new Interleaving(beliefState.getActionHistory(), beliefState.getStateAttackProb()));
@@ -63,7 +72,14 @@ public class DfsModelChecker {
             System.out.println("ENABLED ACTIONS: " + enabledActions);
         }
 
+        List<Node> attackNodes = new ArrayList<>();
+        Map<Node, Apfloat> attackNodeProbMap = new HashMap<>();
+        Action attackAction = null;
+
         for (Action action : enabledActions) {
+
+            attackNodes.clear();
+            attackNodeProbMap.clear();
 
             if (RunConfiguration.getTrace()) {
                 System.out.println("CHOSEN ACTION: " + action.getRecipe().toMathString());
@@ -71,24 +87,51 @@ public class DfsModelChecker {
             }
 
             Apfloat maxActionProb = Apfloat.ZERO;
-
             List<BeliefTransition> transitions = BeliefTransitionSystem.applyAction(beliefState, action);
+
             for (BeliefTransition transition : transitions) {
-                maxActionProb = maxActionProb.add((transition.getTransitionProbability().multiply(getMaximumAttackProb(transition.getBeliefState()))));
+
+                ViewNode node = new ViewNode(transition.getBeliefState().getObservation());
+                node.setAttackProb(transition.getBeliefState().getStateAttackProb());
+                attackNodes.add(node);
+                attackNodeProbMap.put(node, transition.getTransitionProbability());
+
+                maxActionProb = maxActionProb.add((transition.getTransitionProbability()
+                        .multiply(getMaximumAttackProb(transition.getBeliefState(), node))));
             }
 
             if (maxActionProb.equals(Apfloat.ONE)) {
+
+                storeAttack(parentAttackNode, attackNodes, action, attackNodeProbMap);
                 return Apfloat.ONE;
+
             } else {
                 if (maxActionProb.compareTo(maxProb) > 0) {
+                    attackAction = action;
                     maxProb = maxActionProb;
                 }
             }
         }
 
+        storeAttack(parentAttackNode, attackNodes, attackAction, attackNodeProbMap);
+
         GlobalDataCache.addInterleaving(new Interleaving(beliefState.getActionHistory(),
                 beliefState.getStateAttackProb()));
 
         return maxProb;
+    }
+
+    private static void storeAttack(Node parentNode, List<Node> children, Action action,
+                                    Map<Node, Apfloat> attackNodeProbMap) {
+
+        for (Node node : children) {
+
+            TransitionNode transitionNode = new TransitionNode(action, attackNodeProbMap.get(node));
+            parentNode.addChild(transitionNode);
+            transitionNode.addChild(node);
+
+            GlobalDataCache.addAttackNode(transitionNode);
+            GlobalDataCache.addAttackNode(node);
+        }
     }
 }

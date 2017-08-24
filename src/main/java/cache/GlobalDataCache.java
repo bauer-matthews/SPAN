@@ -1,5 +1,7 @@
 package cache;
 
+import attacker.AttackTree;
+import attacker.Node;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -29,6 +31,8 @@ public class GlobalDataCache {
     private static final List<Interleaving> interleavings;
     private static int interleavingsExplored;
 
+    private static AttackTree attackTree;
+
     static {
 
         interleavings = new ArrayList<>();
@@ -43,6 +47,18 @@ public class GlobalDataCache {
                                 return ActionFactory.getAllRecipes(numFrameVariables);
                             }
                         });
+    }
+
+    public static void initializeAttackTree(AttackTree attackTree) {
+        GlobalDataCache.attackTree = attackTree;
+    }
+
+    public static void addAttackNode(Node node) {
+        attackTree.addNode(node);
+    }
+
+    public static AttackTree getAttackTree() {
+        return attackTree;
     }
 
     public static void addInterleaving(Interleaving interleaving) {

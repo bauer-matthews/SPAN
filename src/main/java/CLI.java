@@ -38,19 +38,19 @@ public class CLI {
             System.out.println("------------------Results------------------");
             System.out.println();
 
-            System.out.println("Maximum attack Probability: " + maxAttackProb.toString(true));
+            System.out.println("Maximum attack probability: " + maxAttackProb.toString(true));
 
             long stopTime = System.currentTimeMillis();
             System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
-            System.out.println("Interleavings explored: " + GlobalDataCache.getInterleavingsExplored());
+            System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
+            System.out.println();
 
             if(RunConfiguration.getDebug()) {
 
-                System.out.println();
                 System.out.println("----------------Debug Info-----------------");
                 System.out.println();
 
-                System.out.println("Partial order reduction on interleavings: " +
+                System.out.println("Partial order reduction on paths: " +
                         GlobalDataCache.getInterleavingsReduction());
 
                 System.out.println("Equivalence cache (Call/Load): "
@@ -65,9 +65,15 @@ public class CLI {
                 System.out.println("Unification cache (Call/Load): "
                         + UnificationCache.getCacheCalls() + " / " + UnificationCache.getCacheLoads());
 
+                System.out.println();
             }
 
-            System.out.println();
+            if(RunConfiguration.printAttack()) {
+                System.out.println("----------------Attack Tree----------------");
+                System.out.println();
+                System.out.println(GlobalDataCache.getAttackTree().toString());
+            }
+
             System.out.println("-------------------------------------------");
 
 

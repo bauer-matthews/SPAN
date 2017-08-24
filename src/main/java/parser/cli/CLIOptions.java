@@ -71,9 +71,14 @@ class CLIOptions {
         optionMap.put(debug, (debugOpt) -> RunConfiguration.enableDebug());
 
         // Trace Option
-        Option trace = new Option("trace", "print excessive debugging information");
+        Option trace = new Option("trace", "print path exploreation");
         options.addOption(trace);
         optionMap.put(trace, (traceOpt) -> RunConfiguration.enableTrace());
+
+        // Attack Option
+        Option attack = new Option("attack", "print the attack tree");
+        options.addOption(attack);
+        optionMap.put(attack, (attackOpt) -> RunConfiguration.enableAttackPrinting());
 
         // Protocol Option
         Option protocol = Option.builder("protocol")
