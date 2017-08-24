@@ -1,7 +1,7 @@
 package protocol;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import protocol.role.Role;
 import rewriting.Rewrite;
 import rewriting.Signature;
@@ -24,12 +24,12 @@ public class Protocol {
     private final Metadata metadata;
     private final Signature signature;
     private final Collection<Rewrite> rewrites;
-    private final Map<String, Apfloat> fractionConstants;
+    private final Map<String, Aprational> fractionConstants;
     private final List<Role> roles;
     private final SafetyProperty safetyProperty;
 
     Protocol(Metadata metadata, Signature signature, Collection<Rewrite> rewrites,
-             Map<String, Apfloat> fractionConstants, List<Role> roles, SafetyProperty safetyProperty) {
+             Map<String, Aprational> fractionConstants, List<Role> roles, SafetyProperty safetyProperty) {
 
         Objects.requireNonNull(metadata);
         Objects.requireNonNull(signature);
@@ -58,7 +58,7 @@ public class Protocol {
         return this.rewrites;
     }
 
-    public Map<String, Apfloat> getFractionConstants() {
+    public Map<String, Aprational> getFractionConstants() {
         return this.fractionConstants;
     }
 

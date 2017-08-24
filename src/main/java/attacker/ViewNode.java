@@ -1,6 +1,6 @@
 package attacker;
 
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import process.Observation;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class ViewNode implements Node {
     private final Observation observation;
     private final List<Node> children;
 
-    private Apfloat attackProb;
+    private Aprational attackProb;
     private Long index;
 
     public ViewNode(Observation observation) {
@@ -31,11 +31,11 @@ public class ViewNode implements Node {
         this.children = new ArrayList<>();
     }
 
-    public void setAttackProb(Apfloat attackProb) {
+    public void setAttackProb(Aprational attackProb) {
         this.attackProb = attackProb;
     }
 
-    public Apfloat getAttackProb() {
+    public Aprational getAttackProb() {
 
         if (attackProb == null) {
             throw new UnsupportedOperationException("Attack prob has not been initialized");
@@ -50,13 +50,13 @@ public class ViewNode implements Node {
     }
 
     @Override
-    public Apfloat getAttackProbability() {
+    public Aprational getAttackProbability() {
 
         if(children.size() == 0) {
             return attackProb;
         } else {
 
-            Apfloat attackProb = Apfloat.ZERO;
+            Aprational attackProb = Aprational.ZERO;
             for(Node child : children) {
                 attackProb = attackProb.add(child.getAttackProbability());
             }

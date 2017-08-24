@@ -1,6 +1,6 @@
 package protocol;
 
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import protocol.role.Role;
 import rewriting.Rewrite;
 import rewriting.Signature;
@@ -23,7 +23,7 @@ public class ProtocolBuilder {
     private Metadata metadata;
     private Signature signature;
     private Collection<Rewrite> rewrites;
-    private Map<String, Apfloat> fractionConstants;
+    private Map<String, Aprational> fractionConstants;
     private List<Role> roles;
     private SafetyProperty safetyProperty;
 
@@ -46,7 +46,7 @@ public class ProtocolBuilder {
         return this;
     }
 
-    public ProtocolBuilder fractionConstants(Map<String, Apfloat> fractionConstants) {
+    public ProtocolBuilder fractionConstants(Map<String, Aprational> fractionConstants) {
         this.fractionConstants = fractionConstants;
         return this;
     }

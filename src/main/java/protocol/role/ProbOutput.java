@@ -1,13 +1,11 @@
 package protocol.role;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import rewriting.terms.Term;
 
 import java.util.List;
 import java.util.Objects;
-
-import static com.google.common.base.Objects.equal;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -19,10 +17,10 @@ import static com.google.common.base.Objects.equal;
  */
 public class ProbOutput {
 
-    private final Apfloat probability;
+    private final Aprational probability;
     private final List<Term> outputTerms;
 
-    ProbOutput(Apfloat probability, List<Term> outputTerms) {
+    ProbOutput(Aprational probability, List<Term> outputTerms) {
 
         Objects.requireNonNull(probability);
         Objects.requireNonNull(outputTerms);
@@ -31,7 +29,7 @@ public class ProbOutput {
         this.outputTerms = outputTerms;
     }
 
-    public Apfloat getProbability() {
+    public Aprational getProbability() {
         return probability;
     }
 

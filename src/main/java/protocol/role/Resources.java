@@ -25,7 +25,7 @@ public class Resources {
     static final ParametricString BAD_OUTPUT = new ParametricString("Unable to parse probabilistic output" +
             " from string: #1", Collections.singletonList("#1"));
 
-    static final ParametricString BAD_PROB = new ParametricString("Unable to probability" +
+    static final ParametricString BAD_PROB = new ParametricString("Unable to parse probability" +
             " from string: #1", Collections.singletonList("#1"));
 
     static final String NULL_TEST = "T";

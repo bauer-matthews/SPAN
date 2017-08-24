@@ -1,15 +1,9 @@
 package protocol.role;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
-import rewriting.Equality;
-import rewriting.terms.FunctionSymbol;
-import rewriting.terms.FunctionTerm;
-import rewriting.terms.Term;
+import org.apfloat.Aprational;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -35,12 +29,12 @@ public class OutputProcess implements AtomicProcess {
         this.probOutputs = probOutputs;
         this.phase = phase;
 
-        Apfloat sum = Apfloat.ZERO;
+        Aprational sum = Aprational.ZERO;
         for (ProbOutput pout : probOutputs) {
             sum = sum.add(pout.getProbability());
         }
 
-        if (!sum.equals(Apfloat.ONE)) {
+        if (!sum.equals(Aprational.ONE)) {
             throw new IllegalArgumentException(Resources.INVALID_PROBS);
         }
     }

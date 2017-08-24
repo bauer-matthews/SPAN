@@ -5,14 +5,17 @@ import attacker.Node;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import org.apfloat.Apfloat;
-import process.*;
+import org.apfloat.Aprational;
+import process.ActionFactory;
 import process.Resources;
 import protocol.Interleaving;
 import protocol.Protocol;
-import rewriting.terms.*;
+import rewriting.terms.Term;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -75,7 +78,7 @@ public class GlobalDataCache {
         return interleavings.size();
     }
 
-    public static Optional<Apfloat> hasPartialOrderReduction(Interleaving interleaving) {
+    public static Optional<Aprational> hasPartialOrderReduction(Interleaving interleaving) {
 
         int size = interleaving.getActionList().size();
 

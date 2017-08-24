@@ -1,7 +1,7 @@
 package protocol;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import process.Action;
 
 import java.util.List;
@@ -13,9 +13,9 @@ import java.util.Objects;
 public class Interleaving {
 
     private final List<Action> actionList;
-    private final Apfloat attackProb;
+    private final Aprational attackProb;
 
-    public Interleaving(List<Action> actionList, Apfloat attackProb) {
+    public Interleaving(List<Action> actionList, Aprational attackProb) {
 
         Objects.requireNonNull(actionList);
         Objects.requireNonNull(attackProb);
@@ -28,7 +28,7 @@ public class Interleaving {
         return actionList;
     }
 
-    public Apfloat getAttackProb() {
+    public Aprational getAttackProb() {
         return attackProb;
     }
 

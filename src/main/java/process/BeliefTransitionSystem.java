@@ -1,10 +1,13 @@
 package process;
 
 import cache.EquivalenceCache;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -77,7 +80,7 @@ public class BeliefTransitionSystem {
             State[] states = observations.get(i).stream()
                     .map(Transition::getNewState).distinct().toArray(State[]::new);
 
-            Apfloat bottomSum = Apfloat.ZERO;
+            Aprational bottomSum = Aprational.ZERO;
 
             for (Transition transition : observations.get(i)) {
 
@@ -90,7 +93,7 @@ public class BeliefTransitionSystem {
 
                 // Sum of b(s) * P(s,a)(s') for all states s from original belief state b,
                 // where s' (newState) has observation o
-                Apfloat topSum = Apfloat.ZERO;
+                Aprational topSum = Aprational.ZERO;
 
                 for (Transition transition : observations.get(i)) {
                     if (transition.getNewState().equals(state)) {
@@ -99,7 +102,7 @@ public class BeliefTransitionSystem {
                     }
                 }
 
-                if (!bottomSum.equals(Apfloat.ZERO) && !(topSum.equals(Apfloat.ZERO))) {
+                if (!bottomSum.equals(Aprational.ZERO) && !(topSum.equals(Aprational.ZERO))) {
                     beliefs.add(new Belief(state, topSum.divide(bottomSum)));
                 }
             }

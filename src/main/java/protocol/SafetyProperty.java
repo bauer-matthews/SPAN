@@ -1,11 +1,9 @@
 package protocol;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import rewriting.terms.Term;
-import rewriting.terms.VariableTerm;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,9 +18,9 @@ import java.util.Objects;
 public class SafetyProperty {
 
     private final List<Term> secrets;
-    private final Apfloat probability;
+    private final Aprational probability;
 
-    public SafetyProperty(List<Term> secrets, Apfloat probability) {
+    public SafetyProperty(List<Term> secrets, Aprational probability) {
 
         Objects.requireNonNull(secrets);
         Objects.requireNonNull(probability);
@@ -31,7 +29,7 @@ public class SafetyProperty {
         this.probability = probability;
     }
 
-    public Apfloat getProbability() {
+    public Aprational getProbability() {
         return probability;
     }
 

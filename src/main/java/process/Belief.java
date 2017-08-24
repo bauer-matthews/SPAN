@@ -1,7 +1,7 @@
 package process;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 
 import java.util.Objects;
 
@@ -11,9 +11,9 @@ import java.util.Objects;
 public class Belief {
 
     private final State state;
-    private final Apfloat prob;
+    private final Aprational prob;
 
-    public Belief(State state, Apfloat prob) {
+    public Belief(State state, Aprational prob) {
 
         Objects.requireNonNull(state);
         Objects.requireNonNull(prob);
@@ -22,7 +22,7 @@ public class Belief {
         this.prob = prob;
     }
 
-    public Apfloat getProb() {
+    public Aprational getProb() {
         return prob;
     }
 

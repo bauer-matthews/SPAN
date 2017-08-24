@@ -2,11 +2,8 @@ import cache.*;
 import log.Console;
 import log.Severity;
 import mc.DfsModelChecker;
-import org.apache.commons.cli.*;
-import org.apfloat.Apfloat;
-import parser.*;
+import org.apfloat.Aprational;
 import parser.Parser;
-import process.InvalidActionException;
 import process.State;
 
 import java.util.Collections;
@@ -33,7 +30,7 @@ public class CLI {
                 GlobalDataCache.getProtocol().getRoles());
         try {
 
-            Apfloat maxAttackProb = DfsModelChecker.check(initialState);
+            Aprational maxAttackProb = DfsModelChecker.check(initialState);
 
             System.out.println("------------------Results------------------");
             System.out.println();

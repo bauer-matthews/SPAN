@@ -4,7 +4,7 @@ import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import log.Console;
 import log.Severity;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import protocol.Metadata;
 import protocol.Protocol;
 import protocol.ProtocolBuilder;
@@ -15,7 +15,7 @@ import protocol.role.ActionParseException;
 import protocol.role.Role;
 import rewriting.*;
 import rewriting.terms.*;
-import util.apfloat.ApfloatFactory;
+import util.aprational.AprationalFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -191,17 +191,17 @@ public class ProtocolParser {
         return new Metadata(version, recipeSize.intValue());
     }
 
-    private static Map<String, Apfloat> parseFractionConstants(String text) throws ProtocolParseException,
+    private static Map<String, Aprational> parseFractionConstants(String text) throws ProtocolParseException,
             NumberFormatException {
 
         Collection<Statement> statements = extractStatements(text);
 
-        Map<String, Apfloat> constantMap = new HashMap<>();
+        Map<String, Aprational> constantMap = new HashMap<>();
         for (Statement statement : statements) {
 
             if (statement.getCommand().toLowerCase().startsWith(Commands.FRACTION)) {
                 constantMap.put(getName(statement.getCommand()),
-                        ApfloatFactory.fromString(statement.getValue().trim()));
+                        AprationalFactory.fromString(statement.getValue().trim()));
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));
@@ -414,7 +414,7 @@ public class ProtocolParser {
         Collection<Statement> statements = extractStatements(text);
         List<Term> secretTerms = new ArrayList<>();
 
-        Apfloat probability = null;
+        Aprational probability = null;
 
         for (Statement statement : statements) {
             if (statement.getCommand().toLowerCase().startsWith(Commands.SECRECY)) {
@@ -426,7 +426,7 @@ public class ProtocolParser {
                             .evaluate(Collections.singletonList(statement.getValue())));
                 }
 
-                probability = ApfloatFactory.fromString(pieces[1].trim());
+                probability = AprationalFactory.fromString(pieces[1].trim());
 
                 String[] vars = pieces[0].split(",");
                 for (int i = 0; i < vars.length; i++) {

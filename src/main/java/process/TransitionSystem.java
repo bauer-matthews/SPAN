@@ -1,7 +1,10 @@
 package process;
 
-import org.apfloat.Apfloat;
-import protocol.role.*;
+import org.apfloat.Aprational;
+import protocol.role.AtomicProcess;
+import protocol.role.InputProcess;
+import protocol.role.OutputProcess;
+import protocol.role.ProbOutput;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +58,7 @@ public class TransitionSystem {
         }
 
         Transition transition = new Transition(
-                Apfloat.ONE, state, state.inputTerm(((InputProcess) atomic).getVariable(),
+                Aprational.ONE, state, state.inputTerm(((InputProcess) atomic).getVariable(),
                 action.getRecipe(), action.getRoleIndex()));
 
         return Collections.singleton(transition);

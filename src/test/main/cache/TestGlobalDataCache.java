@@ -1,6 +1,6 @@
 package cache;
 
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,9 +9,12 @@ import protocol.Protocol;
 import protocol.ProtocolBuilder;
 import protocol.SafetyProperty;
 import resources.signature.Simple;
-import rewriting.terms.*;
+import rewriting.terms.FrameVariableTerm;
+import rewriting.terms.Term;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -66,7 +69,7 @@ public class TestGlobalDataCache {
         protocol = new ProtocolBuilder()
                 .metadata(new Metadata("1", 1))
                 .signature(Simple.SIGNATURE)
-                .safetyProperty(new SafetyProperty(Collections.emptyList(), Apfloat.ONE))
+                .safetyProperty(new SafetyProperty(Collections.emptyList(), Aprational.ONE))
                 .fractionConstants(new HashMap<>())
                 .rewrites(Collections.emptyList())
                 .roles(Collections.emptyList())

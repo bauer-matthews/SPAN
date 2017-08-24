@@ -1,7 +1,7 @@
 package process;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 
 import java.util.Objects;
 
@@ -10,11 +10,11 @@ import java.util.Objects;
  */
 public class Transition {
 
-    private final Apfloat transitionProbability;
+    private final Aprational transitionProbability;
     private final State originalState;
     private final State newState;
 
-    Transition(Apfloat transitionProbability, State originalState, State newState) {
+    Transition(Aprational transitionProbability, State originalState, State newState) {
 
         Objects.requireNonNull(transitionProbability);
         Objects.requireNonNull(originalState);
@@ -25,7 +25,7 @@ public class Transition {
         this.newState = newState;
     }
 
-    public Apfloat getTransitionProbability() {
+    public Aprational getTransitionProbability() {
         return transitionProbability;
     }
 

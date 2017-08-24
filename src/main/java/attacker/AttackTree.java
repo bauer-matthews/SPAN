@@ -1,6 +1,6 @@
 package attacker;
 
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +37,7 @@ public class AttackTree implements Tree {
     }
 
     @Override
-    public Apfloat getAttackProbability() {
+    public Aprational getAttackProbability() {
         return rootNode.getAttackProbability();
     }
 

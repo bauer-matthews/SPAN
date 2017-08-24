@@ -1,9 +1,12 @@
 package protocol.role;
 
-import org.apfloat.Apfloat;
-import parser.protocol.ProtocolParseException;
+import org.apfloat.Aprational;
 import rewriting.Equality;
-import rewriting.terms.*;
+import rewriting.terms.Term;
+import rewriting.terms.TermFactory;
+import rewriting.terms.TermParseException;
+import rewriting.terms.VariableTerm;
+import util.aprational.AprationalFactory;
 
 import java.util.*;
 
@@ -17,9 +20,9 @@ import java.util.*;
  */
 public class ProcessFactory {
 
-    private static Map<String, Apfloat> FRACTION_CONSTANTS;
+    private static Map<String, Aprational> FRACTION_CONSTANTS;
 
-    public static void initActionBuilder(Map<String, Apfloat> fractionConstants) {
+    public static void initActionBuilder(Map<String, Aprational> fractionConstants) {
         FRACTION_CONSTANTS = fractionConstants;
     }
 
@@ -120,11 +123,11 @@ public class ProcessFactory {
             throw new ActionParseException(Resources.BAD_OUTPUT.evaluate(Collections.singletonList(probOutput)));
         }
 
-        Apfloat fraction = FRACTION_CONSTANTS.get(probPieces[0].trim());
+        Aprational fraction = FRACTION_CONSTANTS.get(probPieces[0].trim());
 
         if (fraction == null) {
             try {
-                fraction = new Apfloat(probPieces[0].trim());
+                fraction = AprationalFactory.fromString(probPieces[0].trim());
             } catch (NumberFormatException ex) {
                 throw new ActionParseException(Resources.BAD_PROB
                         .evaluate(Collections.singletonList(probPieces[0].trim())));

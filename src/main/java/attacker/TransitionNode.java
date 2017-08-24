@@ -1,15 +1,11 @@
 package attacker;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 import process.Action;
-import process.State;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -22,12 +18,12 @@ import java.util.Optional;
 public class TransitionNode implements Node {
 
     private final Action action;
-    private final Apfloat transitionProb;
+    private final Aprational transitionProb;
     private final List<Node> children;
 
     private Long index;
 
-    public TransitionNode(Action action, Apfloat transitionProb) {
+    public TransitionNode(Action action, Aprational transitionProb) {
 
         Objects.requireNonNull(action);
         Objects.requireNonNull(transitionProb);
@@ -82,9 +78,9 @@ public class TransitionNode implements Node {
     }
 
     @Override
-    public Apfloat getAttackProbability() {
+    public Aprational getAttackProbability() {
 
-        Apfloat attackProb = Apfloat.ZERO;
+        Aprational attackProb = Aprational.ZERO;
 
         for(Node child : children) {
             attackProb = attackProb.add(transitionProb.multiply(child.getAttackProbability()));

@@ -1,7 +1,7 @@
 package process;
 
 import com.google.common.base.MoreObjects;
-import org.apfloat.Apfloat;
+import org.apfloat.Aprational;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,19 +35,19 @@ public class BeliefState {
         return beliefs.get(0).getState().getObservation();
     }
 
-    public Apfloat getStateProb(State state) {
+    public Aprational getStateProb(State state) {
         for (Belief belief : beliefs) {
             if (belief.getState().equals(state)) {
                 return belief.getProb();
             }
         }
 
-        return Apfloat.ZERO;
+        return Aprational.ZERO;
     }
 
-    public Apfloat getStateAttackProb() {
+    public Aprational getStateAttackProb() {
 
-        Apfloat prob = Apfloat.ZERO;
+        Aprational prob = Aprational.ZERO;
 
         for (Belief belief : beliefs) {
             if (belief.getState().isAttackState()) {
