@@ -96,27 +96,7 @@ public class State {
 
                         Optional<Term> guard = ((InputProcess) roles.get(i).getAtomicProcesses().get(0)).getInputGuard();
 
-                        // TODO: move this code to action factory
-                        List<FrameVariableTerm> frameVariableTerms = new ArrayList<>();
-                        Map<FrameVariableTerm, Term> frameVariableTermMap = new HashMap<>();
-                        for (Equality equality : frame) {
-                            // TODO: Tighten type
-                            frameVariableTerms.add((FrameVariableTerm) equality.getLhs());
-                            frameVariableTermMap.put((FrameVariableTerm) equality.getLhs(),
-                                    SubstitutionCache.applySubstitution(equality.getRhs(), substitution));
-                        }
-
-                        Sort guardSort = SortFactory.KIND;
-                        if (guard.isPresent()) {
-                            guardSort = guard.get().getSort();
-                        }
-
-
-                        for (Term recipe : ActionFactory2.getAllRecipes(frameVariableTerms, frameVariableTermMap,
-                                guardSort, GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(), guard)) {
-
-                            actions.add(new Action(recipe, i));
-                        }
+                        actions.addAll(ActionFactory2.getAllRecipes(frame, guard, i));
 
                         // OLD ACTION FACTORY CODE
 //                        if (guard.isPresent()) {

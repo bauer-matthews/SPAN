@@ -346,8 +346,37 @@ public class ProtocolParser {
         }
 
         Signature signature = new Signature(functions, publicNames, privateNames, variables, sorts, sortOrders);
+        validateSignature(signature);
+
         TermFactory.initTermBuilder(signature);
         return signature;
+    }
+
+    private static void validateSignature(Signature signature) throws ProtocolParseException {
+
+        for (FunctionSymbol functionSymbol : signature.getFunctions()) {
+            if (TermFactory.getReservedStrings().contains(functionSymbol.getSymbol())) {
+                throw new ProtocolParseException("Use of a reserved symbol: " + functionSymbol.getSymbol());
+            }
+        }
+
+        for (NameTerm name : signature.getPublicNames()) {
+            if (TermFactory.getReservedStrings().contains(name.getName())) {
+                throw new ProtocolParseException("Use of a reserved symbol: " + name.getName());
+            }
+        }
+
+        for (NameTerm name : signature.getPrivateNames()) {
+            if (TermFactory.getReservedStrings().contains(name.getName())) {
+                throw new ProtocolParseException("Use of a reserved symbol: " + name.getName());
+            }
+        }
+
+        for (VariableTerm variable : signature.getVariables()) {
+            if (TermFactory.getReservedStrings().contains(variable.getName())) {
+                throw new ProtocolParseException("Use of a reserved symbol: " + variable.getName());
+            }
+        }
     }
 
     private static Collection<Rewrite> parseRewrites(String text) throws ProtocolParseException, TermParseException {

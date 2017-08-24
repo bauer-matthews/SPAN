@@ -132,6 +132,18 @@ public class FunctionTerm implements Term {
     }
 
     @Override
+    public int getSize() {
+
+        int size = 1;
+
+        for(Term term : subterms) {
+            size = size + term.getSize();
+        }
+
+        return size;
+    }
+
+    @Override
     public boolean equals(Object o) {
 
         if (!(o instanceof FunctionTerm)) {

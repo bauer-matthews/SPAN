@@ -31,4 +31,6 @@ public interface Term {
     String toMathString();
 
     Sort getSort();
+
+    int getSize();
 }

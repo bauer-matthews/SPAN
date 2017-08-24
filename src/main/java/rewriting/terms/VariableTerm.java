@@ -38,6 +38,11 @@ public class VariableTerm implements Term {
     }
 
     @Override
+    public int getSize() {
+        return 1;
+    }
+
+    @Override
     public Collection<VariableTerm> getVariables() {
         return Collections.singletonList(this);
     }

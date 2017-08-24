@@ -1,6 +1,7 @@
 package process;
 
 import cache.*;
+import rewriting.Equality;
 import rewriting.terms.*;
 
 import java.util.*;
@@ -15,6 +16,64 @@ import java.util.concurrent.ExecutionException;
  * @version 1.0
  */
 public class ActionFactory2 {
+
+    public static List<Action> getAllRecipes(List<Equality> frame, Optional<Term> guard, int role)
+            throws ExecutionException {
+
+
+        List<Action> actions = new ArrayList<>();
+
+        List<FrameVariableTerm> frameVariableTerms = new ArrayList<>();
+        Map<FrameVariableTerm, Term> frameVariableTermMap = new HashMap<>();
+
+        for (Equality equality : frame) {
+
+            frameVariableTerms.add((FrameVariableTerm) equality.getLhs());
+            frameVariableTermMap.put((FrameVariableTerm) equality.getLhs(),equality.getRhs());
+        }
+
+        Sort guardSort = SortFactory.KIND;
+        if (guard.isPresent()) {
+            guardSort = guard.get().getSort();
+        }
+
+
+        List<Term> terms = new ArrayList<>();
+        for (Term recipe : getAllRecipes(frameVariableTerms, frameVariableTermMap,
+                guardSort, GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(), guard)) {
+
+            terms.add(recipe);
+        }
+
+        Set<Term> termSet = new HashSet<>();
+        Map<Term, Term> termRecipeMap = new HashMap<>();
+
+        for (Term recipe: terms) {
+
+            Term groundTerm = recipe;
+            for (FrameVariableTerm frameVariableTerm : frameVariableTerms) {
+                groundTerm = groundTerm.substitute(frameVariableTerm, frameVariableTermMap.get(frameVariableTerm));
+            }
+
+            groundTerm = RewritingCache.reduce(groundTerm);
+
+            if(termRecipeMap.get(groundTerm) == null ) {
+                termRecipeMap.put(groundTerm, recipe);
+            } else {
+                if(termRecipeMap.get(groundTerm).getSize() > recipe.getSize()) {
+                    termRecipeMap.put(groundTerm, recipe);
+                }
+            }
+
+            termSet.add(groundTerm);
+        }
+
+        for(Term term : termSet) {
+            actions.add(new Action(termRecipeMap.get(term), role));
+        }
+
+        return actions;
+    }
 
     public static Collection<Term> getAllRecipes(List<FrameVariableTerm> frameVariables,
                                                  Map<FrameVariableTerm, Term> frameValues, Sort sort, int depth,

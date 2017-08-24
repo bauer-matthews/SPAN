@@ -73,6 +73,11 @@ public class SpecialTerm implements Term {
     }
 
     @Override
+    public int getSize() {
+        return 1;
+    }
+
+    @Override
     public boolean equals(Object o) {
 
         if (!(o instanceof SpecialTerm)) {

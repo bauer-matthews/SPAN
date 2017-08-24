@@ -16,10 +16,20 @@ import java.util.function.Function;
  */
 public class TermFactory {
 
+    private static final String TOP = "T";
+    private static final String FRAME_VAR = "W";
+
+    private static final List<String> RESERVED_STRINGS = new ArrayList<>();
+
     private static Collection<NameTerm> PRIVATE_NAMES = new ArrayList<>();
     private static Collection<NameTerm> PUBLIC_NAMES = new ArrayList<>();
     private static Collection<VariableTerm> VARIABLES = new ArrayList<>();
     private static Collection<FunctionSymbol> FUNCTIONS = new ArrayList<>();
+
+    static {
+        RESERVED_STRINGS.add(TOP);
+        RESERVED_STRINGS.add(FRAME_VAR);
+    }
 
     public static void initTermBuilder(Signature signature) {
 
@@ -27,6 +37,10 @@ public class TermFactory {
         PUBLIC_NAMES = signature.getPublicNames();
         VARIABLES = signature.getVariables();
         FUNCTIONS = signature.getFunctions();
+    }
+
+    public static List<String> getReservedStrings() {
+        return RESERVED_STRINGS;
     }
 
     public static Term buildTerm(String termString) throws TermParseException {
