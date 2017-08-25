@@ -1,7 +1,6 @@
 package attacker;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -22,4 +21,6 @@ public interface Node extends Tree {
     void setIndex(long index);
 
     String getState();
+
+    void appendDotLines(List<String> lines);
 }

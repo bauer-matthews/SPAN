@@ -31,6 +31,10 @@ public class ViewNode implements Node {
         this.children = new ArrayList<>();
     }
 
+    public Observation getObservation() {
+        return observation;
+    }
+
     public void setAttackProb(Aprational attackProb) {
         this.attackProb = attackProb;
     }
@@ -52,16 +56,16 @@ public class ViewNode implements Node {
     @Override
     public Aprational getAttackProbability() {
 
-        if(children.size() == 0) {
+        if (children.size() == 0) {
             return attackProb;
         } else {
 
             Aprational attackProb = Aprational.ZERO;
-            for(Node child : children) {
+            for (Node child : children) {
                 attackProb = attackProb.add(child.getAttackProbability());
             }
 
-            return  attackProb;
+            return attackProb;
         }
     }
 
@@ -101,6 +105,18 @@ public class ViewNode implements Node {
         sb.append("}");
 
         return sb.toString();
+    }
+
+    @Override
+    public void appendDotLines(List<String> lines) {
+
+        lines.add(NodePrinter.getDotString(this));
+        NodePrinter.addChildEdges(this, lines);
+
+        for (Node child : children) {
+            child.appendDotLines(lines);
+        }
+
     }
 
     @Override

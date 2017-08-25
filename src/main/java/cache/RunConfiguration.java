@@ -3,6 +3,7 @@ package cache;
 import process.EquivalenceChecker;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -19,8 +20,10 @@ public class RunConfiguration {
     private static boolean trace;
     private static boolean printAttack;
     private static boolean findMaxAttack;
+    private static boolean outputToDot;
 
     private static File protocolFile;
+    private static Path dotFile;
     private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
 
     private static Integer equivalenceCacheSize;
@@ -32,6 +35,7 @@ public class RunConfiguration {
         // Defaults
         debug = false;
         trace = false;
+        outputToDot = false;
         printAttack = false;
         findMaxAttack = false;
         equivalenceMethod = EquivalenceChecker.EquivalenceMethod.KISS;
@@ -59,6 +63,19 @@ public class RunConfiguration {
 
     public static File getProtocolFile() {
         return protocolFile;
+    }
+
+    public static void setDotFile(Path dotFile) {
+        outputToDot = true;
+        RunConfiguration.dotFile = dotFile;
+    }
+
+    public static Path getDotFile() {
+        return dotFile;
+    }
+
+    public static boolean outputToDot() {
+        return outputToDot;
     }
 
     public static EquivalenceChecker.EquivalenceMethod getEquivalenceMethod() {

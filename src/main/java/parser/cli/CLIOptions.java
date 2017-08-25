@@ -7,6 +7,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -73,7 +75,7 @@ class CLIOptions {
         optionMap.put(debug, (debugOpt) -> RunConfiguration.enableDebug());
 
         // Trace Option
-        Option trace = new Option("trace", "print path exploreation");
+        Option trace = new Option("trace", "print path exploration");
         options.addOption(trace);
         optionMap.put(trace, (traceOpt) -> RunConfiguration.enableTrace());
 
@@ -86,6 +88,20 @@ class CLIOptions {
         Option maxAttack = new Option("maxAttack", "find the maximum attack probability");
         options.addOption(maxAttack);
         optionMap.put(maxAttack, (attackOpt) -> RunConfiguration.enableMaxAttack());
+
+        // Dot Output Option
+        Option dot = Option.builder("dot")
+                .desc("output attack tree to dot file")
+                .hasArg()
+                .argName("file")
+                .required(false)
+                .build();
+        options.addOption(dot);
+
+        optionMap.put(dot, (dotOpt) -> {
+            Path path = Paths.get(dotOpt.getValue());
+            RunConfiguration.setDotFile(path);
+        });
 
         // Protocol Option
         Option protocol = Option.builder("protocol")

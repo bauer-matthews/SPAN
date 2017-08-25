@@ -1,6 +1,9 @@
 package mc;
 
 import cache.*;
+import dot.DotEncoder;
+import log.Console;
+import log.Severity;
 import org.apfloat.Aprational;
 import process.InvalidActionException;
 import process.State;
@@ -83,6 +86,14 @@ public abstract class AbstractModelChecker implements ModelChecker {
         }
 
         System.out.println("-------------------------------------------");
+
+        if(RunConfiguration.outputToDot()) {
+            try {
+                DotEncoder.printToDotFile(RunConfiguration.getDotFile(), GlobalDataCache.getAttackTree());
+            } catch (IOException ex) {
+                Console.printError(Severity.ERROR, ex.getMessage());
+            }
+        }
 
         System.exit(0);
     }

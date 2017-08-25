@@ -28,6 +28,17 @@ public class RoleView {
         this.roleStatus = roleStatus;
     }
 
+    public Status getRoleStatus() {
+        return roleStatus;
+    }
+
+    public int getRoleIndex() {
+        return roleIndex;
+    }
+
+    public String toMathString() {
+        return roleIndex + "-" + roleStatus;
+    }
 
     @Override
     public boolean equals(Object o) {

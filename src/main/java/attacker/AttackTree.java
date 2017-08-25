@@ -41,6 +41,17 @@ public class AttackTree implements Tree {
         return rootNode.getAttackProbability();
     }
 
+    public List<String> getDotLines() {
+
+        List<String> dotLines = new ArrayList<>();
+
+        dotLines.add("digraph G {");
+        rootNode.appendDotLines(dotLines);
+        dotLines.add("}");
+
+        return dotLines;
+    }
+
     public Collection<Node> getNodes() {
         return nodes;
     }

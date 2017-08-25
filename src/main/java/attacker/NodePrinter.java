@@ -46,4 +46,40 @@ public class NodePrinter {
 
         return sb.toString();
     }
+
+    static String getDotString(ViewNode node) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("n");
+        sb.append(node.getIndex());
+        sb.append(" [ label=\"");
+        sb.append(node.getObservation().toMathString());
+        sb.append("\"");
+        sb.append(" ]");
+        return sb.toString();
+    }
+
+    static String getDotString(TransitionNode node) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("n");
+        sb.append(node.getIndex());
+        sb.append(" [ label=\"(");
+
+        sb.append(node.getAction().getRecipe().toMathString());
+        sb.append(", ");
+        sb.append(node.getAction().getRoleIndex());
+        sb.append(") P=");
+        sb.append(node.getTransitionProb().toString(true));
+        sb.append("\"");
+        sb.append(" ]");
+
+        return sb.toString();
+    }
+
+    static void addChildEdges(Node node, List<String> lines) {
+        for (Node child : node.getChildren()) {
+            lines.add("n" + node.getIndex() + " -> n" + child.getIndex() + " [color=black];");
+        }
+    }
 }

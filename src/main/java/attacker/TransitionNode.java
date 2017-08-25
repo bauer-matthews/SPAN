@@ -33,6 +33,14 @@ public class TransitionNode implements Node {
         this.children = new ArrayList<>();
     }
 
+    public Action getAction() {
+        return action;
+    }
+
+    public Aprational getTransitionProb() {
+        return transitionProb;
+    }
+
     @Override
     public List<Node> getChildren() {
         return children;
@@ -73,6 +81,17 @@ public class TransitionNode implements Node {
     }
 
     @Override
+    public void appendDotLines(List<String> lines) {
+
+        lines.add(NodePrinter.getDotString(this));
+        NodePrinter.addChildEdges(this, lines);
+
+        for (Node child : children) {
+            child.appendDotLines(lines);
+        }
+    }
+
+    @Override
     public Node getRoot() {
         return this;
     }
@@ -82,7 +101,7 @@ public class TransitionNode implements Node {
 
         Aprational attackProb = Aprational.ZERO;
 
-        for(Node child : children) {
+        for (Node child : children) {
             attackProb = attackProb.add(transitionProb.multiply(child.getAttackProbability()));
         }
 
