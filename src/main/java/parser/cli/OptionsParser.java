@@ -1,6 +1,7 @@
 package parser.cli;
 
 import org.apache.commons.cli.*;
+import util.ExitCode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,13 +29,13 @@ public class OptionsParser {
 
             if (optionsList.isEmpty()) {
                 CLIOptions.printUsage();
-                System.exit(1);
+                System.exit(ExitCode.OPTION_ERROR.getValue());
             }
 
             for (Option option : CLIOptions.getHelpOptions().getOptions()) {
                 if (optionsList.contains(option)) {
                     CLIOptions.printUsage();
-                    System.exit(1);
+                    System.exit(ExitCode.OPTION_ERROR.getValue());
                 }
             }
         } catch (ParseException ex) {
@@ -47,7 +48,7 @@ public class OptionsParser {
         } catch (ParseException ex) {
             CLIOptions.printParseError(ex);
             CLIOptions.printUsage();
-            System.exit(1);
+            System.exit(ExitCode.OPTION_ERROR.getValue());
         }
     }
 

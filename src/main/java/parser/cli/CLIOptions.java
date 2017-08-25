@@ -5,6 +5,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import util.ExitCode;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -46,7 +47,7 @@ class CLIOptions {
             if (optionMap.get(option) == null) {
                 printParseError(new ParseException("Unrecognized option :" + option.getOpt()));
                 CLIOptions.printUsage();
-                System.exit(1);
+                System.exit(ExitCode.OPTION_ERROR.getValue());
             } else {
                 optionMap.get(option).accept(option);
             }
@@ -117,7 +118,7 @@ class CLIOptions {
             if (!protocolFile.exists() || protocolFile.isDirectory()) {
                 System.err.println("Invalid file path argument for option: " + protocolOpt.getOpt());
                 printUsage();
-                System.exit(1);
+                System.exit(ExitCode.OPTION_ERROR.getValue());
             }
             RunConfiguration.setProtocolFile(protocolFile);
         });

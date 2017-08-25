@@ -1,0 +1,74 @@
+# Example Protocol
+# note b0 = 0
+# note b1 = 1
+# mA = 0
+# mB = 1
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 1;
+
+.constants
+
+    fraction p : 1/2;
+
+.signature
+
+    sort : Key, Nonce, Bit, Message;
+    subsort : Key, Bit, Nonce < Message;
+
+    variables : mes, m1, m2, y, z, x, y1, y2, y3, x1 | Message;
+    variables : r, x2, x3, t | Nonce;
+    variables : key | Key;
+    variables : b | Bit;
+
+    function : senc | Message Key -> Message;
+    function : sdec | Message Key -> Message;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : xor | Bit Bit -> Bit;
+    function : zero | -> Bit;
+    function : one | -> Bit;
+
+    public names : pn | Nonce;
+    public names : pm | Message;
+    public names : pk | Key;
+
+    private names : b1 , b1, b3, k | Nonce;
+    private names : mA, mB, s | Message;
+
+.rewrites
+
+    rewrite : sdec(senc(mes,key), key) -> mes;
+    rewrite : fst(pair(m1, m2)) -> m1;
+    rewrite : snd(pair(m1, m2)) -> m2;
+    rewrite : xor(one, one) -> zero;
+    rewrite : xor(one, zero) -> one;
+    rewrite : xor(zero, one) -> one;
+    rewrite : xor(zero, zero) -> zero;
+
+.roles
+
+    role :  {0} [T] out(1/2 -> senc(pair(pair(zero, one), zero), k) + 1/2 -> senc(pair(pair(zero, one), one), k));
+
+    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {1} [snd(sdec(y1, k)) == zero ] out(1 -> xor(fst(fst(sdec(y1,k))), zero) # snd(fst(sdec(y1,k))));
+
+    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {1} [snd(sdec(y1, k)) == one ] out(1 -> fst(fst(sdec(y1,k))) # xor(snd(fst(sdec(y1,k))),zero));
+
+    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {1} [snd(sdec(y1, k)) == zero ] out(1 -> fst(fst(sdec(y1,k))) # xor(snd(fst(sdec(y1,k))),one));
+
+    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {1} [snd(sdec(y1, k)) == one ] out(1 -> xor(fst(fst(sdec(y1,k))), one) # snd(fst(sdec(y1,k))));
+
+    role :  {2} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {2} in(y2{b}) .
+            {2} [snd(sdec(y1, k)) == b ] out(1 -> s);
+
+
+.safety
+    secrecy : s >= 1/2;

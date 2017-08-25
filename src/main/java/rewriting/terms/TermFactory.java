@@ -1,10 +1,8 @@
 package rewriting.terms;
 
 import rewriting.Signature;
-import util.ParametricString;
 
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -46,6 +44,12 @@ public class TermFactory {
     public static Term buildTerm(String termString) throws TermParseException {
 
         if (!termString.contains("(")) {
+
+            for (FunctionSymbol functionSymbol : FUNCTIONS) {
+                if ((functionSymbol.getArity() == 0) && (termString.equals(functionSymbol.getSymbol()))) {
+                    return new FunctionTerm(functionSymbol, Collections.emptyList());
+                }
+            }
 
             for (VariableTerm variableTerm : VARIABLES) {
                 if (termString.equals(variableTerm.getName())) return variableTerm;

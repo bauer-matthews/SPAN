@@ -6,14 +6,12 @@ import process.State;
 import rewriting.Equality;
 import rewriting.Rewrite;
 import rewriting.Signature;
-import rewriting.terms.FunctionSymbol;
 import rewriting.terms.NameTerm;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,30 +20,33 @@ import java.util.stream.Collectors;
  */
 public class KissEncoder {
 
+    private static final Joiner COMMA_JOINER = Joiner.on(", ");
+    private static final Joiner COMMA_RETURN_JOINER = Joiner.on(",\n");
+
+
     public static String encode(Signature signature, Collection<Rewrite> rewrites, State state1, State state2,
                                 List<Term> frame1Secrets, List<Term> frame2Secrets) {
 
-        Joiner joiner = Joiner.on(", ");
         StringBuilder sb = new StringBuilder();
 
         sb.append("signature ");
-        sb.append(joiner.join(signature.getFunctions().stream()
+        sb.append(COMMA_JOINER.join(signature.getFunctions().stream()
                 .map(functionSymbol -> functionSymbol.getSymbol() + "/" + functionSymbol.getArity())
                 .collect(Collectors.toList())));
         sb.append(";\n");
 
         sb.append("variables ");
-        sb.append(joiner.join(signature.getVariables().stream()
+        sb.append(COMMA_JOINER.join(signature.getVariables().stream()
                 .map(VariableTerm::toMathString)
                 .collect(Collectors.toList())));
         sb.append(";\n");
 
         sb.append("names ");
-        sb.append(joiner.join(signature.getPublicNames().stream()
+        sb.append(COMMA_JOINER.join(signature.getPublicNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
         sb.append(", ");
-        sb.append(joiner.join(signature.getPrivateNames().stream()
+        sb.append(COMMA_JOINER.join(signature.getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
         sb.append(", ");
@@ -57,30 +58,30 @@ public class KissEncoder {
             frameVars.add("W" + i);
         }
 
-        sb.append(joiner.join(frameVars.stream()
+        sb.append(COMMA_JOINER.join(frameVars.stream()
                 .collect(Collectors.toList())));
         sb.append(";\n");
         sb.append("rewrite\n");
 
+        List<String> rewriteStrings = new ArrayList<>();
         for(Rewrite rewrite : rewrites) {
-            sb.append("\t\t");
-            sb.append(rewrite.getLhs().toMathString());
-            sb.append(" -> ");
-            sb.append(rewrite.getRhs().toMathString());
-            sb.append(";\n");
+            rewriteStrings.add("\t\t" + rewrite.getLhs().toMathString() + " -> " + rewrite.getRhs().toMathString());
         }
+
+        sb.append(COMMA_RETURN_JOINER.join(rewriteStrings));
+        sb.append(";\n");
 
         sb.append("frames\n");
 
         sb.append("\t\t");
         sb.append("phi1 = new ");
 
-        sb.append(joiner.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
+        sb.append(COMMA_JOINER.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
 
         sb.append(".{");
-        sb.append(joiner.join(state1.getFrame().stream()
+        sb.append(COMMA_JOINER.join(state1.getFrame().stream()
                 .map(Equality::toMathString)
                 .collect(Collectors.toList())));
         sb.append("},\n");
@@ -88,12 +89,12 @@ public class KissEncoder {
         sb.append("\t\t");
         sb.append("phi2 = new ");
 
-        sb.append(joiner.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
+        sb.append(COMMA_JOINER.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
 
         sb.append(".{");
-        sb.append(joiner.join(state2.getFrame().stream()
+        sb.append(COMMA_JOINER.join(state2.getFrame().stream()
                 .map(Equality::toMathString)
                 .collect(Collectors.toList())));
         sb.append("};\n");

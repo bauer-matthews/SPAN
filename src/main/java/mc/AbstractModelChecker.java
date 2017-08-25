@@ -7,6 +7,7 @@ import log.Severity;
 import org.apfloat.Aprational;
 import process.InvalidActionException;
 import process.State;
+import util.ExitCode;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -104,6 +105,6 @@ public abstract class AbstractModelChecker implements ModelChecker {
             }
         }
 
-        System.exit(0);
+        System.exit(ExitCode.GOOD.getValue());
     }
 }

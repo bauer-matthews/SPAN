@@ -15,6 +15,7 @@ import protocol.role.ActionParseException;
 import protocol.role.Role;
 import rewriting.*;
 import rewriting.terms.*;
+import util.ExitCode;
 import util.aprational.AprationalFactory;
 
 import java.io.BufferedReader;
@@ -93,7 +94,7 @@ public class ProtocolParser {
 
         } catch (IOException ex) {
             Console.printError(Severity.ERROR, ex.getMessage());
-            System.exit(1);
+            System.exit(ExitCode.PROTOCOL_PARSE_ERROR.getValue());
         }
 
         List<Section> sectionList = Arrays.asList(Section.values());
@@ -286,8 +287,13 @@ public class ProtocolParser {
                 String[] sortPieces = typePieces[0].trim().split(" ");
                 List<Sort> sortParameters = new ArrayList<>();
 
-                for (String sortString : sortPieces) {
-                    sortParameters.add(SortFactory.fromString(sortString.trim()));
+                if(sortPieces.length == 1 && sortPieces[0].trim().isEmpty()) {int i = 5454;
+                    // no parameters
+                } else {
+
+                    for (String sortString : sortPieces) {
+                        sortParameters.add(SortFactory.fromString(sortString.trim()));
+                    }
                 }
 
                 Sort sortResult = SortFactory.fromString(typePieces[1].trim());

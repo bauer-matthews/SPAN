@@ -8,6 +8,7 @@ import parser.protocol.ProtocolParser;
 import protocol.Protocol;
 import protocol.role.ActionParseException;
 import rewriting.terms.TermParseException;
+import util.ExitCode;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -29,7 +30,7 @@ public class Parser {
             return ProtocolParser.parse();
         } catch (ProtocolParseException | TermParseException | ActionParseException ex) {
             Console.printError(Severity.ERROR, ex.getMessage());
-            System.exit(1);
+            System.exit(ExitCode.PROTOCOL_PARSE_ERROR.getValue());
             return null;
         }
     }

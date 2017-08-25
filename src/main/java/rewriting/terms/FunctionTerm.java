@@ -109,21 +109,26 @@ public class FunctionTerm implements Term {
     @Override
     public String toMathString() {
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(rootSymbol.getSymbol());
-        sb.append("(");
+        if(subterms.isEmpty()) {
+            return rootSymbol.getSymbol();
+        } else {
 
-        boolean first = true;
-        for (Term term : subterms) {
-            if (!first) {
-                sb.append(", ");
+            StringBuilder sb = new StringBuilder();
+            sb.append(rootSymbol.getSymbol());
+            sb.append("(");
+
+            boolean first = true;
+            for (Term term : subterms) {
+                if (!first) {
+                    sb.append(", ");
+                }
+                sb.append(term.toMathString());
+                first = false;
             }
-            sb.append(term.toMathString());
-            first = false;
-        }
 
-        sb.append(")");
-        return sb.toString();
+            sb.append(")");
+            return sb.toString();
+        }
     }
 
     @Override

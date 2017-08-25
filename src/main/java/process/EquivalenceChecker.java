@@ -4,12 +4,15 @@ import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import kiss.DeductionResult;
+import kiss.EquivalenceResult;
 import kiss.Kiss;
 import kiss.KissEncoder;
 import log.Console;
 import log.Severity;
+import util.ExitCode;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -51,7 +54,6 @@ public class EquivalenceChecker {
             return new EquivalenceCheckResult(true, false, false);
         }
 
-
         String resultString = Kiss.invokeKiss(KISS_COMMAND,
                 KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
                         GlobalDataCache.getProtocol().getRewrites(), state1, state2,
@@ -60,7 +62,20 @@ public class EquivalenceChecker {
                         SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state2.getSubstitution())));
 
-        boolean equivalent = Kiss.getEquivalenceResults(resultString).get(0).isEquivalent()
+        List<EquivalenceResult> results = Kiss.getEquivalenceResults(resultString);
+
+        if (results.size() == 0) {
+            System.out.println(KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
+                    GlobalDataCache.getProtocol().getRewrites(), state1, state2,
+                    SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
+                            .getSafetyProperty().getSecrets(), state1.getSubstitution()),
+                    SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
+                            .getSafetyProperty().getSecrets(), state2.getSubstitution())));
+            Console.printError(Severity.ERROR, "Modeling checking failed due to KISS error");
+            System.exit(ExitCode.KISS_ERROR.getValue());
+        }
+
+        boolean equivalent = results.get(0).isEquivalent()
                 && enabledActionsMatch(state1, state2);
 
         boolean phi1Attack = false;
