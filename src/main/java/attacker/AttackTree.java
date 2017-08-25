@@ -1,5 +1,6 @@
 package attacker;
 
+import cache.GlobalDataCache;
 import org.apfloat.Aprational;
 
 import java.util.ArrayList;
@@ -50,6 +51,13 @@ public class AttackTree implements Tree {
         dotLines.add("}");
 
         return dotLines;
+    }
+
+    public boolean attackFound() {
+
+        return GlobalDataCache.getAttackTree().getAttackProbability()
+                .compareTo(Aprational.ONE.subtract(GlobalDataCache.getProtocol()
+                        .getSafetyProperty().getProbability())) > 0;
     }
 
     public Collection<Node> getNodes() {

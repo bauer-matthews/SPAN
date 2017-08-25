@@ -136,9 +136,8 @@ public class DfsModelChecker extends AbstractModelChecker {
                 beliefState.getStateAttackProb()));
 
         if (!findMaximum()) {
-            if (GlobalDataCache.getAttackTree().getAttackProbability()
-                    .compareTo(Aprational.ONE.subtract(GlobalDataCache.getProtocol()
-                            .getSafetyProperty().getProbability())) > 0) {
+
+            if (GlobalDataCache.getAttackTree().attackFound()) {
 
                 this.setStopTime(System.currentTimeMillis());
                 printResults();

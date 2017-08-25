@@ -41,14 +41,23 @@ public abstract class AbstractModelChecker implements ModelChecker {
     public void printResults() {
 
         Aprational attackProbFound = GlobalDataCache.getAttackTree().getAttackProbability();
+        boolean attackFound = GlobalDataCache.getAttackTree().attackFound();
 
         System.out.println("------------------Results------------------");
         System.out.println();
 
-        if(findMaximum()) {
+        if(!attackFound) {
+            System.out.println("No attack found!");
             System.out.print("Maximum attack probability: ");
+
         } else {
-            System.out.print("Attack found with probability: ");
+
+            System.out.println("Attack found!");
+            if (findMaximum()) {
+                System.out.print("Maximum attack probability: ");
+            } else {
+                System.out.print("Attack probability: ");
+            }
         }
 
         System.out.println( attackProbFound.toString(true));
@@ -79,7 +88,7 @@ public abstract class AbstractModelChecker implements ModelChecker {
             System.out.println();
         }
 
-        if (RunConfiguration.printAttack()) {
+        if (RunConfiguration.printAttack() && attackFound) {
             System.out.println("----------------Attack Tree----------------");
             System.out.println();
             System.out.println(GlobalDataCache.getAttackTree().toString());
@@ -87,7 +96,7 @@ public abstract class AbstractModelChecker implements ModelChecker {
 
         System.out.println("-------------------------------------------");
 
-        if(RunConfiguration.outputToDot()) {
+        if(RunConfiguration.outputToDot() && attackFound) {
             try {
                 DotEncoder.printToDotFile(RunConfiguration.getDotFile(), GlobalDataCache.getAttackTree());
             } catch (IOException ex) {
