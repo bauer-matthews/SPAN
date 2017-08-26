@@ -7,7 +7,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 1;
+    recipe depth : 3;
 
 .constants
 
@@ -66,9 +66,9 @@
     role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
             {1} [snd(sdec(y1, k)) == one ] out(1 -> xor(fst(fst(sdec(y1,k))), one) # snd(fst(sdec(y1,k))));
 
-    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
-            {1} in(y2{b}) .
-            {1} [snd(sdec(y1, k)) == y2 ] out(1 -> s);
+    role :  {2} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {2} in(y2{b}) .
+            {2} [snd(sdec(y1, k)) == y2 ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

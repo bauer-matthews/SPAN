@@ -1,12 +1,13 @@
 package process;
 
-import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
 import protocol.role.*;
 import rewriting.Equality;
-import rewriting.terms.*;
+import rewriting.terms.FrameVariableTerm;
+import rewriting.terms.Term;
+import rewriting.terms.VariableTerm;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -58,7 +59,7 @@ public class State {
         return roleViews;
     }
 
-    private int getMinPhase() {
+    private int getMinPhase() throws ExecutionException {
 
         int minPhase = Integer.MAX_VALUE;
 
@@ -66,8 +67,16 @@ public class State {
 
             if (!role.getAtomicProcesses().isEmpty()) {
 
-                if (role.getHead().getPhase() < minPhase) {
-                    minPhase = role.getHead().getPhase();
+                if(role.getHead() instanceof OutputProcess) {
+                    if(checkGuards(((OutputProcess) role.getHead()).getGuards())) {
+                        if (role.getHead().getPhase() < minPhase) {
+                            minPhase = role.getHead().getPhase();
+                        }
+                    }
+                } else {
+                    if (role.getHead().getPhase() < minPhase) {
+                        minPhase = role.getHead().getPhase();
+                    }
                 }
             }
         }
