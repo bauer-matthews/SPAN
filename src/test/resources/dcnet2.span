@@ -18,10 +18,10 @@
     sort : Key, Nonce, Bit, Message;
     subsort : Key, Bit, Nonce < Message;
 
-    variables : mes, m1, m2, y, z, x, y1, y2, y3, x1 | Message;
+    variables : mes, m1, m2, y1, y2, y3, x1 | Message;
     variables : r, x2, x3, t | Nonce;
     variables : key | Key;
-    variables : b | Bit;
+    variables : b, x, y, z | Bit;
 
     function : senc | Message Key -> Message;
     function : sdec | Message Key -> Message;
@@ -36,8 +36,9 @@
     public names : pm | Message;
     public names : pk | Key;
 
-    private names : b1 , b1, b3, k | Nonce;
+    private names : b1 , b2, b3| Nonce;
     private names : mA, mB, s | Message;
+    private names : k | Key;
 
 .rewrites
 
@@ -65,10 +66,9 @@
     role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
             {1} [snd(sdec(y1, k)) == one ] out(1 -> xor(fst(fst(sdec(y1,k))), one) # snd(fst(sdec(y1,k))));
 
-    role :  {2} in(y1{senc(pair(pair(x, y), z), k)}) .
-            {2} in(y2{b}) .
-            {2} [snd(sdec(y1, k)) == b ] out(1 -> s);
-
+    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {1} in(y2{b}) .
+            {1} [snd(sdec(y1, k)) == y2 ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

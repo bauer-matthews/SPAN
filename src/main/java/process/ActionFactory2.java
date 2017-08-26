@@ -234,6 +234,11 @@ public class ActionFactory2 {
 
     private static Collection<List<Term>> permuteListMap(Map<Integer, Collection<Term>> parameterListMap) {
 
+
+        if(parameterListMap.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Collection<List<Term>> newLists = new ArrayList<>();
         for (Term term : parameterListMap.get(0)) {
             newLists.add(Collections.singletonList(term));
