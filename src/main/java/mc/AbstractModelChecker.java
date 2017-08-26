@@ -47,7 +47,7 @@ public abstract class AbstractModelChecker implements ModelChecker {
         System.out.println("------------------Results------------------");
         System.out.println();
 
-        if(!attackFound) {
+        if (!attackFound) {
             System.out.println("No attack found!");
             System.out.print("Maximum attack probability: ");
 
@@ -61,7 +61,7 @@ public abstract class AbstractModelChecker implements ModelChecker {
             }
         }
 
-        System.out.println( attackProbFound.toString(true));
+        System.out.println(attackProbFound.toString(true));
         System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
         System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
         System.out.println();
@@ -86,6 +86,8 @@ public abstract class AbstractModelChecker implements ModelChecker {
             System.out.println("Unification cache (Call/Load): "
                     + UnificationCache.getCacheCalls() + " / " + UnificationCache.getCacheLoads());
 
+            System.out.println("Max Action Set Size: " + GlobalDataCache.getMaxActionSetSize());
+
             System.out.println();
         }
 
@@ -97,7 +99,7 @@ public abstract class AbstractModelChecker implements ModelChecker {
 
         System.out.println("-------------------------------------------");
 
-        if(RunConfiguration.outputToDot() && attackFound) {
+        if (RunConfiguration.outputToDot() && attackFound) {
             try {
                 DotEncoder.printToDotFile(RunConfiguration.getDotFile(), GlobalDataCache.getAttackTree());
             } catch (IOException ex) {

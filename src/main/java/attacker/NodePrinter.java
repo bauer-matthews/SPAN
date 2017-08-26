@@ -66,10 +66,11 @@ public class NodePrinter {
         sb.append(node.getIndex());
         sb.append(" [ label=\"(");
 
+        sb.append("recipe=");
         sb.append(node.getAction().getRecipe().toMathString());
-        sb.append(", ");
+        sb.append(", role=");
         sb.append(node.getAction().getRoleIndex());
-        sb.append(") P=");
+        sb.append(") prob=");
         sb.append(node.getTransitionProb().toString(true));
         sb.append("\"");
         sb.append(" ]");

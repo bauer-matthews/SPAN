@@ -3,6 +3,7 @@
 # note b1 = 1
 # mA = 0
 # mB = 1
+# I can allow b0 and b1 to vary with more coin flips in phase 0
 
 .metadata
 
@@ -36,7 +37,7 @@
     public names : pm | Message;
     public names : pk | Key;
 
-    private names : b1 , b2, b3| Nonce;
+    private names : b1 , b2, b3 | Nonce;
     private names : mA, mB, s | Message;
     private names : k | Key;
 

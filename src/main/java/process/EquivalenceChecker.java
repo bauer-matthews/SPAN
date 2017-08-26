@@ -65,12 +65,20 @@ public class EquivalenceChecker {
         List<EquivalenceResult> results = Kiss.getEquivalenceResults(resultString);
 
         if (results.size() == 0) {
-            System.out.println(KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
-                    GlobalDataCache.getProtocol().getRewrites(), state1, state2,
-                    SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
-                            .getSafetyProperty().getSecrets(), state1.getSubstitution()),
-                    SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
-                            .getSafetyProperty().getSecrets(), state2.getSubstitution())));
+
+            if(RunConfiguration.getDebug()) {
+
+                System.out.println("Here is the problematic KISS encoding:");
+                System.out.println();
+
+                System.out.println(KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
+                        GlobalDataCache.getProtocol().getRewrites(), state1, state2,
+                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
+                                .getSafetyProperty().getSecrets(), state1.getSubstitution()),
+                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
+                                .getSafetyProperty().getSecrets(), state2.getSubstitution())));
+            }
+
             Console.printError(Severity.ERROR, "Modeling checking failed due to KISS error");
             System.exit(ExitCode.KISS_ERROR.getValue());
         }

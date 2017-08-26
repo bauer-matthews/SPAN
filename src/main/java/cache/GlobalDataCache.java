@@ -34,12 +34,15 @@ public class GlobalDataCache {
     private static final List<Interleaving> interleavings;
     private static int interleavingsExplored;
 
+    private static int maxActionSetSize;
+
     private static AttackTree attackTree;
 
     static {
 
         interleavings = new ArrayList<>();
         interleavingsExplored = 0;
+        maxActionSetSize = 0;
 
         recipes = CacheBuilder.newBuilder()
                 .maximumSize(1000)
@@ -50,6 +53,16 @@ public class GlobalDataCache {
                                 return ActionFactory.getAllRecipes(numFrameVariables);
                             }
                         });
+    }
+
+    public static void reportActionSetSize(int size) {
+        if (size > GlobalDataCache.maxActionSetSize) {
+            GlobalDataCache.maxActionSetSize = size;
+        }
+    }
+
+    public static int getMaxActionSetSize() {
+        return maxActionSetSize;
     }
 
     public static void initializeAttackTree(AttackTree attackTree) {
@@ -87,11 +100,11 @@ public class GlobalDataCache {
 
 
                 // Back-to-back outputs can be swapped
-                if (interleaving.getActionList().get(size-1).getRecipe().equals(Resources.TAU_ACTION) &&
+                if (interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION) &&
                         interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION)) {
 
-                    if (explored.getActionList().get(size-1).equals(interleaving.getActionList().get(size - 2)) &&
-                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size-1))) {
+                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
+                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
 
                         interleavingsExplored++;
                         return Optional.of(explored.getAttackProb());
@@ -99,12 +112,12 @@ public class GlobalDataCache {
                 }
 
                 // Back-to-back inputs can be swapped
-                if ((!interleaving.getActionList().get(size-1).getRecipe().equals(Resources.TAU_ACTION)) &&
+                if ((!interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION)) &&
                         (!interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION))) {
 
                     // NOTE: This only allows swapping of identical recipes.
-                    if (explored.getActionList().get(size-1).equals(interleaving.getActionList().get(size - 2)) &&
-                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size-1))) {
+                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
+                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
 
                         interleavingsExplored++;
                         return Optional.of(explored.getAttackProb());

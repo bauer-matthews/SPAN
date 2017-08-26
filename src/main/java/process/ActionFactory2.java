@@ -29,7 +29,7 @@ public class ActionFactory2 {
         for (Equality equality : frame) {
 
             frameVariableTerms.add((FrameVariableTerm) equality.getLhs());
-            frameVariableTermMap.put((FrameVariableTerm) equality.getLhs(),equality.getRhs());
+            frameVariableTermMap.put((FrameVariableTerm) equality.getLhs(), equality.getRhs());
         }
 
         Sort guardSort = SortFactory.KIND;
@@ -48,7 +48,7 @@ public class ActionFactory2 {
         Set<Term> termSet = new HashSet<>();
         Map<Term, Term> termRecipeMap = new HashMap<>();
 
-        for (Term recipe: terms) {
+        for (Term recipe : terms) {
 
             Term groundTerm = recipe;
             for (FrameVariableTerm frameVariableTerm : frameVariableTerms) {
@@ -57,10 +57,10 @@ public class ActionFactory2 {
 
             groundTerm = RewritingCache.reduce(groundTerm);
 
-            if(termRecipeMap.get(groundTerm) == null ) {
+            if (termRecipeMap.get(groundTerm) == null) {
                 termRecipeMap.put(groundTerm, recipe);
             } else {
-                if(termRecipeMap.get(groundTerm).getSize() > recipe.getSize()) {
+                if (termRecipeMap.get(groundTerm).getSize() > recipe.getSize()) {
                     termRecipeMap.put(groundTerm, recipe);
                 }
             }
@@ -68,8 +68,12 @@ public class ActionFactory2 {
             termSet.add(groundTerm);
         }
 
-        for(Term term : termSet) {
+        for (Term term : termSet) {
             actions.add(new Action(termRecipeMap.get(term), role));
+        }
+
+        if (RunConfiguration.getDebug()) {
+            GlobalDataCache.reportActionSetSize(actions.size());
         }
 
         return actions;
@@ -85,7 +89,7 @@ public class ActionFactory2 {
 
         if (guard.isPresent() && (!guard.get().isCompoundTerm())) {
 
-            if(guard.get().isNameTerm()) {
+            if (guard.get().isNameTerm()) {
                 return terms;
             } else {
                 for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
@@ -110,11 +114,13 @@ public class ActionFactory2 {
         }
 
         Optional<List<Term>> guardList = Optional.empty();
+        Optional<FunctionSymbol> rootGuardSymbol = Optional.empty();
 
         if (guard.isPresent()) {
 
             // NOTE: if we are here we know the guard is a compound term
             FunctionTerm guardFunctionTerm = (FunctionTerm) guard.get();
+            rootGuardSymbol = Optional.of(guardFunctionTerm.getRootSymbol());
 
             List<Term> subGuards = new ArrayList<>();
             for (int i = 0; i < guardFunctionTerm.getSubterms().size(); i++) {
@@ -127,21 +133,24 @@ public class ActionFactory2 {
 
         for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
 
-            if (functionSymbol.getReturnType().equals(sort)) {
+            if (rootGuardSymbol.isPresent() && rootGuardSymbol.get().equals(functionSymbol)) {
 
-                Collection<List<Term>> parameterLists = getParameterLists(frameVariables, frameValues,
-                        functionSymbol.getParameterType(), depth - 1, guardList);
+                if (functionSymbol.getReturnType().equals(sort)) {
 
-                for (List<Term> parameterList : parameterLists) {
-                    Term newTerm = new FunctionTerm(functionSymbol, parameterList);
-                    Term newTermSub = new FunctionTerm(functionSymbol, parameterList);
+                    Collection<List<Term>> parameterLists = getParameterLists(frameVariables, frameValues,
+                            functionSymbol.getParameterType(), depth - 1, guardList);
 
-                    for (FrameVariableTerm frameVariableTerm : frameVariables) {
-                        newTermSub = newTermSub.substitute(frameVariableTerm, frameValues.get(frameVariableTerm));
-                    }
+                    for (List<Term> parameterList : parameterLists) {
+                        Term newTerm = new FunctionTerm(functionSymbol, parameterList);
+                        Term newTermSub = new FunctionTerm(functionSymbol, parameterList);
 
-                    if (matchesGuard(guard, RewritingCache.reduce(newTermSub))) {
-                        terms.add(newTerm);
+                        for (FrameVariableTerm frameVariableTerm : frameVariables) {
+                            newTermSub = newTermSub.substitute(frameVariableTerm, frameValues.get(frameVariableTerm));
+                        }
+
+                        if (matchesGuard(guard, RewritingCache.reduce(newTermSub))) {
+                            terms.add(newTerm);
+                        }
                     }
                 }
             }
@@ -200,13 +209,11 @@ public class ActionFactory2 {
                 guard = Optional.ofNullable(guardList.get().get(i));
             }
 
-
             Set<Term> recipes = new HashSet<>();
 
             for (int j = depth; j > 0; j--) {
                 recipes.addAll(getAllRecipes(frameVariables, frameValues, parameterTypes.get(i), j, guard));
             }
-
 
             parameterListMap.put(i, recipes);
         }
@@ -235,7 +242,7 @@ public class ActionFactory2 {
     private static Collection<List<Term>> permuteListMap(Map<Integer, Collection<Term>> parameterListMap) {
 
 
-        if(parameterListMap.isEmpty()) {
+        if (parameterListMap.isEmpty()) {
             return Collections.emptyList();
         }
 

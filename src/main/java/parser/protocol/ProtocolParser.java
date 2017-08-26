@@ -351,6 +351,10 @@ public class ProtocolParser {
             }
         }
 
+        if(publicNames.size() == 0 ) {
+            throw new ProtocolParseException("At least one public name is required.");
+        }
+
         Signature signature = new Signature(functions, publicNames, privateNames, variables, sorts, sortOrders);
         validateSignature(signature);
 
