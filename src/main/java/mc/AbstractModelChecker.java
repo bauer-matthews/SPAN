@@ -91,7 +91,8 @@ public abstract class AbstractModelChecker implements ModelChecker {
             System.out.println();
         }
 
-        if (RunConfiguration.printAttack() && attackFound) {
+        if ((RunConfiguration.printAttack() && attackFound)) {
+
             System.out.println("----------------Attack Tree----------------");
             System.out.println();
             System.out.println(GlobalDataCache.getAttackTree().toString());
@@ -99,7 +100,9 @@ public abstract class AbstractModelChecker implements ModelChecker {
 
         System.out.println("-------------------------------------------");
 
-        if (RunConfiguration.outputToDot() && attackFound) {
+        if ((RunConfiguration.outputToDot() && attackFound) ||
+                (RunConfiguration.findMaxAttack() &&
+                        GlobalDataCache.getAttackTree().getAttackProbability().compareTo(Aprational.ZERO) > 0)) {
             try {
                 DotEncoder.printToDotFile(RunConfiguration.getDotFile(), GlobalDataCache.getAttackTree());
             } catch (IOException ex) {
