@@ -1,4 +1,5 @@
-# Example Protocol
+# NAME: Threshold Mix Protocol
+# PARAMETERS: 2 parties, 2 mixes, 1 round
 
 .metadata
 

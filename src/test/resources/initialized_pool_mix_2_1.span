@@ -1,0 +1,55 @@
+# NAME: Pool Mix Protocol
+# PARAMETERS: 2 parties, 1 round
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 1;
+
+.constants
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message;
+    subsort : PKey, SKey, Nonce < Message;
+
+    variables : m, y1, y2, y3, y4, x1 | Message;
+    variables : r, k, x2, x3, t | Nonce;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+
+    public names : a | Nonce;
+    public names : b | Message;
+
+    private names : m1 , m2, m3 | Message;
+    private names : s, r1, r2, r3, r4, r5, r6, k1, k2, k3, km | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(m,r,pk(k)), sk(k)) -> m;
+
+.roles
+
+    role :  {0} [T] out(1 -> pk(km));
+
+    role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)),r2, pk(km))) .
+            {1} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)),r4, pk(km)));
+
+    role:   {2} in(y1{aenc(aenc(x1, x2, pk(t)),x3, pk(km))}) .
+            {2} in(y2{aenc(aenc(x1, x2, pk(t)),x3, pk(km))}) .
+            {2} [y1 != y2 ]
+                            out(1/6 -> adec(y1, sk(km)) # adec(y2, sk(km)) +
+                                1/6 -> adec(y2, sk(km)) # adec(y1, sk(km)) +
+                                1/6 -> adec(y1, sk(km)) # aenc(m3, r5, pk(k3)) +
+                                1/6 -> aenc(m3, r5, pk(k3)) # adec(y1, sk(km)) +
+                                1/6 -> aenc(m3, r5, pk(k3)) # adec(y2, sk(km)) +
+                                1/6 -> adec(y2, sk(km)) # aenc(m3, r5, pk(k3)));
+
+    role:   {3} in(y4{aenc(m2,r3, pk(k2))}) .
+            {3} [ y4 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
+
+.safety
+    secrecy : s >= 1/2;
