@@ -180,7 +180,7 @@ public class ActionFactory {
 
         Collection<Term> filteredRecipes = new ArrayList<>();
 
-        for (Term recipe : GlobalDataCache.getRecipes(numFrameVariables)) {
+        for (Term recipe : ActionFactoryCache.getRecipes(numFrameVariables)) {
 
             Term groundTerm = SubstitutionCache.applySubstitution(recipe, frame);
 

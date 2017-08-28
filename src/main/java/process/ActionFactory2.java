@@ -39,8 +39,8 @@ public class ActionFactory2 {
 
 
         List<Term> terms = new ArrayList<>();
-        for (Term recipe : getAllRecipes(frameVariableTerms, frameVariableTermMap,
-                guardSort, GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(), guard)) {
+        for (Term recipe : ActionFactory2Cache.getRecipes(new RecipeParameter(frameVariableTerms, frameVariableTermMap,
+                guardSort, GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(), guard))) {
 
             terms.add(recipe);
         }
@@ -212,7 +212,8 @@ public class ActionFactory2 {
             Set<Term> recipes = new HashSet<>();
 
             for (int j = depth; j > 0; j--) {
-                recipes.addAll(getAllRecipes(frameVariables, frameValues, parameterTypes.get(i), j, guard));
+                recipes.addAll(ActionFactory2Cache.getRecipes(new RecipeParameter(frameVariables,
+                        frameValues, parameterTypes.get(i), j, guard)));
             }
 
             parameterListMap.put(i, recipes);

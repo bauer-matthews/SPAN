@@ -86,6 +86,9 @@ public abstract class AbstractModelChecker implements ModelChecker {
             System.out.println("Unification cache (Call/Load): "
                     + UnificationCache.getCacheCalls() + " / " + UnificationCache.getCacheLoads());
 
+            System.out.println("Action factory cache (Call/Load): "
+                    + ActionFactory2Cache.getCacheCalls() + " / " + ActionFactory2Cache.getCacheLoads());
+
             System.out.println("Max Action Set Size: " + GlobalDataCache.getMaxActionSetSize());
 
             System.out.println();

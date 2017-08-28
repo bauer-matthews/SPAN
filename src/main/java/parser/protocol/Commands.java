@@ -19,6 +19,7 @@ class Commands {
     static final String EQUIVALENCE_CACHE = "equivalence cache";
     static final String SUBSTITUTION_CACHE = "substitution cache";
     static final String UNIFICATION_CACHE = "unification cache";
+    static final String ACTION_FACTORY_CACHE = "action factory cache";
 
     // Constants Commands
     static final String FRACTION = "fraction";

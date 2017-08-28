@@ -132,9 +132,11 @@ public class ProtocolParser {
         Integer recipeSize = null;
         for (Statement statement : statements) {
 
-            if (statement.getCommand().equalsIgnoreCase(Commands.VERSION)) {
+            if (statement.getCommand().trim().equalsIgnoreCase(Commands.VERSION)) {
+
                 version = statement.getValue();
-            } else if (statement.getCommand().equalsIgnoreCase(Commands.RECIPE_DEPTH)) {
+
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.RECIPE_DEPTH)) {
 
                 try {
                     recipeSize = Integer.parseInt(statement.getValue().trim());
@@ -143,7 +145,7 @@ public class ProtocolParser {
                             .evaluate(Collections.singletonList(statement.getValue().trim())));
                 }
 
-            } else if (statement.getCommand().equalsIgnoreCase(Commands.REWRITING_CACHE)) {
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.REWRITING_CACHE)) {
 
                 try {
                     RunConfiguration.setRewritingCacheSize(Integer.parseInt(statement.getValue().trim()));
@@ -151,7 +153,7 @@ public class ProtocolParser {
                     throw new ProtocolParseException("Invalid Rewriting Cache Size: " + statement.getValue().trim());
                 }
 
-            } else if (statement.getCommand().equalsIgnoreCase(Commands.EQUIVALENCE_CACHE)) {
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.EQUIVALENCE_CACHE)) {
 
                 try {
                     RunConfiguration.setEquivalenceCacheSize(Integer.parseInt(statement.getValue().trim()));
@@ -159,7 +161,7 @@ public class ProtocolParser {
                     throw new ProtocolParseException("Invalid Equivalence Cache Size: " + statement.getValue().trim());
                 }
 
-            } else if (statement.getCommand().equalsIgnoreCase(Commands.UNIFICATION_CACHE)) {
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.UNIFICATION_CACHE)) {
 
                 try {
                     RunConfiguration.setUnificationCacheSize(Integer.parseInt(statement.getValue().trim()));
@@ -167,12 +169,20 @@ public class ProtocolParser {
                     throw new ProtocolParseException("Invalid Unification Cache Size: " + statement.getValue().trim());
                 }
 
-            } else if (statement.getCommand().equalsIgnoreCase(Commands.SUBSTITUTION_CACHE)) {
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.SUBSTITUTION_CACHE)) {
 
                 try {
                     RunConfiguration.setSubstitutionCacheSize(Integer.parseInt(statement.getValue().trim()));
                 } catch (NumberFormatException ex) {
                     throw new ProtocolParseException("Invalid Substitution Cache Size: " + statement.getValue().trim());
+                }
+
+            } else if(statement.getCommand().trim().equalsIgnoreCase(Commands.ACTION_FACTORY_CACHE)) {
+
+                try {
+                    RunConfiguration.setActionFactoryCacheSize(Integer.parseInt(statement.getValue().trim()));
+                } catch (NumberFormatException ex) {
+                    throw new ProtocolParseException("Invalid Action Factory Cache Size: " + statement.getValue().trim());
                 }
 
             } else {

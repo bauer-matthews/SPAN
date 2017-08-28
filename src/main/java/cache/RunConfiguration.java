@@ -27,9 +27,10 @@ public class RunConfiguration {
     private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
 
     private static Integer equivalenceCacheSize;
-    private static Integer RewritingCacheSize;
-    private static Integer SubstitutionCacheSize;
-    private static Integer UnificationCacheSize;
+    private static Integer rewritingCacheSize;
+    private static Integer substitutionCacheSize;
+    private static Integer unificationCacheSize;
+    private static Integer actionFactoryCacheSize;
 
     static {
         // Defaults
@@ -91,27 +92,35 @@ public class RunConfiguration {
     }
 
     static Optional<Integer> getRewritingCacheSize() {
-        return Optional.ofNullable(RewritingCacheSize);
+        return Optional.ofNullable(rewritingCacheSize);
     }
 
     public static void setRewritingCacheSize(Integer rewritingCacheSize) {
-        RewritingCacheSize = rewritingCacheSize;
+        RunConfiguration.rewritingCacheSize = rewritingCacheSize;
     }
 
     static Optional<Integer> getSubstitutionCacheSize() {
-        return Optional.ofNullable(SubstitutionCacheSize);
+        return Optional.ofNullable(substitutionCacheSize);
     }
 
     public static void setSubstitutionCacheSize(Integer substitutionCacheSize) {
-        SubstitutionCacheSize = substitutionCacheSize;
+        RunConfiguration.substitutionCacheSize = substitutionCacheSize;
+    }
+
+    public static Optional<Integer> getActionFactoryCacheSize() {
+        return Optional.ofNullable(actionFactoryCacheSize);
+    }
+
+    public static void setActionFactoryCacheSize(Integer actionFactoryCacheSize) {
+        RunConfiguration.actionFactoryCacheSize = actionFactoryCacheSize;
     }
 
     static Optional<Integer> getUnificationCacheSize() {
-        return Optional.ofNullable(UnificationCacheSize);
+        return Optional.ofNullable(unificationCacheSize);
     }
 
     public static void setUnificationCacheSize(Integer unificationCacheSize) {
-        UnificationCacheSize = unificationCacheSize;
+        RunConfiguration.unificationCacheSize = unificationCacheSize;
     }
 
     public static void enableAttackPrinting() {

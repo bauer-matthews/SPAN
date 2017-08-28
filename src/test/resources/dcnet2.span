@@ -1,4 +1,4 @@
-# Example Protocol
+# DC-net example Protocol
 
 .metadata
 
@@ -15,7 +15,7 @@
     subsort : Key, Nonce, Bit < Message;
 
     variables : mes, m1, m2, y1, y2 | Message;
-    variables : r | Nonce;
+    variables : r, r1, r2, r3, r4 | Nonce;
     variables : key | Key;
     variables : bit, x, y, z, b, b1, b2 | Bit;
 
@@ -27,7 +27,7 @@
     function : xor | Bit Bit -> Bit;
     function : zero | -> Bit;
     function : one | -> Bit;
-    function : val | Bit Bit Bit Bit -> Message;
+    function : val | Bit Bit Bit Bit Nonce -> Message;
 
     public names : g | Bit;
 
@@ -43,8 +43,8 @@
     rewrite : xor(one, zero) -> one;
     rewrite : xor(zero, one) -> one;
     rewrite : xor(zero, zero) -> zero;
-    rewrite : val(bit, zero, b1, b2) -> pair(xor(bit, b1), b2);
-    rewrite : val(bit, one, b1, b2) -> pair(b1, xor(bit,b2));
+    rewrite : val(bit, zero, b1, b2, r) -> pair(xor(bit, b1), b2);
+    rewrite : val(bit, one, b1, b2, r) -> pair(b1, xor(bit,b2));
 
 .roles
 
@@ -58,12 +58,12 @@
                         1/8 -> senc(pair(pair(one, zero), zero), k));
 
     role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
-            {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), zero, one) +
-                        1/2 -> val(one, snd(sdec(y1, k)), zero, one));
+            {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r1) +
+                        1/2 -> val(one, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r2));
 
     role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
-            {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y1, k)), one), zero, one) +
-                        1/2 -> val(one, xor(snd(sdec(y1, k)), one), zero, one) );
+            {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y1, k)), one), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r3) +
+                        1/2 -> val(one, xor(snd(sdec(y1, k)), one), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r4) );
 
     role :  {2} in(y1{senc(pair(pair(x, y), z), k)}) .
             {2} in(y2{b}) .

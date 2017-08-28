@@ -1,5 +1,6 @@
 package process;
 
+import cache.RewritingCache;
 import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
@@ -67,8 +68,8 @@ public class State {
 
             if (!role.getAtomicProcesses().isEmpty()) {
 
-                if(role.getHead() instanceof OutputProcess) {
-                    if(checkGuards(((OutputProcess) role.getHead()).getGuards())) {
+                if (role.getHead() instanceof OutputProcess) {
+                    if (checkGuards(((OutputProcess) role.getHead()).getGuards())) {
                         if (role.getHead().getPhase() < minPhase) {
                             minPhase = role.getHead().getPhase();
                         }
@@ -182,7 +183,7 @@ public class State {
         int index = newFrame.size();
         for (Term term : terms) {
             newFrame.add(new Equality(new FrameVariableTerm("W", index),
-                    SubstitutionCache.applySubstitution(term, substitution)));
+                    RewritingCache.reduce(SubstitutionCache.applySubstitution(term, substitution))));
             index++;
         }
 

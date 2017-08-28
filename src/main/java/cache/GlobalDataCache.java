@@ -2,21 +2,14 @@ package cache;
 
 import attacker.AttackTree;
 import attacker.Node;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.apfloat.Aprational;
-import process.ActionFactory;
 import process.Resources;
 import protocol.Interleaving;
 import protocol.Protocol;
-import rewriting.terms.Term;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -28,7 +21,6 @@ import java.util.concurrent.ExecutionException;
  */
 public class GlobalDataCache {
 
-    private static final LoadingCache<Integer, Collection<Term>> recipes;
     private static Protocol protocol;
 
     private static final List<Interleaving> interleavings;
@@ -39,20 +31,9 @@ public class GlobalDataCache {
     private static AttackTree attackTree;
 
     static {
-
         interleavings = new ArrayList<>();
         interleavingsExplored = 0;
         maxActionSetSize = 0;
-
-        recipes = CacheBuilder.newBuilder()
-                .maximumSize(1000)
-                .build(
-                        new CacheLoader<Integer, Collection<Term>>() {
-                            // TODO: tighten exception
-                            public Collection<Term> load(Integer numFrameVariables) throws Exception {
-                                return ActionFactory.getAllRecipes(numFrameVariables);
-                            }
-                        });
     }
 
     public static void reportActionSetSize(int size) {
@@ -135,9 +116,5 @@ public class GlobalDataCache {
 
     public static Protocol getProtocol() {
         return protocol;
-    }
-
-    public static Collection<Term> getRecipes(int numFrameVariables) throws ExecutionException {
-        return recipes.get(numFrameVariables);
     }
 }

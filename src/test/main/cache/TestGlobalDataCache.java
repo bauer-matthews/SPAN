@@ -42,7 +42,7 @@ public class TestGlobalDataCache {
     @Test
     public void generateRecipes_Depth1() throws Exception {
 
-        Collection<Term> recipes = GlobalDataCache.getRecipes(1);
+        Collection<Term> recipes = ActionFactoryCache.getRecipes(1);
 
         assert(recipes.size() == 4);
 
@@ -59,7 +59,7 @@ public class TestGlobalDataCache {
         protocol.getMetadata().setRecipeDepth(2);
         GlobalDataCache.setProtocol(protocol);
 
-        Collection<Term> recipes = GlobalDataCache.getRecipes(1);
+        Collection<Term> recipes = ActionFactoryCache.getRecipes(1);
 
         // TODO: verfiy the list is correct
     }
