@@ -6,6 +6,7 @@ import process.Observation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -108,7 +109,7 @@ public class ViewNode implements Node {
     }
 
     @Override
-    public void appendDotLines(List<String> lines) {
+    public void appendDotLines(List<String> lines) throws ExecutionException {
 
         lines.add(NodePrinter.getDotString(this));
         NodePrinter.addChildEdges(this, lines);

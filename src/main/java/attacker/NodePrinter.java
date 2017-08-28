@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -47,7 +48,7 @@ public class NodePrinter {
         return sb.toString();
     }
 
-    static String getDotString(ViewNode node) {
+    static String getDotString(ViewNode node) throws ExecutionException {
 
         StringBuilder sb = new StringBuilder();
         sb.append("n");

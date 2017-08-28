@@ -1,6 +1,7 @@
 package attacker;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -22,5 +23,5 @@ public interface Node extends Tree {
 
     String getState();
 
-    void appendDotLines(List<String> lines);
+    void appendDotLines(List<String> lines) throws ExecutionException;
 }

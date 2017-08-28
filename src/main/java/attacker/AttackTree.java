@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -42,7 +43,7 @@ public class AttackTree implements Tree {
         return rootNode.getAttackProbability();
     }
 
-    public List<String> getDotLines() {
+    public List<String> getDotLines() throws ExecutionException {
 
         List<String> dotLines = new ArrayList<>();
 

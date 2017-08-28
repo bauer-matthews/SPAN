@@ -2,10 +2,7 @@ package rewriting.terms;
 
 import com.google.common.base.MoreObjects;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -30,7 +27,7 @@ public class FunctionTerm implements Term {
         }
 
         this.rootSymbol = rootSymbol;
-        this.subterms = subterms;
+        this.subterms = Collections.unmodifiableList(subterms);
     }
 
     public FunctionSymbol getRootSymbol() {

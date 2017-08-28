@@ -31,7 +31,7 @@ public class TestReduce {
         cipher2Subterms.add(KEY);
         FunctionTerm cipher2 = new FunctionTerm(SymmetricKey.DEC_SYMBOL, cipher2Subterms);
 
-        Term reducedTerm = RewriteEngine.reduce(cipher2, SymmetricKeyRewrites.REWRITE_RULES);
+        Term reducedTerm = RewriteEngine.reduce(cipher2, SymmetricKeyRewrites.REWRITE_RULES, false);
         assert (reducedTerm.equals(MESSAGE));
 
         List<Term> cipher3Subterms = new ArrayList<>();
@@ -42,7 +42,7 @@ public class TestReduce {
         hashMessageTerms.add(MESSAGE);
         Term hashMessage = new FunctionTerm(SymmetricKey.HASH_SYMBOL, hashMessageTerms);
 
-        reducedTerm = RewriteEngine.reduce(cipher3, SymmetricKeyRewrites.REWRITE_RULES);
+        reducedTerm = RewriteEngine.reduce(cipher3, SymmetricKeyRewrites.REWRITE_RULES, false);
         assert (hashMessage.equals(reducedTerm));
 
         List<Term> cipher4Subterms = new ArrayList<>();
@@ -53,7 +53,7 @@ public class TestReduce {
         hashHashMessageTerms.add(hashMessage);
         Term hashHashMessage = new FunctionTerm(SymmetricKey.HASH_SYMBOL, hashHashMessageTerms);
 
-        reducedTerm = RewriteEngine.reduce(cipher4, SymmetricKeyRewrites.REWRITE_RULES);
+        reducedTerm = RewriteEngine.reduce(cipher4, SymmetricKeyRewrites.REWRITE_RULES, false);
         assert (hashHashMessage.equals(reducedTerm));
     }
 }

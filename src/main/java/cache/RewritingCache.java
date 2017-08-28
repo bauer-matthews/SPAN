@@ -33,7 +33,7 @@ public class RewritingCache {
         cacheCalls = 0;
 
         if (RunConfiguration.getRewritingCacheSize().isPresent()) {
-            cacheSize = RunConfiguration.getRewritingCacheSize().get().intValue();
+            cacheSize = RunConfiguration.getRewritingCacheSize().get();
         } else {
             cacheSize = DEFAULT_CACHE_SIZE;
         }
@@ -45,7 +45,8 @@ public class RewritingCache {
                             // TODO: tighten exception
                             public Term load(Term term) throws Exception {
                                 cacheLoads++;
-                                return RewriteEngine.reduce(term, GlobalDataCache.getProtocol().getRewrites());
+                                return RewriteEngine.reduce(term,
+                                        GlobalDataCache.getProtocol().getRewrites(), true);
                             }
                         });
     }

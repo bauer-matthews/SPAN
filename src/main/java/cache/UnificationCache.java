@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache;
 import javafx.util.Pair;
 import rewriting.Equality;
 import rewriting.terms.Term;
-import rewriting.unification.Unify;
+import rewriting.unification.UnificationEngine;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public class UnificationCache {
                             public Optional<Collection<Equality>> load(Pair<Term, Term> pair) throws Exception {
 
                                 cacheLoads++;
-                                return Unify.unify(pair.getKey(), pair.getValue());
+                                return UnificationEngine.unify(pair.getKey(), pair.getValue());
                             }
                         });
     }

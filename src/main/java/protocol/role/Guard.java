@@ -1,11 +1,10 @@
 package protocol.role;
 
-import cache.GlobalDataCache;
+import cache.RewritingCache;
 import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import com.google.common.base.MoreObjects;
 import rewriting.Equality;
-import rewriting.RewriteEngine;
 import rewriting.terms.Term;
 
 import java.util.List;
@@ -45,11 +44,9 @@ public class Guard {
 
         Equality groundGuard = SubstitutionCache.applySubstitution(equality, substitution);
 
-        Term lhsNormalForm = RewriteEngine.reduce(groundGuard.getLhs(),
-                GlobalDataCache.getProtocol().getRewrites());
+        Term lhsNormalForm = RewritingCache.reduce(groundGuard.getLhs());
 
-        Term rhsNormalForm = RewriteEngine.reduce(groundGuard.getRhs(),
-                GlobalDataCache.getProtocol().getRewrites());
+        Term rhsNormalForm = RewritingCache.reduce(groundGuard.getRhs());
 
         if (positiveTest && lhsNormalForm.equals(rhsNormalForm)) {
             return true;

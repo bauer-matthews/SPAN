@@ -1,9 +1,4 @@
 # Example Protocol
-# note b0 = 0
-# note b1 = 1
-# mA = 0
-# mB = 1
-# I can allow b0 and b1 to vary with more coin flips in phase 0
 
 .metadata
 
