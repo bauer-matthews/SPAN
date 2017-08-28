@@ -53,27 +53,24 @@ public class RewriteEngine {
         if (term.isCompoundTerm()) {
 
             List<Term> subterms = ((FunctionTerm) term).getSubterms();
+            List<Term> newSubterms = new ArrayList<>();
 
+            boolean changed = false;
             for (int i = 0; i < subterms.size(); i++) {
 
-                for (Rewrite rewrite : rewrites) {
-                    Optional<Collection<Equality>> unifier = UnificationCache.unify(subterms.get(i), rewrite.getLhs());
+                Term newSubterm = rewrite(subterms.get(i), rewrites, useCache);
 
-                    if (unifier.isPresent()) {
-
-                        List<Term> newSubterms = new ArrayList<>();
-                        for (int j = 0; j < subterms.size(); j++) {
-
-                            if (j == i) {
-                                newSubterms.add(i, SubstitutionCache.applySubstitution(rewrite.getRhs(), unifier.get()));
-                            } else {
-                                newSubterms.add(i, subterms.get(i));
-                            }
-                        }
-
-                        return new FunctionTerm(((FunctionTerm) term).getRootSymbol(), newSubterms);
-                    }
+                if (newSubterm == null) {
+                    newSubterms.add(i, subterms.get(i));
+                } else {
+                    changed = true;
+                    newSubterms.add(newSubterm);
                 }
+            }
+            if (changed) {
+                return new FunctionTerm(((FunctionTerm) term).getRootSymbol(), newSubterms);
+            } else {
+                return null;
             }
         }
 
