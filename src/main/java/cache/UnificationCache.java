@@ -36,7 +36,7 @@ public class UnificationCache {
         cacheCalls = 0;
 
         if (RunConfiguration.getUnificationCacheSize().isPresent()) {
-            cacheSize = RunConfiguration.getUnificationCacheSize().get().intValue();
+            cacheSize = RunConfiguration.getUnificationCacheSize().get();
         } else {
             cacheSize = DEFAULT_CACHE_SIZE;
         }

@@ -34,7 +34,7 @@ public class EquivalenceCache {
         cacheCalls = 0;
 
         if (RunConfiguration.getDefaultEquivalenceCacheSize().isPresent()) {
-            cacheSize = RunConfiguration.getDefaultEquivalenceCacheSize().get().intValue();
+            cacheSize = RunConfiguration.getDefaultEquivalenceCacheSize().get();
         } else {
             cacheSize = DEFAULT_CACHE_SIZE;
         }

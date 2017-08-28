@@ -24,7 +24,6 @@ public class ActionFactory2Cache {
 
     private static long cacheLoads;
     private static long cacheCalls;
-    private static long cacheSize;
 
     private static final LoadingCache<RecipeParameter, Collection<Term>> recipes;
 
@@ -33,6 +32,7 @@ public class ActionFactory2Cache {
         cacheCalls = 0;
         cacheLoads = 0;
 
+        long cacheSize;
         if (RunConfiguration.getActionFactoryCacheSize().isPresent()) {
             cacheSize = RunConfiguration.getActionFactoryCacheSize().get();
         } else {

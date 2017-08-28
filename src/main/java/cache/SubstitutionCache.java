@@ -4,13 +4,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import javafx.util.Pair;
-import process.EquivalenceCheckResult;
-import process.EquivalenceChecker;
-import process.State;
 import rewriting.Equality;
-import rewriting.terms.FrameVariableTerm;
 import rewriting.terms.Term;
-import rewriting.terms.VariableTerm;
 import util.rewrite.RewriteUtils;
 
 import java.util.ArrayList;
@@ -42,7 +37,7 @@ public class SubstitutionCache {
         cacheCalls = 0;
 
         if (RunConfiguration.getSubstitutionCacheSize().isPresent()) {
-            cacheSize = RunConfiguration.getSubstitutionCacheSize().get().intValue();
+            cacheSize = RunConfiguration.getSubstitutionCacheSize().get();
         } else {
             cacheSize = DEFAULT_CACHE_SIZE;
         }
