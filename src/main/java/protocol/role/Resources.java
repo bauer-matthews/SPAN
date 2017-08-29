@@ -16,6 +16,8 @@ public class Resources {
 
     static final String INVALID_PROBS = "Output probabilities do not sum to one.";
 
+    static final String NO_REWRITE_VARS = "Rewrite variables cannot be used in the protocol definition";
+
     static final ParametricString BAD_ACTION = new ParametricString("Unable to parse action from string: " +
             "#1", Collections.singletonList("#1"));
 

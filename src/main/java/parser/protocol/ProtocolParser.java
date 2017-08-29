@@ -219,7 +219,7 @@ public class ProtocolParser {
             }
         }
 
-        ProcessFactory.initActionBuilder(constantMap);
+        ProcessFactory.initFractionConstants(constantMap);
 
         return constantMap;
     }
@@ -403,6 +403,7 @@ public class ProtocolParser {
 
         Collection<Statement> statements = extractStatements(text);
         Collection<Rewrite> rewrites = new ArrayList<>();
+        List<VariableTerm> rewriteVariables = new ArrayList<>();
 
         for (Statement statement : statements) {
             if (statement.getCommand().toLowerCase().startsWith(Commands.REWRITE)) {
@@ -417,6 +418,9 @@ public class ProtocolParser {
                 Term lhs = TermFactory.buildTerm(rule[0].trim());
                 Term rhs = TermFactory.buildTerm(rule[1].trim());
 
+                rewriteVariables.addAll(lhs.getVariables());
+                rewriteVariables.addAll(rhs.getVariables());
+
                 rewrites.add(new Rewrite(lhs, rhs));
 
             } else {
@@ -424,6 +428,8 @@ public class ProtocolParser {
                         .evaluate(Collections.singletonList(statement.getCommand())));
             }
         }
+
+        ProcessFactory.initRewriteVariables(rewriteVariables);
 
         return rewrites;
     }

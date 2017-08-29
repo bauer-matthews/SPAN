@@ -22,12 +22,25 @@ import java.util.*;
 public class ProcessFactory {
 
     private static Map<String, Aprational> FRACTION_CONSTANTS;
+    private static List<VariableTerm> REWRITE_VARIABLES;
 
-    public static void initActionBuilder(Map<String, Aprational> fractionConstants) {
+    public static void initFractionConstants(Map<String, Aprational> fractionConstants) {
         FRACTION_CONSTANTS = fractionConstants;
     }
 
+    public static void initRewriteVariables(List<VariableTerm> variables) {
+        REWRITE_VARIABLES = variables;
+    }
+
     public static AtomicProcess buildAction(String actionString) throws TermParseException, ActionParseException {
+
+        if (FRACTION_CONSTANTS == null) {
+            throw new UnsupportedOperationException("Fraction constants have not been initialized.");
+        }
+
+        if (REWRITE_VARIABLES == null) {
+            throw new UnsupportedOperationException("Rewrite variables have not been initialized.");
+        }
 
         if ((!actionString.contains("}")) || (!actionString.startsWith("{"))) {
             throw new ActionParseException("Phase is not valid for action: " + actionString);
@@ -70,7 +83,7 @@ public class ProcessFactory {
         }
 
         String[] pieces = inp.split("\\{");
-        Term var = TermFactory.buildTerm(pieces[0].trim());
+        Term var = validateTerm(TermFactory.buildTerm(pieces[0].trim()));
 
         Optional<Term> guard;
         String guardString = pieces[1].substring(0, pieces[1].length() - 1).trim();
@@ -78,9 +91,8 @@ public class ProcessFactory {
         if (guardString.isEmpty()) {
             guard = Optional.empty();
         } else {
-            guard = Optional.of(TermFactory.buildTerm(guardString));
+            guard = Optional.of(validateTerm(TermFactory.buildTerm(guardString)));
         }
-
 
         if (!(var instanceof VariableTerm)) {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
@@ -89,7 +101,20 @@ public class ProcessFactory {
         }
     }
 
-    private static AtomicProcess parseOutput(String actionString, int phase) throws TermParseException, ActionParseException {
+    private static Term validateTerm(Term term) throws ActionParseException {
+
+        for (VariableTerm variableTerm : term.getVariables()) {
+            if (REWRITE_VARIABLES.contains(variableTerm)) {
+                throw new ActionParseException(Resources.NO_REWRITE_VARS);
+            }
+        }
+
+        return term;
+    }
+
+
+    private static AtomicProcess parseOutput(String actionString, int phase)
+            throws TermParseException, ActionParseException {
 
         String guardString = actionString.substring(actionString.indexOf("[") + 1, actionString.indexOf("]"));
         String outString = actionString.substring(actionString.indexOf("]") + 1);
@@ -135,7 +160,7 @@ public class ProcessFactory {
             }
         }
 
-        if(probPieces[1].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
+        if (probPieces[1].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
             RunConfiguration.enableEmptyOutputs();
             return new ProbOutput(fraction, Collections.emptyList());
         }
@@ -143,7 +168,7 @@ public class ProcessFactory {
         String[] outPieces = probPieces[1].split("\\#");
 
         for (String outPiece : outPieces) {
-            outputTerms.add(TermFactory.buildTerm(outPiece.trim()));
+            outputTerms.add(validateTerm(TermFactory.buildTerm(outPiece.trim())));
         }
 
         return new ProbOutput(fraction, outputTerms);
@@ -159,8 +184,8 @@ public class ProcessFactory {
                 throw new ActionParseException(Resources.BAD_EQUALITY.evaluate(Collections.singletonList(guard)));
             }
 
-            Term lhs = TermFactory.buildTerm(pieces[0].trim());
-            Term rhs = TermFactory.buildTerm(pieces[1].trim());
+            Term lhs = validateTerm(TermFactory.buildTerm(pieces[0].trim()));
+            Term rhs = validateTerm(TermFactory.buildTerm(pieces[1].trim()));
 
             return new Guard(new Equality(lhs, rhs), true);
 
@@ -172,8 +197,8 @@ public class ProcessFactory {
                 throw new ActionParseException(Resources.BAD_EQUALITY.evaluate(Collections.singletonList(guard)));
             }
 
-            Term lhs = TermFactory.buildTerm(pieces[0].trim());
-            Term rhs = TermFactory.buildTerm(pieces[1].trim());
+            Term lhs = validateTerm(TermFactory.buildTerm(pieces[0].trim()));
+            Term rhs = validateTerm(TermFactory.buildTerm(pieces[1].trim()));
 
             return new Guard(new Equality(lhs, rhs), false);
         }
