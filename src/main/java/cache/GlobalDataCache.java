@@ -76,6 +76,10 @@ public class GlobalDataCache {
 
     public static Optional<Aprational> hasPartialOrderReduction(Interleaving interleaving) {
 
+        if (RunConfiguration.getDebug()) {
+            System.out.print("\rPaths explored: " + interleavingsExplored);
+        }
+
         int size = interleaving.getActionList().size();
 
         for (Interleaving explored : interleavings) {

@@ -2,6 +2,7 @@ package parser.protocol;
 
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
+import javafx.util.Pair;
 import log.Console;
 import log.Severity;
 import org.apfloat.Aprational;
@@ -9,11 +10,12 @@ import protocol.Metadata;
 import protocol.Protocol;
 import protocol.ProtocolBuilder;
 import protocol.SafetyProperty;
+import protocol.role.ActionParseException;
 import protocol.role.AtomicProcess;
 import protocol.role.ProcessFactory;
-import protocol.role.ActionParseException;
 import protocol.role.Role;
-import rewriting.*;
+import rewriting.Rewrite;
+import rewriting.Signature;
 import rewriting.terms.*;
 import util.CollectionUtils;
 import util.ExitCode;
@@ -502,36 +504,98 @@ public class ProtocolParser {
             throws ProtocolParseException, TermParseException, ActionParseException {
 
         Collection<Statement> statements = extractStatements(text);
+        Collection<Statement> remainingStatements = new ArrayList<>();
+
         Map<String, Role> subroleMap = new HashMap<>();
+        ProcessFactory.setSubRolesMap(subroleMap);
 
         for (Statement statement : statements) {
 
             if (statement.getCommand().toLowerCase().startsWith(Commands.SUBROLE)) {
 
-                List<AtomicProcess> actions = new ArrayList<>();
-                String[] actionStrings = statement.getValue().split("\\.");
+                if (getSubRoleStrings(statement.getValue()).isEmpty()) {
 
-                for (String actionString : actionStrings) {
-
-                    if (actionString.contains("#")) {
-                        throw new ProtocolParseException("Subroles cannot contain references to other subroles");
-                    }
-
-                    actions.add(ProcessFactory.buildAction(actionString.trim()));
+                    Pair<String, Role> parsedSubRole = parseSubrole(statement);
+                    subroleMap.put(parsedSubRole.getKey(), parsedSubRole.getValue());
+                } else {
+                    remainingStatements.add(statement);
                 }
-
-                if ((!statement.getCommand().contains("(")) || (!statement.getCommand().contains(")"))) {
-                    throw new ProtocolParseException("Subroles must be labeled with name");
-                }
-
-                String roleName = statement.getCommand().substring(statement.getCommand().indexOf("(") + 1,
-                        statement.getCommand().lastIndexOf(")")).trim();
-
-                subroleMap.put(roleName, new Role(actions));
             }
         }
 
-        ProcessFactory.initSubRolesMap(subroleMap);
+        ProcessFactory.setSubRolesMap(subroleMap);
+
+        boolean progress = true;
+        while ((!remainingStatements.isEmpty()) && progress) {
+
+            progress = false;
+
+            for (Statement statement : remainingStatements) {
+                List<String> subroleStrings = getSubRoleStrings(statement.getValue());
+
+                boolean canParse = true;
+                for (String subroleString : subroleStrings) {
+                    if (subroleMap.get(subroleString) == null) {
+                        canParse = false;
+                    }
+                }
+
+                if (canParse) {
+                    progress = true;
+                    Pair<String, Role> parsedSubRole = parseSubrole(statement);
+                    subroleMap.put(parsedSubRole.getKey(), parsedSubRole.getValue());
+                    ProcessFactory.setSubRolesMap(subroleMap);
+                    remainingStatements.remove(statement);
+                    break;
+                }
+            }
+        }
+
+        ProcessFactory.setSubRolesMap(subroleMap);
+    }
+
+    private static Pair<String, Role> parseSubrole(Statement statement)
+            throws TermParseException, ActionParseException, ProtocolParseException {
+
+        List<AtomicProcess> actions = new ArrayList<>();
+        String[] actionStrings = statement.getValue().split("\\.");
+
+        for (String actionString : actionStrings) {
+            actions.add(ProcessFactory.buildAction(actionString.trim()));
+        }
+
+        if ((!statement.getCommand().contains("(")) || (!statement.getCommand().contains(")"))) {
+            throw new ProtocolParseException("Subroles must be labeled with name");
+        }
+
+        String roleName = statement.getCommand().substring(statement.getCommand().indexOf("(") + 1,
+                statement.getCommand().lastIndexOf(")")).trim();
+
+        return new Pair<>(roleName, new Role(actions));
+    }
+
+    private static List<String> getSubRoleStrings(String role) {
+
+        List<String> subroleStrings = new ArrayList<>();
+        String[] actionStrings = role.split("\\.");
+
+        for (String actionString : actionStrings) {
+            if (!actionString.contains("in")) {
+
+                String[] probOutputs = actionString.split("\\+");
+
+                for (String probOutput : probOutputs) {
+
+                    if(probOutput.contains("#")) {
+                        String[] subRoleChunk = probOutput.split("#");
+                        String subRole = subRoleChunk[1].replaceAll("\\)", "").trim();
+                        subroleStrings.add(subRole);
+                    }
+                }
+            }
+        }
+
+        return subroleStrings;
     }
 
     private static List<Role> validateRoles(List<Role> roles) throws ProtocolParseException {

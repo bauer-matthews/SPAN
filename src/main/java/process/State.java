@@ -185,11 +185,15 @@ public class State {
             newFrame.add(equality);
         }
 
-        int index = newFrame.size();
-        for (Term term : terms) {
-            newFrame.add(new Equality(new FrameVariableTerm("W", index),
-                    RewritingCache.reduce(SubstitutionCache.applySubstitution(term, substitution))));
-            index++;
+        if(!terms.isEmpty()) {
+            int index = newFrame.size();
+            for (Term term : terms) {
+                newFrame.add(new Equality(new FrameVariableTerm("W", index),
+                        RewritingCache.reduce(SubstitutionCache.applySubstitution(term, substitution))));
+                index++;
+            }
+        } else {
+            newFrame = frame;
         }
 
         return new State(substitution, newFrame, newRoles);

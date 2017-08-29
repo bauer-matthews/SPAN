@@ -44,6 +44,11 @@ public abstract class AbstractModelChecker implements ModelChecker {
         Aprational attackProbFound = GlobalDataCache.getAttackTree().getAttackProbability();
         boolean attackFound = GlobalDataCache.getAttackTree().attackFound();
 
+        if(RunConfiguration.getDebug()) {
+            System.out.println();
+            System.out.println();
+        }
+
         System.out.println("------------------Results------------------");
         System.out.println();
 

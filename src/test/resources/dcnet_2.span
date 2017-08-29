@@ -37,8 +37,6 @@
 .rewrites
 
     rewrite : sdec(senc(mes,key), key) -> mes;
-    rewrite : fst(pair(m1, m2)) -> m1;
-    rewrite : snd(pair(m1, m2)) -> m2;
     rewrite : xor(one, one) -> zero;
     rewrite : xor(one, zero) -> one;
     rewrite : xor(zero, one) -> one;
@@ -48,22 +46,54 @@
 
 .roles
 
-    role :  {0} [T] out(1/8 -> senc(pair(pair(zero, zero), zero), k) # A  +
-                        1/8 -> senc(pair(pair(zero, zero), one), k) # B +
-                        1/8 -> senc(pair(pair(zero, one), zero), k) # A +
-                        1/8 -> senc(pair(pair(zero, one), one), k) # B +
-                        1/8 -> senc(pair(pair(one, one), one), k) # B +
-                        1/8 -> senc(pair(pair(one, one), zero), k) # A +
-                        1/8 -> senc(pair(pair(one, zero), one), k) # B +
-                        1/8 -> senc(pair(pair(one, zero), zero), k) # A);
+    role :  {0} [T] out(1/8 -> T # 000  +
+                        1/8 -> T # 001 +
+                        1/8 -> T # 010 +
+                        1/8 -> T # 011 +
+                        1/8 -> T # 111 +
+                        1/8 -> T # 110 +
+                        1/8 -> T # 101 +
+                        1/8 -> T # 100);
 
-    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
-            {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r1) +
-                        1/2 -> val(one, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r2));
+    subrole(000) :  {1} [T] out(1/2 -> val(zero, zero, zero, zero, r1) # A +
+                                1/2 -> val(one, zero, zero, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), zero, zero, r3) # A +
+                                1/2 -> val(one, xor(zero, one), zero, zero, r4) # B );
 
-    role :  {1} in(y2{senc(pair(pair(x, y), z), k)}) .
-            {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r3) +
-                        1/2 -> val(one, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r4) );
+    subrole(001) :  {1} [T] out(1/2 -> val(zero, zero, zero, one, r1) # A +
+                                1/2 -> val(one, zero, zero, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), zero, one, r3) # A +
+                                1/2 -> val(one, xor(zero, one), zero, one, r4) # B );
+
+    subrole(010) :  {1} [T] out(1/2 -> val(zero, zero, one, zero, r1) # A +
+                                1/2 -> val(one, zero, one, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), one, zero, r3) # A +
+                                1/2 -> val(one, xor(zero, one), one, zero, r4) # B );
+
+    subrole(011) :  {1} [T] out(1/2 -> val(zero, zero, one, one, r1) # A +
+                                1/2 -> val(one, zero, one, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), one, one, r3) # A +
+                                1/2 -> val(one, xor(zero, one), one, one, r4) # B );
+
+    subrole(111) :  {1} [T] out(1/2 -> val(zero, one, one, one, r1) # A +
+                                1/2 -> val(one, one, one, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), one, one, r3) # A +
+                                1/2 -> val(one, xor(one, one), one, one, r4) # B );
+
+    subrole(110) :  {1} [T] out(1/2 -> val(zero, one, one, zero, r1) # A +
+                                1/2 -> val(one, one, one, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), one, zero, r3) # A +
+                                1/2 -> val(one, xor(one, one), one, zero, r4) # B );
+
+    subrole(101) :  {1} [T] out(1/2 -> val(zero, one, zero, one, r1) # A +
+                                1/2 -> val(one, one, zero, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), zero, one, r3) # A +
+                                1/2 -> val(one, xor(one, one), zero, one, r4) # B );
+
+    subrole(100) :  {1} [T] out(1/2 -> val(zero, one, zero, zero, r1) # A +
+                                1/2 -> val(one, one, zero, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), zero, zero, r3) # A +
+                                1/2 -> val(one, xor(one, one), zero, zero, r4) # B );
 
     subrole(A)  :   {2} in(y4{b}) .
                     {2} [y4 == zero ] out(1 -> s);

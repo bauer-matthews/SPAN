@@ -66,7 +66,7 @@ public class EquivalenceChecker {
 
         if (results.size() == 0) {
 
-            if(RunConfiguration.getDebug()) {
+            if (RunConfiguration.getDebug()) {
 
                 System.out.println("Here is the problematic KISS encoding:");
                 System.out.println();
@@ -106,6 +106,7 @@ public class EquivalenceChecker {
     }
 
     private static boolean enabledActionsMatch(State state1, State state2) throws ExecutionException {
-        return state1.getRoleViews().equals(state2.getRoleViews());
+        return (state1.getRoleViews().equals(state2.getRoleViews())) &&
+                (state1.getFrame().size() == state2.getFrame().size());
     }
 }

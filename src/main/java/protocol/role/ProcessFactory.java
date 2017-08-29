@@ -35,7 +35,7 @@ public class ProcessFactory {
         REWRITE_VARIABLES = variables;
     }
 
-    public static void initSubRolesMap(Map<String, Role> subroleMap) {
+    public static void setSubRolesMap(Map<String, Role> subroleMap) {
         SUBROLE_MAP = subroleMap;
     }
 
@@ -167,11 +167,6 @@ public class ProcessFactory {
             }
         }
 
-        if (probPieces[1].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
-            RunConfiguration.enableEmptyOutputs();
-            return new ProbOutput(fraction, Collections.emptyList(), new Role(Collections.emptyList()));
-        }
-
         String[] outRolePieces = probPieces[1].split("\\#");
 
         Role subrole;
@@ -182,11 +177,13 @@ public class ProcessFactory {
                     .appendBranchIndexToVars(GlobalDataCache.getFreshBranchIndex());
         }
 
-
-        String[] outPieces = outRolePieces[0].split("\\@");
-
-        for (String outPiece : outPieces) {
-            outputTerms.add(validateTerm(TermFactory.buildTerm(outPiece.trim())));
+        if (!outRolePieces[0].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
+            String[] outPieces = outRolePieces[0].split("\\@");
+            for (String outPiece : outPieces) {
+                outputTerms.add(validateTerm(TermFactory.buildTerm(outPiece.trim())));
+            }
+        } else{
+            RunConfiguration.enableEmptyOutputs();
         }
 
         return new ProbOutput(fraction, outputTerms, subrole);
