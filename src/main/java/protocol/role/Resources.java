@@ -31,4 +31,6 @@ public class Resources {
     static final String NULL_TEST = "T";
 
     static final String TEST_DELIMITER = "&";
+
+    static final String EMPTY_OUTPUT = "T";
 }

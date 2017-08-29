@@ -1,11 +1,10 @@
-# NAME: Pool Mix Protocol
+# NAME: Pool Mix Protocol (Threshold)
 # PARAMETERS: 2 parties, 1 round
 
 .metadata
 
     version : 1.0;
-    recipe depth : 3
-    ;
+    recipe depth : 3;
 
 .constants
 

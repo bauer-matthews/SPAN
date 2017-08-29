@@ -41,8 +41,11 @@ public class TransitionSystem {
 
         Collection<Transition> transitions = new ArrayList<>();
         for (ProbOutput output : ((OutputProcess) atomic).getProbOutputs()) {
-            transitions.add(new Transition(output.getProbability(), state,
-                    state.outputTerms(output.getOutputTerms(), action.getRoleIndex())));
+
+            if(!output.getOutputTerms().isEmpty()) {
+                transitions.add(new Transition(output.getProbability(), state,
+                        state.outputTerms(output.getOutputTerms(), action.getRoleIndex())));
+            }
         }
 
         return transitions;

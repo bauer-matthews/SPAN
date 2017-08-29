@@ -1,5 +1,6 @@
 package protocol.role;
 
+import cache.RunConfiguration;
 import org.apfloat.Aprational;
 import rewriting.Equality;
 import rewriting.terms.Term;
@@ -50,7 +51,7 @@ public class ProcessFactory {
 
     private static int parsePhase(String phaseString) throws ActionParseException {
 
-        String number = phaseString.substring(phaseString.indexOf("{")+1, phaseString.indexOf("}"));
+        String number = phaseString.substring(phaseString.indexOf("{") + 1, phaseString.indexOf("}"));
 
         try {
             return Integer.parseInt(number);
@@ -132,6 +133,11 @@ public class ProcessFactory {
                 throw new ActionParseException(Resources.BAD_PROB
                         .evaluate(Collections.singletonList(probPieces[0].trim())));
             }
+        }
+
+        if(probPieces[1].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
+            RunConfiguration.disableConsecutiveOutputReduction();
+            return new ProbOutput(fraction, Collections.emptyList());
         }
 
         String[] outPieces = probPieces[1].split("\\#");

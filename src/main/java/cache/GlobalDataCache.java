@@ -80,15 +80,18 @@ public class GlobalDataCache {
             if (explored.getActionList().size() == size && size >= 2) {
 
 
-                // Back-to-back outputs can be swapped
-                if (interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION) &&
-                        interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION)) {
+                // Back-to-back outputs can be swapped if there are no empty outputs
+                if (RunConfiguration.useConsecutiveOutputReduction()) {
 
-                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
-                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
+                    if (interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION) &&
+                            interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION)) {
 
-                        interleavingsExplored++;
-                        return Optional.of(explored.getAttackProb());
+                        if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
+                                explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
+
+                            interleavingsExplored++;
+                            return Optional.of(explored.getAttackProb());
+                        }
                     }
                 }
 
@@ -117,4 +120,5 @@ public class GlobalDataCache {
     public static Protocol getProtocol() {
         return protocol;
     }
+
 }

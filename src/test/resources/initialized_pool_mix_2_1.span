@@ -1,5 +1,6 @@
-# NAME: Pool Mix Protocol
+# NAME: Pool Mix Protocol (Threshold)
 # PARAMETERS: 2 parties, 1 round
+# NOTE: Mix initialized with 1 dummy message
 
 .metadata
 
