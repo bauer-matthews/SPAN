@@ -48,22 +48,22 @@
 
 .roles
 
-    role :          {0} [T] out(1/8 -> senc(pair(pair(zero, zero), zero), k) # A  +
-                                1/8 -> senc(pair(pair(zero, zero), one), k) # B +
-                                1/8 -> senc(pair(pair(zero, one), zero), k) # A +
-                                1/8 -> senc(pair(pair(zero, one), one), k) # B +
-                                1/8 -> senc(pair(pair(one, one), one), k) # B +
-                                1/8 -> senc(pair(pair(one, one), zero), k) # A +
-                                1/8 -> senc(pair(pair(one, zero), one), k) # B +
-                                1/8 -> senc(pair(pair(one, zero), zero), k) # A);
+    role :  {0} [T] out(1/8 -> senc(pair(pair(zero, zero), zero), k) # A  +
+                        1/8 -> senc(pair(pair(zero, zero), one), k) # B +
+                        1/8 -> senc(pair(pair(zero, one), zero), k) # A +
+                        1/8 -> senc(pair(pair(zero, one), one), k) # B +
+                        1/8 -> senc(pair(pair(one, one), one), k) # B +
+                        1/8 -> senc(pair(pair(one, one), zero), k) # A +
+                        1/8 -> senc(pair(pair(one, zero), one), k) # B +
+                        1/8 -> senc(pair(pair(one, zero), zero), k) # A);
 
-    role :          {1} in(y1{senc(pair(pair(x, y), z), k)}) .
-                    {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r1) +
-                                1/2 -> val(one, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r2));
+    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+            {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r1) +
+                        1/2 -> val(one, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r2));
 
-    role :          {1} in(y2{senc(pair(pair(x, y), z), k)}) .
-                    {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r3) +
-                                1/2 -> val(one, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r4) );
+    role :  {1} in(y2{senc(pair(pair(x, y), z), k)}) .
+            {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r3) +
+                        1/2 -> val(one, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r4) );
 
     subrole(A)  :   {2} in(y4{b}) .
                     {2} [y4 == zero ] out(1 -> s);
