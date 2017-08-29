@@ -52,6 +52,11 @@ public class InputProcess implements AtomicProcess {
     }
 
     @Override
+    public AtomicProcess appendBranchIndexToVars(int index) {
+        return new InputProcess((VariableTerm) variable.appendBranchIndexToVars(index), inputGuard, phase);
+    }
+
+    @Override
     public boolean isOutput() {
         return false;
     }

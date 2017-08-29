@@ -22,4 +22,6 @@ public interface AtomicProcess {
 
     Collection<VariableTerm> getVariables();
 
+    AtomicProcess appendBranchIndexToVars(int index);
+
 }

@@ -106,7 +106,7 @@ public class FunctionTerm implements Term {
     @Override
     public String toMathString() {
 
-        if(subterms.isEmpty()) {
+        if (subterms.isEmpty()) {
             return rootSymbol.getSymbol();
         } else {
 
@@ -138,11 +138,23 @@ public class FunctionTerm implements Term {
 
         int size = 1;
 
-        for(Term term : subterms) {
+        for (Term term : subterms) {
             size = size + term.getSize();
         }
 
         return size;
+    }
+
+    @Override
+    public Term appendBranchIndexToVars(int index) {
+
+        List<Term> newSubterms = new ArrayList<>();
+
+        for (Term subterm : subterms) {
+            newSubterms.add(subterm.appendBranchIndexToVars(index));
+        }
+
+        return new FunctionTerm(rootSymbol, newSubterms);
     }
 
     @Override

@@ -14,7 +14,7 @@
     subsort : Key, Nonce, Bit < Message;
 
     variables : mes, m1, m2, y1, y2, y3, y4 | Message;
-    variables : r, r1, r2, r3, r4 | Nonce;
+    variables : r | Nonce;
     variables : key | Key;
     variables : bit, x, y, z, b, b1, b2 | Bit;
 
@@ -32,6 +32,7 @@
 
     private names : s | Nonce;
     private names : k | Key;
+    private names : r1, r2, r3, r4 | Nonce;
 
 .rewrites
 
@@ -47,26 +48,28 @@
 
 .roles
 
-    role :  {0} [T] out(1/8 -> senc(pair(pair(zero, zero), zero), k) +
-                        1/8 -> senc(pair(pair(zero, zero), one), k) +
-                        1/8 -> senc(pair(pair(zero, one), zero), k) +
-                        1/8 -> senc(pair(pair(zero, one), one), k) +
-                        1/8 -> senc(pair(pair(one, one), one), k) +
-                        1/8 -> senc(pair(pair(one, one), zero), k) +
-                        1/8 -> senc(pair(pair(one, zero), one), k) +
-                        1/8 -> senc(pair(pair(one, zero), zero), k));
+    role :          {0} [T] out(1/8 -> senc(pair(pair(zero, zero), zero), k) # A  +
+                                1/8 -> senc(pair(pair(zero, zero), one), k) # B +
+                                1/8 -> senc(pair(pair(zero, one), zero), k) # A +
+                                1/8 -> senc(pair(pair(zero, one), one), k) # B +
+                                1/8 -> senc(pair(pair(one, one), one), k) # B +
+                                1/8 -> senc(pair(pair(one, one), zero), k) # A +
+                                1/8 -> senc(pair(pair(one, zero), one), k) # B +
+                                1/8 -> senc(pair(pair(one, zero), zero), k) # A);
 
-    role :  {1} in(y1{senc(pair(pair(x, y), z), k)}) .
-            {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r1) +
-                        1/2 -> val(one, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r2));
+    role :          {1} in(y1{senc(pair(pair(x, y), z), k)}) .
+                    {1} [T] out(1/2 -> val(zero, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r1) +
+                                1/2 -> val(one, snd(sdec(y1, k)), fst(fst(sdec(y1, k))), snd(fst(sdec(y1, k))), r2));
 
-    role :  {1} in(y2{senc(pair(pair(x, y), z), k)}) .
-            {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r3) +
-                        1/2 -> val(one, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r4) );
+    role :          {1} in(y2{senc(pair(pair(x, y), z), k)}) .
+                    {1} [T] out(1/2 -> val(zero, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r3) +
+                                1/2 -> val(one, xor(snd(sdec(y2, k)), one), fst(fst(sdec(y2, k))), snd(fst(sdec(y2, k))), r4) );
 
-    role :  {2} in(y3{senc(pair(pair(x, y), z), k)}) .
-            {2} in(y4{b}) .
-            {2} [snd(sdec(y3, k)) == y4 ] out(1 -> s);
+    subrole(A)  :   {2} in(y4{b}) .
+                    {2} [y4 == zero ] out(1 -> s);
+
+    subrole(B)  :   {2} in(y4{b}) .
+                    {2} [y4 == one ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

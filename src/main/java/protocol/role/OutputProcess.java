@@ -1,12 +1,15 @@
 package protocol.role;
 
+import cache.GlobalDataCache;
 import com.google.common.base.MoreObjects;
 import org.apfloat.Aprational;
+import rewriting.Equality;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -71,9 +74,42 @@ public class OutputProcess implements AtomicProcess {
                 variableTerms.addAll(term.getVariables());
                 variableTerms.addAll(term.getVariables());
             }
+
+            for (AtomicProcess atomicProcess : output.getSubrole().getAtomicProcesses()) {
+                variableTerms.addAll(atomicProcess.getVariables());
+            }
         }
 
         return variableTerms;
+    }
+
+    @Override
+    public AtomicProcess appendBranchIndexToVars(int index) {
+
+        Collection<Guard> newGuards = new ArrayList<>();
+        for (Guard guard : guards) {
+
+            newGuards.add(new Guard(new Equality(guard.getEquality().getLhs().appendBranchIndexToVars(index),
+                    guard.getEquality().getRhs().appendBranchIndexToVars(index)), guard.isPositiveTest()));
+        }
+
+        Collection<ProbOutput> newProbOutputs = new ArrayList<>();
+        for (ProbOutput output : probOutputs) {
+
+            List<Term> newOutputTerms = new ArrayList<>();
+            for (Term term : output.getOutputTerms()) {
+                newOutputTerms.add(term.appendBranchIndexToVars(index));
+            }
+
+            if (output.getSubrole().getAtomicProcesses().isEmpty()) {
+                newProbOutputs.add(new ProbOutput(output.getProbability(), newOutputTerms, output.getSubrole()));
+            } else {
+                newProbOutputs.add(new ProbOutput(output.getProbability(), newOutputTerms,
+                        output.getSubrole().appendBranchIndexToVars(GlobalDataCache.getFreshBranchIndex())));
+            }
+        }
+
+        return new OutputProcess(newGuards, newProbOutputs, phase);
     }
 
     @Override

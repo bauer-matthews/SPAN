@@ -42,12 +42,12 @@
     role:   {2} in(y1{aenc(aenc(x1, x2, pk(t)),x3, pk(km))}) .
             {2} in(y2{aenc(aenc(x1, x2, pk(t)),x3, pk(km))}) .
             {2} [y1 != y2 ]
-                            out(1/6 -> adec(y1, sk(km)) # adec(y2, sk(km)) +
-                                1/6 -> adec(y2, sk(km)) # adec(y1, sk(km)) +
-                                1/6 -> adec(y1, sk(km)) # aenc(m3, r5, pk(k3)) +
-                                1/6 -> aenc(m3, r5, pk(k3)) # adec(y1, sk(km)) +
-                                1/6 -> aenc(m3, r5, pk(k3)) # adec(y2, sk(km)) +
-                                1/6 -> adec(y2, sk(km)) # aenc(m3, r5, pk(k3)));
+                            out(1/6 -> adec(y1, sk(km)) @ adec(y2, sk(km)) +
+                                1/6 -> adec(y2, sk(km)) @ adec(y1, sk(km)) +
+                                1/6 -> adec(y1, sk(km)) @ aenc(m3, r5, pk(k3)) +
+                                1/6 -> aenc(m3, r5, pk(k3)) @ adec(y1, sk(km)) +
+                                1/6 -> aenc(m3, r5, pk(k3)) @ adec(y2, sk(km)) +
+                                1/6 -> adec(y2, sk(km)) @ aenc(m3, r5, pk(k3)));
 
     role:   {3} in(y4{aenc(m2,r3, pk(k2))}) .
             {3} [ y4 == aenc(m2,r3, pk(k2)) ] out(1 -> s);

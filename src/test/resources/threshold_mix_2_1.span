@@ -43,7 +43,8 @@
 
     role:   {2} in(y1{aenc(aenc(x1, x2, pk(t)),x3, pk(km))}) .
             {2} in(y2{aenc(aenc(x1, x2, pk(t)),x3, pk(km))}) .
-            {2} [y1 != y2] out(p -> adec(y1, sk(km)) # adec(y2, sk(km)) + p -> adec(y2, sk(km)) # adec(y1, sk(km)));
+            {2} [y1 != y2] out(p -> adec(y1, sk(km)) @ adec(y2, sk(km)) +
+                               p -> adec(y2, sk(km)) @ adec(y1, sk(km)));
 
     role:   {3} in(y3{aenc(m2,r3, pk(k2))}) .
             {3} [ y3 == aenc(m2,r3, pk(k2)) ] out(1 -> s);

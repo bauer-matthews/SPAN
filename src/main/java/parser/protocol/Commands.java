@@ -37,6 +37,7 @@ class Commands {
 
     // Protocol Commands
     static final String ROLE = "role";
+    static final String SUBROLE = "subrole";
 
     // Safety Commands
     static final String SECRECY = "secrecy";

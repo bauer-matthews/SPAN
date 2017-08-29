@@ -375,27 +375,24 @@ public class ProtocolParser {
 
     private static void validateSignature(Signature signature) throws ProtocolParseException {
 
-        for (FunctionSymbol functionSymbol : signature.getFunctions()) {
-            if (TermFactory.getReservedStrings().contains(functionSymbol.getSymbol())) {
-                throw new ProtocolParseException("Use of a reserved symbol: " + functionSymbol.getSymbol());
-            }
-        }
 
-        for (NameTerm name : signature.getPublicNames()) {
-            if (TermFactory.getReservedStrings().contains(name.getName())) {
-                throw new ProtocolParseException("Use of a reserved symbol: " + name.getName());
-            }
-        }
+        List<String> symbols = new ArrayList<>();
 
-        for (NameTerm name : signature.getPrivateNames()) {
-            if (TermFactory.getReservedStrings().contains(name.getName())) {
-                throw new ProtocolParseException("Use of a reserved symbol: " + name.getName());
-            }
-        }
+        signature.getFunctions().forEach(functionSymbol -> symbols.add(functionSymbol.getSymbol()));
+        signature.getPrivateNames().forEach(nameTerm -> symbols.add(nameTerm.getName()));
+        signature.getPublicNames().forEach(nameTerm -> symbols.add(nameTerm.getName()));
+        signature.getVariables().forEach(variableTerm -> symbols.add(variableTerm.getName()));
 
-        for (VariableTerm variable : signature.getVariables()) {
-            if (TermFactory.getReservedStrings().contains(variable.getName())) {
-                throw new ProtocolParseException("Use of a reserved symbol: " + variable.getName());
+        checkForReservedStrings(symbols);
+    }
+
+    private static void checkForReservedStrings(List<String> symbols) throws ProtocolParseException {
+
+        for (String symbol : symbols) {
+            for (String reservedString : TermFactory.getReservedStrings()) {
+                if (symbol.contains(reservedString)) {
+                    throw new ProtocolParseException("Use of a reserved symbol: " + symbol);
+                }
             }
         }
     }
@@ -473,6 +470,8 @@ public class ProtocolParser {
     private static List<Role> parseRoles(String text) throws ProtocolParseException, TermParseException,
             ActionParseException {
 
+        parseSubRoles(text);
+
         Collection<Statement> statements = extractStatements(text);
         List<Role> roles = new ArrayList<>();
 
@@ -488,6 +487,8 @@ public class ProtocolParser {
 
                 roles.add(new Role(actions));
 
+            } else if (statement.getCommand().toLowerCase().startsWith(Commands.SUBROLE)) {
+                //already handled
             } else {
                 Console.printMessage(Severity.WARNING, Resources.UNRECOGNIZED_COMMAND
                         .evaluate(Collections.singletonList(statement.getCommand())));
@@ -495,6 +496,42 @@ public class ProtocolParser {
         }
 
         return validateRoles(roles);
+    }
+
+    private static void parseSubRoles(String text)
+            throws ProtocolParseException, TermParseException, ActionParseException {
+
+        Collection<Statement> statements = extractStatements(text);
+        Map<String, Role> subroleMap = new HashMap<>();
+
+        for (Statement statement : statements) {
+
+            if (statement.getCommand().toLowerCase().startsWith(Commands.SUBROLE)) {
+
+                List<AtomicProcess> actions = new ArrayList<>();
+                String[] actionStrings = statement.getValue().split("\\.");
+
+                for (String actionString : actionStrings) {
+
+                    if (actionString.contains("#")) {
+                        throw new ProtocolParseException("Subroles cannot contain references to other subroles");
+                    }
+
+                    actions.add(ProcessFactory.buildAction(actionString.trim()));
+                }
+
+                if ((!statement.getCommand().contains("(")) || (!statement.getCommand().contains(")"))) {
+                    throw new ProtocolParseException("Subroles must be labeled with name");
+                }
+
+                String roleName = statement.getCommand().substring(statement.getCommand().indexOf("(") + 1,
+                        statement.getCommand().lastIndexOf(")")).trim();
+
+                subroleMap.put(roleName, new Role(actions));
+            }
+        }
+
+        ProcessFactory.initSubRolesMap(subroleMap);
     }
 
     private static List<Role> validateRoles(List<Role> roles) throws ProtocolParseException {

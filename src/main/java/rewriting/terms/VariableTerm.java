@@ -43,6 +43,12 @@ public class VariableTerm implements Term {
     }
 
     @Override
+    public Term appendBranchIndexToVars(int index) {
+
+        return new VariableTerm(variable + "_" + index, sort);
+    }
+
+    @Override
     public Collection<VariableTerm> getVariables() {
         return Collections.singletonList(this);
     }

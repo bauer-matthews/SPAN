@@ -44,7 +44,7 @@ public class TransitionSystem {
 
             if(!output.getOutputTerms().isEmpty()) {
                 transitions.add(new Transition(output.getProbability(), state,
-                        state.outputTerms(output.getOutputTerms(), action.getRoleIndex())));
+                        state.outputTerms(output.getOutputTerms(), action.getRoleIndex(), output.getSubrole())));
             }
         }
 

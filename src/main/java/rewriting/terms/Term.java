@@ -33,4 +33,6 @@ public interface Term {
     Sort getSort();
 
     int getSize();
+
+    Term appendBranchIndexToVars(int index);
 }

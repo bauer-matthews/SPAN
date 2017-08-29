@@ -19,14 +19,17 @@ public class ProbOutput {
 
     private final Aprational probability;
     private final List<Term> outputTerms;
+    private final Role subrole;
 
-    ProbOutput(Aprational probability, List<Term> outputTerms) {
+    ProbOutput(Aprational probability, List<Term> outputTerms, Role subrole) {
 
         Objects.requireNonNull(probability);
         Objects.requireNonNull(outputTerms);
+        Objects.requireNonNull(subrole);
 
         this.probability = probability;
         this.outputTerms = outputTerms;
+        this.subrole = subrole;
     }
 
     public Aprational getProbability() {
@@ -35,6 +38,10 @@ public class ProbOutput {
 
     public List<Term> getOutputTerms() {
         return outputTerms;
+    }
+
+    public Role getSubrole() {
+        return subrole;
     }
 
     @Override
@@ -46,13 +53,15 @@ public class ProbOutput {
 
         if (!probability.equals(((ProbOutput) o).probability)) return false;
         if (!outputTerms.equals(((ProbOutput) o).outputTerms)) return false;
+        if (!subrole.equals(((ProbOutput) o).subrole)) return false;
+
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(probability, outputTerms);
+        return Objects.hash(probability, outputTerms, subrole);
     }
 
     @Override
@@ -60,6 +69,7 @@ public class ProbOutput {
         return MoreObjects.toStringHelper(this)
                 .add("probability", probability.toString())
                 .add("output terms", outputTerms.toString())
+                .add("subrole", subrole.toString())
                 .toString();
     }
 }

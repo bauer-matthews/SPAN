@@ -21,19 +21,21 @@ import java.util.Optional;
  */
 public class GlobalDataCache {
 
-    private static Protocol protocol;
-
     private static final List<Interleaving> interleavings;
-    private static int interleavingsExplored;
 
+    private static int interleavingsExplored;
     private static int maxActionSetSize;
+    private static int branchIndexCounter;
 
     private static AttackTree attackTree;
+    private static Protocol protocol;
+
 
     static {
         interleavings = new ArrayList<>();
         interleavingsExplored = 0;
         maxActionSetSize = 0;
+        branchIndexCounter = 0;
     }
 
     public static void reportActionSetSize(int size) {
@@ -134,4 +136,8 @@ public class GlobalDataCache {
         return protocol;
     }
 
+    public static int getFreshBranchIndex() {
+        branchIndexCounter++;
+        return branchIndexCounter;
+    }
 }

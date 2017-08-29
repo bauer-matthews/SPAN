@@ -171,9 +171,14 @@ public class State {
         this.attackState = attackState;
     }
 
-    State outputTerms(List<Term> terms, int roleIndex) throws ExecutionException {
+    State outputTerms(List<Term> terms, int roleIndex, Role subrole) throws ExecutionException {
 
-        List<Role> newRoles = removeHead(roleIndex);
+        List<Role> newRoles;
+        if (subrole.getAtomicProcesses().isEmpty()) {
+            newRoles = removeHead(roleIndex);
+        } else {
+            newRoles = replaceHead(roleIndex, subrole);
+        }
 
         List<Equality> newFrame = new ArrayList<>();
         for (Equality equality : frame) {
@@ -210,6 +215,20 @@ public class State {
         for (int i = 0; i < roles.size(); i++) {
             if (i == roleIndex) {
                 newRoles.add(roles.get(i).removeHead());
+            } else {
+                newRoles.add(roles.get(i));
+            }
+        }
+
+        return newRoles;
+    }
+
+    private List<Role> replaceHead(int roleIndex, Role subrole) {
+
+        ArrayList<Role> newRoles = new ArrayList<>();
+        for (int i = 0; i < roles.size(); i++) {
+            if (i == roleIndex) {
+                newRoles.add(roles.get(i).replaceHead(subrole.getAtomicProcesses()));
             } else {
                 newRoles.add(roles.get(i));
             }

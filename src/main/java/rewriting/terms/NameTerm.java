@@ -95,6 +95,11 @@ public class NameTerm implements Term {
     }
 
     @Override
+    public Term appendBranchIndexToVars(int index) {
+        return this;
+    }
+
+    @Override
     public boolean equals(Object o) {
 
         if (!(o instanceof NameTerm)) {

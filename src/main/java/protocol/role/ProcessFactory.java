@@ -1,5 +1,6 @@
 package protocol.role;
 
+import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import org.apfloat.Aprational;
 import rewriting.Equality;
@@ -23,6 +24,8 @@ public class ProcessFactory {
 
     private static Map<String, Aprational> FRACTION_CONSTANTS;
     private static List<VariableTerm> REWRITE_VARIABLES;
+    private static Map<String, Role> SUBROLE_MAP;
+
 
     public static void initFractionConstants(Map<String, Aprational> fractionConstants) {
         FRACTION_CONSTANTS = fractionConstants;
@@ -30,6 +33,10 @@ public class ProcessFactory {
 
     public static void initRewriteVariables(List<VariableTerm> variables) {
         REWRITE_VARIABLES = variables;
+    }
+
+    public static void initSubRolesMap(Map<String, Role> subroleMap) {
+        SUBROLE_MAP = subroleMap;
     }
 
     public static AtomicProcess buildAction(String actionString) throws TermParseException, ActionParseException {
@@ -162,16 +169,40 @@ public class ProcessFactory {
 
         if (probPieces[1].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
             RunConfiguration.enableEmptyOutputs();
-            return new ProbOutput(fraction, Collections.emptyList());
+            return new ProbOutput(fraction, Collections.emptyList(), new Role(Collections.emptyList()));
         }
 
-        String[] outPieces = probPieces[1].split("\\#");
+        String[] outRolePieces = probPieces[1].split("\\#");
+
+        Role subrole;
+        if (outRolePieces.length == 1) {
+            subrole = new Role(Collections.emptyList());
+        } else {
+            subrole = getSubrole(outRolePieces[1].trim())
+                    .appendBranchIndexToVars(GlobalDataCache.getFreshBranchIndex());
+        }
+
+
+        String[] outPieces = outRolePieces[0].split("\\@");
 
         for (String outPiece : outPieces) {
             outputTerms.add(validateTerm(TermFactory.buildTerm(outPiece.trim())));
         }
 
-        return new ProbOutput(fraction, outputTerms);
+        return new ProbOutput(fraction, outputTerms, subrole);
+    }
+
+    private static Role getSubrole(String roleName) throws ActionParseException {
+
+        if (SUBROLE_MAP == null) {
+            throw new UnsupportedOperationException("Subroles have not been initialized.");
+        }
+
+        if (SUBROLE_MAP.get(roleName) == null) {
+            throw new ActionParseException("Action contains a reference to an undefined subrole");
+        }
+
+        return SUBROLE_MAP.get(roleName);
     }
 
     private static Guard parseGuard(String guard) throws TermParseException, ActionParseException {

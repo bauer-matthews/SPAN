@@ -16,6 +16,7 @@ public class TermFactory {
 
     private static final String TOP = "T";
     private static final String FRAME_VAR = "W";
+    private static final String UNDERSCORE = "_";
 
     private static final List<String> RESERVED_STRINGS = new ArrayList<>();
 
@@ -27,6 +28,7 @@ public class TermFactory {
     static {
         RESERVED_STRINGS.add(TOP);
         RESERVED_STRINGS.add(FRAME_VAR);
+        RESERVED_STRINGS.add(UNDERSCORE);
     }
 
     public static void initTermBuilder(Signature signature) {

@@ -53,6 +53,19 @@ public class Role {
         return new Role(newProcesses);
     }
 
+    public Role replaceHead(List<AtomicProcess> newHead) {
+
+        if (atomicProcesses.isEmpty()) {
+            throw new UnsupportedOperationException("Cannot replace head of empty Role.");
+        }
+
+        List<AtomicProcess> newProcesses = new ArrayList<>();
+        newProcesses.addAll(newHead);
+        newProcesses.addAll(this.removeHead().getAtomicProcesses());
+
+        return new Role(newProcesses);
+    }
+
     public List<VariableTerm> getOutputVariables() {
 
         List<VariableTerm> variableTerms = new ArrayList<>();
@@ -72,8 +85,27 @@ public class Role {
             if (process.isInput()) {
                 variableTerms.addAll(process.getVariables());
             }
+
+            if (process.isOutput()) {
+
+                for (ProbOutput probOutput : ((OutputProcess) process).getProbOutputs()) {
+                    variableTerms.addAll(probOutput.getSubrole().getInputVariables());
+                }
+            }
         }
+
         return variableTerms;
+    }
+
+    public Role appendBranchIndexToVars(int index) {
+
+        List<AtomicProcess> newProcesses = new ArrayList<>();
+
+        for (AtomicProcess atomicProcess : atomicProcesses) {
+            newProcesses.add(atomicProcess.appendBranchIndexToVars(index));
+        }
+
+        return new Role(newProcesses);
     }
 
     public Collection<VariableTerm> getVariables() {
