@@ -1,5 +1,9 @@
 package protocol.role;
 
+import rewriting.terms.VariableTerm;
+
+import java.util.Collection;
+
 /**
  * SPAN - Stochastic Protocol Analyzer
  * <p>
@@ -15,5 +19,7 @@ public interface AtomicProcess {
     boolean isInput();
 
     int getPhase();
+
+    Collection<VariableTerm> getVariables();
 
 }

@@ -2,7 +2,10 @@ package protocol.role;
 
 import com.google.common.base.MoreObjects;
 import org.apfloat.Aprational;
+import rewriting.terms.Term;
+import rewriting.terms.VariableTerm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -51,6 +54,26 @@ public class OutputProcess implements AtomicProcess {
     @Override
     public int getPhase() {
         return phase;
+    }
+
+    @Override
+    public Collection<VariableTerm> getVariables() {
+
+        Collection<VariableTerm> variableTerms = new ArrayList<>();
+
+        for (Guard guard : guards) {
+            variableTerms.addAll(guard.getEquality().getLhs().getVariables());
+            variableTerms.addAll(guard.getEquality().getRhs().getVariables());
+        }
+
+        for (ProbOutput output : probOutputs) {
+            for (Term term : output.getOutputTerms()) {
+                variableTerms.addAll(term.getVariables());
+                variableTerms.addAll(term.getVariables());
+            }
+        }
+
+        return variableTerms;
     }
 
     @Override

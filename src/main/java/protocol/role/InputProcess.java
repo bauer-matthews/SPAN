@@ -4,10 +4,10 @@ import com.google.common.base.MoreObjects;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
-
-import static com.google.common.base.Objects.equal;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -44,6 +44,11 @@ public class InputProcess implements AtomicProcess {
     @Override
     public int getPhase() {
         return phase;
+    }
+
+    @Override
+    public Collection<VariableTerm> getVariables() {
+        return Collections.singletonList(variable);
     }
 
     @Override

@@ -15,6 +15,7 @@ import protocol.role.ActionParseException;
 import protocol.role.Role;
 import rewriting.*;
 import rewriting.terms.*;
+import util.CollectionUtils;
 import util.ExitCode;
 import util.aprational.AprationalFactory;
 
@@ -177,7 +178,7 @@ public class ProtocolParser {
                     throw new ProtocolParseException("Invalid Substitution Cache Size: " + statement.getValue().trim());
                 }
 
-            } else if(statement.getCommand().trim().equalsIgnoreCase(Commands.ACTION_FACTORY_CACHE)) {
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.ACTION_FACTORY_CACHE)) {
 
                 try {
                     RunConfiguration.setActionFactoryCacheSize(Integer.parseInt(statement.getValue().trim()));
@@ -297,7 +298,7 @@ public class ProtocolParser {
                 String[] sortPieces = typePieces[0].trim().split(" ");
                 List<Sort> sortParameters = new ArrayList<>();
 
-                if(sortPieces.length == 1 && sortPieces[0].trim().isEmpty()) {int i = 5454;
+                if (sortPieces.length == 1 && sortPieces[0].trim().isEmpty()) {
                     // no parameters
                 } else {
 
@@ -361,7 +362,7 @@ public class ProtocolParser {
             }
         }
 
-        if(publicNames.size() == 0 ) {
+        if (publicNames.size() == 0) {
             throw new ProtocolParseException("At least one public name is required.");
         }
 
@@ -493,7 +494,59 @@ public class ProtocolParser {
             }
         }
 
+        return validateRoles(roles);
+    }
+
+    private static List<Role> validateRoles(List<Role> roles) throws ProtocolParseException {
+
+        validateNoMultipleBindings(roles);
+        validateOutputVarsBound(roles);
+
+        if (roles.size() == 1) {
+            return roles;
+        }
+
+        Collection<VariableTerm> reservedVariables = roles.get(0).getVariables();
+
+        for (int i = 1; i < roles.size(); i++) {
+
+            Collection<VariableTerm> newVariables = roles.get(i).getVariables();
+
+            if (!CollectionUtils.intersection(newVariables, reservedVariables).isEmpty()) {
+                throw new ProtocolParseException("Variables cannot be shared across roles");
+            }
+
+            reservedVariables.addAll(newVariables);
+        }
+
         return roles;
+    }
+
+    private static void validateNoMultipleBindings(List<Role> roles) throws ProtocolParseException {
+
+        for (int i = 0; i < roles.size(); i++) {
+            List<VariableTerm> variableTerms = roles.get(i).getInputVariables();
+            Set<VariableTerm> uniqueVariableTerms = new HashSet<>(variableTerms);
+
+            if (variableTerms.size() != uniqueVariableTerms.size()) {
+                throw new ProtocolParseException("Role " + i + " binds the same variable multiple times");
+            }
+        }
+    }
+
+    private static void validateOutputVarsBound(List<Role> roles) throws ProtocolParseException {
+
+        for (int i = 0; i < roles.size(); i++) {
+
+            List<VariableTerm> inputVariables = roles.get(i).getInputVariables();
+
+            for (VariableTerm outputVariable : roles.get(i).getOutputVariables()) {
+                if (!inputVariables.contains(outputVariable)) {
+                    throw new ProtocolParseException("Role " + i + " contains an unbound variable: "
+                            + outputVariable.toMathString());
+                }
+            }
+        }
     }
 
     private static String getName(String command) throws ProtocolParseException {

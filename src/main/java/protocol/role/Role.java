@@ -1,8 +1,10 @@
 package protocol.role;
 
 import com.google.common.base.MoreObjects;
+import rewriting.terms.VariableTerm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,13 +37,13 @@ public class Role {
 
     public Role removeHead() {
 
-        if(atomicProcesses.isEmpty()) {
+        if (atomicProcesses.isEmpty()) {
             throw new UnsupportedOperationException("Cannot remove head of empty Role.");
         }
 
         List<AtomicProcess> newProcesses = new ArrayList<>();
 
-        for(AtomicProcess process : atomicProcesses) {
+        for (AtomicProcess process : atomicProcesses) {
 
             // NOTE: AtomicProcess is immutable
             newProcesses.add(process);
@@ -49,6 +51,38 @@ public class Role {
 
         newProcesses.remove(0);
         return new Role(newProcesses);
+    }
+
+    public List<VariableTerm> getOutputVariables() {
+
+        List<VariableTerm> variableTerms = new ArrayList<>();
+        for (AtomicProcess process : atomicProcesses) {
+            if (process.isOutput()) {
+                variableTerms.addAll(process.getVariables());
+            }
+        }
+        return variableTerms;
+    }
+
+    public List<VariableTerm> getInputVariables() {
+
+        List<VariableTerm> variableTerms = new ArrayList<>();
+        for (AtomicProcess process : atomicProcesses) {
+
+            if (process.isInput()) {
+                variableTerms.addAll(process.getVariables());
+            }
+        }
+        return variableTerms;
+    }
+
+    public Collection<VariableTerm> getVariables() {
+
+        List<VariableTerm> variableTerms = new ArrayList<>();
+        for (AtomicProcess process : atomicProcesses) {
+            variableTerms.addAll(process.getVariables());
+        }
+        return variableTerms;
     }
 
     @Override
