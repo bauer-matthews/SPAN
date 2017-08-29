@@ -2,7 +2,6 @@ package parser.protocol;
 
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
-import javafx.util.Pair;
 import log.Console;
 import log.Severity;
 import org.apfloat.Aprational;
@@ -19,6 +18,7 @@ import rewriting.Signature;
 import rewriting.terms.*;
 import util.CollectionUtils;
 import util.ExitCode;
+import util.Pair;
 import util.aprational.AprationalFactory;
 
 import java.io.BufferedReader;

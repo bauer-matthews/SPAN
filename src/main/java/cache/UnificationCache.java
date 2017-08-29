@@ -3,10 +3,10 @@ package cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import javafx.util.Pair;
 import rewriting.Equality;
 import rewriting.terms.Term;
 import rewriting.unification.UnificationEngine;
+import util.Pair;
 
 import java.util.Collection;
 import java.util.Optional;

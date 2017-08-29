@@ -5,7 +5,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 1;
+    recipe depth : 2;
 
 .constants
 
@@ -49,7 +49,7 @@
 
     role:   {2} in(y1{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
             {2} in(y2{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
-            {2} [y1 != y2 ] out(1/4 -> adec(y1, sk(km)) +
+            {2} [ T ] out(1/4 -> adec(y1, sk(km)) +
                                 3/4 -> T) .
             {2} [ T ]       out(1/4 -> adec(y2, sk(km)) +
                                 3/4 -> T) .

@@ -1,0 +1,69 @@
+# NAME: Simple Electronic Voting Protocol
+# PARAMETERS: 2 parties, 2 candidates, 1 round
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 3;
+
+.constants
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message, Vote;
+    subsort : PKey, SKey, Nonce, Vote < Message;
+
+    variables : m , m1, m2, m3, m4, y0, y1, y2, y3, y4 | Message;
+    variables : k, n, n1, n2, n3, n4, t, t1, t2,  r | Nonce;
+    variables : v, v1, v2 | vote;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : party1 | -> Vote;
+    function : party2 | -> Vote;
+
+    public names : a | Nonce;
+    public names : b | Message;
+    public names : c | Vote;
+
+    private names : kEA, kA, kB, tA, tB | Nonce;
+    private names : r1, r2, r3, r4, r5, r6, s | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(m,r,pk(k)), sk(k)) -> m;
+    rewrite : fst(pair(m1, m2)) -> m1;
+    rewrite : snd(pair(m3, m4)) -> m4;
+
+.roles
+
+    role :  {1} [T] out(1 -> aenc(tA, r1, pk(kA))) .
+            {1} [T] out(1 -> aenc(tB, r2, pk(kB)));
+
+    role :  {2} in(y0{aenc(n1, n2, pk(kA))}) .
+            {2} [T] out(1/2 -> aenc(pair(adec(y0, sk(kA)), party1), r3, pk(kEA)) # A +
+                        1/2 -> aenc(pair(adec(y0, sk(kA)), party2), r4, pk(kEA)) # B );
+
+    role :  {2} in(y1{aenc(n3, n4, pk(kB))}) .
+            {2} [T] out(1/2 -> aenc(pair(adec(y1, sk(kB)), party1), r5, pk(kEA)) +
+                        1/2 -> aenc(pair(adec(y1, sk(kB)), party2), r6, pk(kEA)));
+
+    role:   {3} in(y2{aenc(pair(tA, v1), n1, pk(kEA))}) .
+            {3} in(y3{aenc(pair(tB, v2), n2, pk(kEA))}) .
+            {3} [ T ] out(1/2 -> snd(adec(y2, sk(kEA))) @ snd(adec(y3, sk(kEA))) +
+                          1/2 -> snd(adec(y3, sk(kEA))) @ snd(adec(y2, sk(kEA))));
+
+    subrole(A) : {4} in(y4{v}) .
+                 {4} [y4 == party1] out(1 -> s);
+
+    subrole(B) : {4} in(y4{v}) .
+                 {4} [y4 == party2] out(1 -> s);
+
+
+.safety
+    secrecy : s >= 1/4;

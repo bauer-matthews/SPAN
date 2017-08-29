@@ -3,10 +3,10 @@ package cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import javafx.util.Pair;
 import process.EquivalenceCheckResult;
 import process.EquivalenceChecker;
 import process.State;
+import util.Pair;
 
 import java.util.concurrent.ExecutionException;
 

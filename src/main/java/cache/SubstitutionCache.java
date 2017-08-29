@@ -3,9 +3,9 @@ package cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import javafx.util.Pair;
 import rewriting.Equality;
 import rewriting.terms.Term;
+import util.Pair;
 import util.rewrite.RewriteUtils;
 
 import java.util.ArrayList;
