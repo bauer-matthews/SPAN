@@ -136,7 +136,7 @@ public class ProcessFactory {
         }
 
         if(probPieces[1].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
-            RunConfiguration.disableConsecutiveOutputReduction();
+            RunConfiguration.enableEmptyOutputs();
             return new ProbOutput(fraction, Collections.emptyList());
         }
 

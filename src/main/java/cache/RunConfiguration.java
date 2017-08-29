@@ -21,7 +21,7 @@ public class RunConfiguration {
     private static boolean printAttack;
     private static boolean findMaxAttack;
     private static boolean outputToDot;
-    private static boolean consecutiveOutputReduction;
+    private static boolean emptyOutputs;
 
     private static File protocolFile;
     private static Path dotFile;
@@ -40,7 +40,7 @@ public class RunConfiguration {
         outputToDot = false;
         printAttack = false;
         findMaxAttack = false;
-        consecutiveOutputReduction = true;
+        emptyOutputs = false;
         equivalenceMethod = EquivalenceChecker.EquivalenceMethod.KISS;
     }
 
@@ -141,11 +141,11 @@ public class RunConfiguration {
         return findMaxAttack;
     }
 
-    public static void disableConsecutiveOutputReduction() {
-        consecutiveOutputReduction = false;
+    public static void enableEmptyOutputs() {
+        emptyOutputs = true;
     }
 
-    public static boolean useConsecutiveOutputReduction() {
-        return consecutiveOutputReduction;
+    public static boolean containsEmptyOutputs() {
+        return emptyOutputs;
     }
 }
