@@ -11,20 +11,25 @@ args = parser.parse_args()
 
 outFile = open('./results.csv', 'w+')
 
-print >> outFile, "test name, recipe size, time, attack found, attack prob, paths explored"
+print >> outFile, "test name, recipe size, time, attack found, maximum attack prob, paths explored"
 
 for root, dirs, filenames in os.walk(args.test_files_dir):
 
     for f in filenames:
 
-        p = Popen(['java', '-jar', args.jar_location, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        p = Popen(['java', '-jar', args.jar_location, "-maxAttack" ,'-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
         output, err = p.communicate();
 
         testName = root[root.rfind('/') + 1:]
         tail = f[f.rfind('_')+1:]
         recipeSize = tail[0:tail.rfind('.')]
 
-        print(testName + " " + recipeSize)
+        if not err:
+            print(testName + " " + recipeSize)
+        else:
+            print(testName + " " + recipeSize + " - failed!")
+            print(err)
+
 
         time = ''
         prob = ''

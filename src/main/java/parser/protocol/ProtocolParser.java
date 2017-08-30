@@ -626,7 +626,10 @@ public class ProtocolParser {
     private static void validateNoMultipleBindings(List<Role> roles) throws ProtocolParseException {
 
         for (int i = 0; i < roles.size(); i++) {
-            List<VariableTerm> variableTerms = roles.get(i).getInputVariables();
+
+            // TODO: Fix - This ensures nothing!
+            Role modifiedRole = roles.get(i).appendBranchIndexToVars(GlobalDataCache.getFreshBranchIndex());
+            List<VariableTerm> variableTerms = modifiedRole.getInputVariables();
             Set<VariableTerm> uniqueVariableTerms = new HashSet<>(variableTerms);
 
             if (variableTerms.size() != uniqueVariableTerms.size()) {

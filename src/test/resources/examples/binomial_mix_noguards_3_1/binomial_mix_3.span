@@ -1,15 +1,12 @@
 # NAME: Binomial Mix Protocol
-# PARAMETERS: 2 parties, 1 round
-# NOTE: Mix initialized with 2 messages
+# PARAMETERS: 3 parties, 1 round
 
 .metadata
 
     version : 1.0;
-    recipe depth : 1;
+    recipe depth : 3;
 
 .constants
-
-    fraction p : 1/6;
 
 .signature
 
@@ -19,7 +16,7 @@
     variables : m | Message;
     variables : k, r | Nonce;
 
-    variables : y1, y2, y3, y4 | Message;
+    variables : y1, y2, y3, y4, y5 | Message;
     variables : vM | Message;
     variables : vN | Nonce;
 
@@ -29,10 +26,9 @@
     function : sk | Nonce -> SKey;
 
     public names : a | Nonce;
-    public names : b | Message;
 
     private names : m1, m2, m3, m4 | Message;
-    private names : r1, r2, r3, r4, r5, r6 | Nonce;
+    private names : r1, r2, r3, r4, r5, r6, r7, r8 | Nonce;
     private names : k1, k2, k3, k4, km | Nonce;
     private names : s | Nonce;
 
@@ -45,21 +41,21 @@
     role :  {0} [T] out(1 -> pk(km));
 
     role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)),r2, pk(km))) .
-            {1} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)),r4, pk(km)));
+            {1} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)),r4, pk(km))) .
+            {1} [T] out(1 -> aenc(aenc(m3, r5, pk(k3)),r6, pk(km)));
 
     role:   {2} in(y1{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
             {2} in(y2{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+            {2} in(y3{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
             {2} [ T ] out(1/4 -> adec(y1, sk(km)) +
-                                3/4 -> T) .
-            {2} [ T ]       out(1/4 -> adec(y2, sk(km)) +
-                                3/4 -> T) .
-            {2} [ T ]       out(1/4 -> aenc(m3, r5, pk(k3)) +
-                                3/4 -> T) .
-            {2} [ T ]       out(1/4 -> aenc(m4, r6, pk(k4)) +
-                                3/4 -> T);
+                          3/4 -> T) .
+            {2} [ T ] out(1/4 -> adec(y2, sk(km)) +
+                          3/4 -> T) .
+            {2} [ T ] out(1/4 -> adec(y3, sk(km)) +
+                          3/4 -> T); 
 
-    role:   {3} in(y4{aenc(m2, r3, pk(k2))}) .
-            {3} [ y4 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
+    role:   {3} in(y5{aenc(m2, r3, pk(k2))}) .
+            {3} [ y5 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

@@ -1,0 +1,105 @@
+# NAME: DC-net Protocol
+# PARAMETERS: 2 parties
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 5;
+
+.constants
+
+.signature
+
+    sort : Key, Bit, Nonce, Message;
+    subsort : Key, Nonce, Bit < Message;
+
+    variables : mes, m1, m2, y1, y2, y3, y4 | Message;
+    variables : r | Nonce;
+    variables : key | Key;
+    variables : bit, x, y, z, b, b1, b2 | Bit;
+
+    function : senc | Message Key -> Message;
+    function : sdec | Message Key -> Message;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : xor | Bit Bit -> Bit;
+    function : zero | -> Bit;
+    function : one | -> Bit;
+    function : val | Bit Bit Bit Bit Nonce -> Message;
+
+    public names : g | Bit;
+
+    private names : s | Nonce;
+    private names : k | Key;
+    private names : r1, r2, r3, r4 | Nonce;
+
+.rewrites
+
+    rewrite : sdec(senc(mes,key), key) -> mes;
+    rewrite : xor(one, one) -> zero;
+    rewrite : xor(one, zero) -> one;
+    rewrite : xor(zero, one) -> one;
+    rewrite : xor(zero, zero) -> zero;
+    rewrite : val(bit, zero, b1, b2, r) -> pair(xor(bit, b1), b2);
+    rewrite : val(bit, one, b1, b2, r) -> pair(b1, xor(bit,b2));
+
+.roles
+
+    role :  {0} [T] out(1/8 -> T # 000  +
+                        1/8 -> T # 001 +
+                        1/8 -> T # 010 +
+                        1/8 -> T # 011 +
+                        1/8 -> T # 111 +
+                        1/8 -> T # 110 +
+                        1/8 -> T # 101 +
+                        1/8 -> T # 100);
+
+    subrole(000) :  {1} [T] out(1/2 -> val(zero, zero, zero, zero, r1) # A +
+                                1/2 -> val(one, zero, zero, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), zero, zero, r3) # A +
+                                1/2 -> val(one, xor(zero, one), zero, zero, r4) # B );
+
+    subrole(001) :  {1} [T] out(1/2 -> val(zero, zero, zero, one, r1) # A +
+                                1/2 -> val(one, zero, zero, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), zero, one, r3) # A +
+                                1/2 -> val(one, xor(zero, one), zero, one, r4) # B );
+
+    subrole(010) :  {1} [T] out(1/2 -> val(zero, zero, one, zero, r1) # A +
+                                1/2 -> val(one, zero, one, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), one, zero, r3) # A +
+                                1/2 -> val(one, xor(zero, one), one, zero, r4) # B );
+
+    subrole(011) :  {1} [T] out(1/2 -> val(zero, zero, one, one, r1) # A +
+                                1/2 -> val(one, zero, one, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(zero, one), one, one, r3) # A +
+                                1/2 -> val(one, xor(zero, one), one, one, r4) # B );
+
+    subrole(111) :  {1} [T] out(1/2 -> val(zero, one, one, one, r1) # A +
+                                1/2 -> val(one, one, one, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), one, one, r3) # A +
+                                1/2 -> val(one, xor(one, one), one, one, r4) # B );
+
+    subrole(110) :  {1} [T] out(1/2 -> val(zero, one, one, zero, r1) # A +
+                                1/2 -> val(one, one, one, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), one, zero, r3) # A +
+                                1/2 -> val(one, xor(one, one), one, zero, r4) # B );
+
+    subrole(101) :  {1} [T] out(1/2 -> val(zero, one, zero, one, r1) # A +
+                                1/2 -> val(one, one, zero, one, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), zero, one, r3) # A +
+                                1/2 -> val(one, xor(one, one), zero, one, r4) # B );
+
+    subrole(100) :  {1} [T] out(1/2 -> val(zero, one, zero, zero, r1) # A +
+                                1/2 -> val(one, one, zero, zero, r2) # B ) .
+                    {1} [T] out(1/2 -> val(zero, xor(one, one), zero, zero, r3) # A +
+                                1/2 -> val(one, xor(one, one), zero, zero, r4) # B );
+
+    subrole(A)  :   {2} in(y4{b}) .
+                    {2} [y4 == zero ] out(1 -> s);
+
+    subrole(B)  :   {2} in(y4{b}) .
+                    {2} [y4 == one ] out(1 -> s);
+
+.safety
+    secrecy : s >= 1/2;

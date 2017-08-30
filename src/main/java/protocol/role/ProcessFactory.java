@@ -1,6 +1,5 @@
 package protocol.role;
 
-import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import org.apfloat.Aprational;
 import rewriting.Equality;
@@ -173,8 +172,7 @@ public class ProcessFactory {
         if (outRolePieces.length == 1) {
             subrole = new Role(Collections.emptyList());
         } else {
-            subrole = getSubrole(outRolePieces[1].trim())
-                    .appendBranchIndexToVars(GlobalDataCache.getFreshBranchIndex());
+            subrole = getSubrole(outRolePieces[1].trim());
         }
 
         if (!outRolePieces[0].trim().equalsIgnoreCase(Resources.EMPTY_OUTPUT)) {
