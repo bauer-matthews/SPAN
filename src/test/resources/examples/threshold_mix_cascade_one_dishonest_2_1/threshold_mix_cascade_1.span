@@ -4,7 +4,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 2;
+    recipe depth : 1;
 
 .constants
 
@@ -16,7 +16,7 @@
     subsort : PKey, SKey, Nonce < Message;
 
     variables : m, y1, y2, y3, y4, y5, x0, x1 | Message;
-    variables : r, k, x2, x3, x4, x5, t1, t2 | Nonce;
+    variables : r, k, x2, x3, x4, x5, t | Nonce;
 
     function : aenc | Message Nonce PKey -> Message;
     function : adec | Message SKey -> Message;
@@ -24,7 +24,6 @@
     function : sk | Nonce -> SKey;
 
     public names : a | Nonce;
-    public names : b | Message;
 
     private names : m1 , m2 | Message;
     private names : s, r1, r2, r3, r4, r5, r6, k1, k2, k3, km1, km2 | Nonce;
@@ -38,18 +37,17 @@
     role :  {0} [T] out(1 -> pk(km1)) .
             {0} [T] out(1 -> pk(km2));
 
-    role :  {1} [T] out(1 -> aenc(aenc(aenc(m1, r1, pk(k1)),r2, pk(km1)), r3, pk(km2)));
-
-    role :  {1} [T] out(1 -> aenc(aenc(aenc(m2, r4, pk(k2)),r5, pk(km1)), r6, pk(km2)));
+    role :  {1} [T] out(1 -> aenc(aenc(aenc(m1, r1, pk(k1)),r2, pk(km1)), r3, pk(km2))) .
+            {1} [T] out(1 -> aenc(aenc(aenc(m2, r4, pk(k2)),r5, pk(km1)), r6, pk(km2)));
 
     role:   {2} in(y1{aenc(aenc(x1, x2, pk(km1)),x3, pk(km2))}) .
             {2} in(y2{aenc(aenc(x1, x2, pk(km1)),x3, pk(km2))}) .
-            {2} [y1 != y2] out(1 -> adec(y1, sk(km2)) @ adec(y2, sk(km2)));
+            {2} [ y1 != y2 ] out(1 -> adec(y1, sk(km2)) @ adec(y2, sk(km2)));
 
-    role:   {3} in(y4{aenc(aenc(x0, x4, pk(k1)),x5, pk(km1))}) .
-            {3} in(y5{aenc(aenc(x0, x4, pk(k2)),x5, pk(km1))}) .
-            {3} [y4 != y5] out( p -> adec(y4, sk(km1)) @ adec(y4, sk(km1)) +
-                                p -> adec(y5, sk(km1)) @ adec(y5, sk(km1)));
+    role:   {3} in(y4{aenc(aenc(x0, x4, pk(t)),x5, pk(km1))}) .
+            {3} in(y5{aenc(aenc(x0, x4, pk(t)),x5, pk(km1))}) .
+            {3} [ y4 != y5 ] out( p -> adec(y4, sk(km1)) @ adec(y5, sk(km1)) +
+                                  p -> adec(y5, sk(km1)) @ adec(y4, sk(km1)));
 
     role:   {4} in(y3{aenc(m1,r1, pk(k1))}) .
             {4} [ y3 == aenc(m1,r1, pk(k1)) ] out(1 -> s);
