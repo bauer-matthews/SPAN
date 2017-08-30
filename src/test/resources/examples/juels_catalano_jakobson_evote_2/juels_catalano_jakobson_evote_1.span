@@ -1,0 +1,68 @@
+# NAME: Juels - Catalano - Jakobson remote voting protocol
+# PARAMETERS: 2 parties
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 1;
+
+.constants
+
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message, Boolean, Vote;
+    subsort : PKey, SKey, Nonce, Vote < Message;
+
+    variables : m, m1, m2 | Message;
+    variables : r, k | Nonce;
+    variables : b | Boolean;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : eq | Message Message -> Boolean;
+    function : true | -> Boolean;
+    function : false | -> Boolean;
+    function : and | Boolean Boolean -> Boolean;
+    function : or | Boolean Boolean -> Boolean;
+    function : party1 | -> Vote;
+    function : party2 | -> Vote;
+
+    public names : a | Nonce;
+
+    private names : t1, t2 | Nonce;
+    private names : kTA, kV1, kV2;
+    private names : n1, n2, n3, n4, n5, n6, n7, n8, n9, n10;
+
+.rewrites
+
+    rewrite : adec(aenc(m,r,pk(k)), sk(k)) -> m;
+    rewrite : fst(pair(m1, m2)) -> m1;
+    rewrite : snd(pair(m1, m2)) -> m2;
+    rewrite : eq(m, m) -> true;
+    rewrite : and(true, true) -> true;
+    rewrite : or(b, true) -> true;
+    rewrite : or(true, b) -> true;
+
+
+.roles
+
+    role :  {0} [T] out(1 -> pk(kTA));
+
+    role :  {1} [T] out(1 -> aenc(t1, n1, pk(kTA))) .
+            {1} [T] out(1 -> aenc(t2, n2, pk(kTA)));
+
+    role :  {2} [T] out(1/2 -> pair(aenc(t1, n3, pk(kTA)), aenc(party1, n4, pk(kTA))),
+                        1/2 -> pair(aenc(t1, n5, pk(kTA)), aenc(party2, n6, pk(kTA))));
+
+    role :  {2} [T] out(1/2 -> pair(aenc(t1, n7, pk(kTA)), aenc(party1, n8, pk(kTA))),
+                        1/2 -> pair(aenc(t1, n9, pk(kTA)), aenc(party2, n10, pk(kTA))));
+
+.safety
+
+    secrecy : s >= 1/2;

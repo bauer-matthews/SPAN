@@ -1,0 +1,76 @@
+# NAME: Binomial Mix Protocol
+# PARAMETERS: 3 parties, 1 round
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 2;
+
+.constants
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message;
+    subsort : PKey, SKey, Nonce < Message;
+
+    variables : m | Message;
+    variables : k, r | Nonce;
+
+    variables : y1, y2, y3, y4, y5, y6, y7 | Message;
+    variables : vM | Message;
+    variables : vN | Nonce;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+
+    public names : a | Nonce;
+
+    private names : m1, m2, m3, m4 | Message;
+    private names : r1, r2, r3, r4, r5, r6, r7, r8 | Nonce;
+    private names : k1, k2, k3, k4, km | Nonce;
+    private names : s | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(m,r,pk(k)), sk(k)) -> m;
+
+.roles
+
+    role :  {0} [T] out(1 -> pk(km));
+
+    role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)),r2, pk(km))) .
+            {1} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)),r4, pk(km)));
+
+    role :  {2} in(y1{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+            {2} in(y2{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+            {2} [ y1 != y2 ] out(1/4 -> adec(y1, sk(km)) # A0 +
+                                 3/4 -> T # A1 ) .
+            {2} [ y1 != y2 ] out(1/4 -> adec(y2, sk(km)) # C +
+                                 3/4 -> T # B);
+
+    role :  {5} in(y5{aenc(m2, r3, pk(k2))}) .
+            {5} [ y5 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
+
+    subrole(A0) :   {3} in(y6{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+                    {3} in(y7{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+                    {3} [ y6 != y7 ] out(1 -> T);
+
+    subrole(A1) :   {3} in(y6{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+                    {3} in(y7{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
+                    {3} [ y6 != y7 ] out(1 -> T) .
+                    {3} [T] out( 1-> T # A);
+
+    subrole(A)  :   {4} [ T ] out(1/4 -> adec(y1, sk(km)) +
+                                  3/4 -> T);
+
+    subrole(B)  :   {4} [ T ] out(1/4 -> adec(y2, sk(km)) +
+                                  3/4 -> T # C);
+
+    subrole(C) :    {4} [ T ] out(1/4 -> adec(y6, sk(km)) +
+                                  3/4 -> T ) .
+                    {4} [ T ] out(1/4 -> adec(y7, sk(km)) +
+                                  3/4 -> T);
+.safety
+    secrecy : s >= 1/2;
