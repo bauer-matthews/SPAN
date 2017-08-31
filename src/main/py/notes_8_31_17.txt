@@ -1,0 +1,86 @@
+Summary:
+Tool is robust and works on all primitives for
+anonymous communication. Profession implementation
+~6k lines of Java (not including blank lines/comments) -
+Showpiece for job interviews (can you code?).
+Haven't completed modeling, but I believe larger scale
+evoting protocols are in reach. Aiming for FOO protocol.
+
+Major Features Implemented:
+-Sort system
+-Input Guards
+-Phases
+-PO reductions
+-Ability to invoke subroles (unbounded depth)
+-New, faster (minimal) recipe generation engine
+-Print attack tree to dot (graph)
+-Automated testing infrastructure
+
+Minor Features Implemented:
+-Enhanced parser w/ compliance checks
+-Caching and other speed enhancements
+-Extensive debugging and logging options added
+-Many bug fixes, code improvements
+-Improvement of CLI I/O
+
+Notes:
+-KISS untrustworthy (didn't check frame size)
+
+Todos:
+-Suggestions?
+-Integrate with Maude(-NPA) rewriting/deduction
+modulo algebraic properties, variant gen (static equiv?)
+-Integrate with SAT-equiv
+-Engineering (speed) enhancements
+-Investigate how AKISS can be used
+
+Examples: Below, "primitives" that can be used
+as part of larger protocols/systems. Minimal
+ability to use nonces given to attacker.
+
+==threshold_mix_X_Y==
+-Original Chaum mix with X parties and Y rounds
+
+==threshold_mix_cascade_one_dishonest_X_Y==
+-Chain of two threshold mixes, X parties, Y rounds
+
+==simple_evote_X==
+-X party evoke protocol from LICS paper
+
+==dcnet_X==
+-X party dcnet protocol from out theory papers
+
+==pool_mix_X_Y==
+-X parties, Y rounds
+-At each round, add X messages and flush 2 of
+from the total pool
+-Initially pool is empty
+
+==initialized_pool_mix_X_Y==
+-Same as above, pool starts with one message
+
+==binomial_mix_(no)guards_X_Y==
+-At each round, read X messages and add them
+to the pool. At the end a round, each message is
+flushed with prob 1/4
+-guards indicate that message distinctness is
+checked at each round
+-Lots of equivalence checks, for X=2, Y=2 and
+recipe depth 3, 215k calls to cache, 150k loads
+(I have some ideas to reduce)
+
+Examples to add:
+
+-Verifiable mix: each party sends PK(k) and
+aenc(Vote, nonce, SK(k)) though the mix. Should
+reach a state where Vote can be derived for
+each party
+
+-Re-encryption mix: Many variations - mostly relying
+on algebraic properties. Simple Dolev-Yao abstraction.
+Essentially the idea is that at each stage, decrypt and
+re-encrypt with the key of the next mix.
+
+-More parties for dcnet
+
+-More parties/rounds for other mix protocols
