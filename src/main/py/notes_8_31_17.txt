@@ -1,10 +1,9 @@
 Summary:
 Tool is robust and works on all primitives for
-anonymous communication. Profession implementation
-~6k lines of Java (not including blank lines/comments) -
-Showpiece for job interviews (can you code?).
-Haven't completed modeling, but I believe larger scale
-evoting protocols are in reach. Aiming for FOO protocol.
+anonymous communication. Professional implementation
+~6k lines of Java. Haven't completed modeling,
+but I believe larger scale evoting protocols are
+in reach. Aiming for FOO protocol.
 
 Major Features Implemented:
 -Sort system
@@ -74,7 +73,7 @@ Examples to add:
 -Verifiable mix: each party sends PK(k) and
 aenc(Vote, nonce, SK(k)) though the mix. Should
 reach a state where Vote can be derived for
-each party
+each party.
 
 -Re-encryption mix: Many variations - mostly relying
 on algebraic properties. Simple Dolev-Yao abstraction.
