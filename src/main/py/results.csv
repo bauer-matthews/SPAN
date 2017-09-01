@@ -1,4 +1,4 @@
-test name, recipe size, time, attack found, maximum attack prob, paths explored
+test name, recipe depth, time, attack found, maximum attack prob, paths explored
 threshold_mix_2_1, 1, 250, no, 1/2, 16
 threshold_mix_2_1, 2, 203, yes, 1, 3
 threshold_mix_2_1, 3, 260, yes, 1, 4
