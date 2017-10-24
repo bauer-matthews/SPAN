@@ -20,9 +20,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class EquivalenceChecker {
 
-    // TODO: Take from input
-    private static String KISS_COMMAND = "/home/matt/Desktop/kiss/kiss";
-
+    private static String KISS_COMMAND = RunConfiguration.getKissPath();
     private static final EquivalenceMethod method;
 
     public enum EquivalenceMethod {

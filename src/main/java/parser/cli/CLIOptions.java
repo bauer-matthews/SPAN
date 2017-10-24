@@ -1,10 +1,7 @@
 package parser.cli;
 
 import cache.RunConfiguration;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import util.ExitCode;
 
 import java.io.File;
@@ -88,7 +85,17 @@ class CLIOptions {
         // Maximum Attack Prob Option
         Option maxAttack = new Option("maxAttack", "find the maximum attack probability");
         options.addOption(maxAttack);
-        optionMap.put(maxAttack, (attackOpt) -> RunConfiguration.enableMaxAttack());
+        optionMap.put(maxAttack, (maxAttackOpt) -> RunConfiguration.enableMaxAttack());
+
+        // KISS engine
+        Option kiss = Option.builder("kiss")
+                .desc("path to KISS engine")
+                .hasArg()
+                .argName("location")
+                .required(false)
+                .build();
+        options.addOption(kiss);
+        optionMap.put(kiss, (kissOpt) -> RunConfiguration.setKissPath(kissOpt.getValue()));
 
         // Dot Output Option
         Option dot = Option.builder("dot")

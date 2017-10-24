@@ -26,6 +26,7 @@ public class RunConfiguration {
     private static File protocolFile;
     private static Path dotFile;
     private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
+    private static String kissPath;
 
     private static Integer equivalenceCacheSize;
     private static Integer rewritingCacheSize;
@@ -147,5 +148,13 @@ public class RunConfiguration {
 
     public static boolean containsEmptyOutputs() {
         return emptyOutputs;
+    }
+
+    public static void setKissPath(String kissPath) {
+        RunConfiguration.kissPath = kissPath;
+    }
+
+    public static String getKissPath() {
+        return RunConfiguration.kissPath;
     }
 }
