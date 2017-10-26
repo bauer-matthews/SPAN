@@ -26,6 +26,8 @@ public class GlobalDataCache {
     private static int interleavingsExplored;
     private static int maxActionSetSize;
     private static int branchIndexCounter;
+    private static long stateCounter;
+    private static long beliefStateCounter;
 
     private static AttackTree attackTree;
     private static Protocol protocol;
@@ -36,6 +38,8 @@ public class GlobalDataCache {
         interleavingsExplored = 0;
         maxActionSetSize = 0;
         branchIndexCounter = 0;
+        stateCounter = 0;
+        beliefStateCounter = 0;
     }
 
     public static void reportActionSetSize(int size) {
@@ -143,5 +147,21 @@ public class GlobalDataCache {
     public static int getFreshBranchIndex() {
         branchIndexCounter++;
         return branchIndexCounter;
+    }
+
+    public static long getBeliefStateCounter() {
+        return beliefStateCounter;
+    }
+
+    public static long getStateCounter() {
+        return stateCounter;
+    }
+
+    public static void incrimentBeliefStateCounter() {
+        GlobalDataCache.beliefStateCounter++;
+    }
+
+    public static void incrementStateCounter(long numStates) {
+        GlobalDataCache.stateCounter = stateCounter + numStates;
     }
 }

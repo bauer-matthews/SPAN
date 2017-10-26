@@ -4,10 +4,7 @@ import cache.EquivalenceCache;
 import org.apfloat.Aprational;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -17,11 +14,14 @@ public class BeliefTransitionSystem {
 
     public static List<Action> getEnabledActions(BeliefState beliefState) throws ExecutionException {
 
-        List<Action> enabledActions = new ArrayList<>();
+        Set<Action> enabledActionSet = new HashSet<>();
 
         for (Belief belief : beliefState.getBeliefs()) {
-            enabledActions.addAll(belief.getState().getEnabledActions());
+            enabledActionSet.addAll(belief.getState().getEnabledActions());
         }
+
+        List<Action> enabledActions = new ArrayList<>();
+        enabledActions.addAll(enabledActionSet);
 
         return enabledActions;
     }

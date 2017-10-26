@@ -85,7 +85,10 @@ public class ProtocolParser {
                     section = getSection(line.substring(1).trim());
                     stringBuilder = new StringBuilder();
                 } else {
-                    stringBuilder.append(line);
+
+                    if(!line.trim().startsWith("#")) {
+                        stringBuilder.append(line);
+                    }
                 }
 
                 line = reader.readLine();

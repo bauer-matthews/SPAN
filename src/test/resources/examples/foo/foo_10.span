@@ -1,0 +1,140 @@
+# NAME: FOO voting protocol
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 10;
+
+.constants
+
+    fraction p : 1/2;
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message, Vote, Host, Num, Token;
+    subsort : PKey, SKey, Nonce, Vote, Token, Num, Host < Message;
+
+    # equational theory variables
+    variables : m, m1, m2 | Message;
+    variables : r, k | Nonce;
+
+    # input varialbes
+    variables : y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 | Message;
+
+    # input guard variables
+    variables : skey1 | Skey;
+    variables : token | Token;
+    variables : vote | Vote;
+    variables : nonce | Nonce;
+    variables : host | Host;
+    variables : message | Message;
+
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : commit | Message Nonce -> Message;
+    function : open | Message Nonce -> Message;
+    function : sign | Message SKey -> Message;
+    function : checksign | Message PKey -> Message;
+    function : blind | Message Nonce -> Message;
+    function : unblind | Message Nonce -> Message;
+    function : host | PKey -> Host;
+    function : getpk | Host -> PKey;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : party1 | -> Vote;
+    function : party2 | -> Vote;
+
+    public names : atkmsg | Message;
+    public names : party3 | Vote;
+    public names : t3, t33 | Token;
+    public names : l1, l2 | Num;
+    public names : an1, an2 | Nonce;
+
+    private names : km, ka | Nonce;
+    private names : r1, r11, r111, b1, k1 | Nonce;
+    private names : r2, r22, r222, b2, k2 | Nonce;
+    private names : secret | Nonce;
+    private names : t1, t11, t2, t22 | Token;
+
+.rewrites
+
+    rewrite : getpk(host(pk(k))) -> pk(k);
+    rewrite : open(commit(m,r),r) -> m;
+    rewrite : checksign(sign(m, sk(k)), pk(k)) -> m;
+    rewrite : unblind(blind(m,r),r) -> m;
+    rewrite : unblind(sign(blind(m,r), sk(k)), r) -> sign(m, sk(k));
+    rewrite : fst(pair(m1, m2)) -> m1;
+    rewrite : snd(pair(m1, m2)) -> m2;
+    rewrite : adec(aenc(m,r,pk(k)), sk(k)) -> m;
+
+.roles
+
+    # setup
+    role :          {0} [T] out(1 -> pk(ka)) .
+                    {0} [T] out(1 -> pk(k1)) .
+                    {0} [T] out(1 -> pk(k2)) .
+                    {0} [T] out(1 -> pk(km));
+
+    # voter 1
+    role :          {1} [T] out(1/2 -> pair( host(pk(k1)), sign(blind(commit(party1, r1),b1), sk(k1))) # v1p1 +
+                                 1/2 -> pair( host(pk(k1)), sign(blind(commit(party2, r1),b1), sk(k1))) # v1p2 );
+
+    subrole(v1p1) : {1} in(y1{sign(blind(commit(party1, r1), b1), sk(ka))}) .
+                    {2} [ checksign(y1, pk(ka)) == blind(commit(party1, r1),b1) ]
+                            out( 1 -> aenc(pair(t1, unblind(y1, b1)), r11, pk(km)) ) .
+                    {3} [ T ] out(1 -> aenc(pair(t11, r1), r111, pk(km))) .
+                    {4} in(y2{vote}) .
+                    {4} [ y2 == party1 ] out(1 -> secret);
+
+    subrole(v1p2) : {1} in(y1{sign(blind(commit(party1, r1), b1), sk(ka))}) .
+                    {2} [ checksign(y1, pk(ka)) == blind(commit(party2, r1),b1) ]
+                            out( 1 -> aenc(pair(t1, unblind(y1, b1)), r11, pk(km)) ) .
+                    {3} [ T ] out(1 -> aenc(pair(t11, r1), r111, pk(km))) .
+                    {4} in(y2{vote}) .
+                    {4} [ y2 == party2 ] out(1 -> secret);
+
+    # voter 2
+    role :          {1} [T] out(1/2 -> pair( host(pk(k2)), sign(blind(commit(party1, r2),b2), sk(k2))) # v2p1 +
+                                 1/2 -> pair( host(pk(k2)), sign(blind(commit(party2, r2),b2), sk(k2))) # v2p2 );
+
+    subrole(v2p1) : {1} in(y3{sign(blind(commit(party1, r2), b2), sk(ka))}) .
+                    {2} [ checksign(y3, pk(ka)) == blind(commit(party1, r2), b2) ]
+                            out( 1 -> aenc(pair(t2, unblind(y3, b2)), r22, pk(km))) .
+                    {3} [ T ] out(1 -> aenc(pair(t22, r2), r222, pk(km))) ;
+
+    subrole(v2p2) : {1} in(y3{sign(blind(commit(party1, r2), b2), sk(ka))}) .
+                    {2} [ checksign(y3, pk(ka)) == blind(commit(party2, r2), b2) ]
+                            out( 1 -> aenc(pair(t2, unblind(y3, b2)), r22, pk(km))) .
+                    {3} [ T ] out(1 -> aenc(pair(t22, r2), r222, pk(km))) ;
+
+    # administrator process voter 1
+    role :          {1} in(y5{pair(host, sign(message, sk(k1)))}) .
+                    {1} [ pk(k1) == getpk(fst(y5)) ] out(1 -> sign(checksign(snd(y5), pk(k1)), sk(ka)));
+
+    # administrator process voter 2
+    role :          {1} in(y6{pair(host, sign(message, sk(k2)))}) .
+                    {1} [ pk(k2) == getpk(fst(y6)) ] out(1 -> sign(checksign(snd(y6), pk(k2)), sk(ka)));
+
+    # collector process with anonymous channels
+    role:
+                    {2} in(y7{aenc(pair(t1, sign(message, sk(ka))), nonce, pk(km))}) .
+                    {2} in(y8{aenc(pair(t2, sign(message, sk(ka))), nonce, pk(km))}) .
+
+                    {2} [ t1 == fst(adec(y7, sk(km))) & t2 == fst(adec(y8, sk(km))) ]
+                            out(1/2 -> pair(l1, snd(adec(y7, sk(km)))) @ pair(l2, snd(adec(y8, sk(km)))) +
+                                1/2 -> pair(l2, snd(adec(y8, sk(km)))) @ pair(l1, snd(adec(y7, sk(km))))) .
+
+                    {3} in(y9{aenc(pair(t11, nonce), nonce, pk(km))}) .
+                    {3} in(y10{aenc(pair(t22, nonce), nonce, pk(km))}) .
+
+                    {3} [ t11 == fst(adec(y9, sk(km))) & t22 == fst(adec(y10, sk(km))) ]
+                            out(1/2 -> open(checksign(snd(adec(y7, sk(km))), pk(ka)), snd(adec(y9, sk(km))))
+                                     @ open(checksign(snd(adec(y8, sk(km))), pk(ka)), snd(adec(y10, sk(km)))) +
+                                1/2 -> open(checksign(snd(adec(y8, sk(km))), pk(ka)), snd(adec(y10, sk(km))))
+                                     @ open(checksign(snd(adec(y7, sk(km))), pk(ka)), snd(adec(y9, sk(km)))));
+
+.safety
+    secrecy : secret >= 1/4;

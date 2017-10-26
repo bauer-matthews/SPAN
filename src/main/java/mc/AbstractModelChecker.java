@@ -68,7 +68,9 @@ public abstract class AbstractModelChecker implements ModelChecker {
 
         System.out.println(attackProbFound.toString(true));
         System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
-        System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
+        //System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
+        System.out.println("Belief states explored: " + GlobalDataCache.getBeliefStateCounter());
+        System.out.println("States explored: " + GlobalDataCache.getStateCounter());
         System.out.println();
 
         if (RunConfiguration.getDebug()) {
@@ -76,8 +78,8 @@ public abstract class AbstractModelChecker implements ModelChecker {
             System.out.println("----------------Debug Info-----------------");
             System.out.println();
 
-            System.out.println("Partial order reduction on paths: " +
-                    GlobalDataCache.getInterleavingsReduction());
+            //System.out.println("Partial order reduction on paths: " +
+            //        GlobalDataCache.getInterleavingsReduction());
 
             System.out.println("Equivalence cache (Call/Load): "
                     + EquivalenceCache.getCacheCalls() + " / " + EquivalenceCache.getCacheLoads());
