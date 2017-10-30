@@ -24,17 +24,17 @@ public class OptionsParser {
         // First parse the option list of help/empty to avoid conflicts with required options
         try {
 
-            CommandLine cmd = parser.parse(CLIOptions.getOptions(), args, false);
+            CommandLine cmd = parser.parse(CLIOptionsHelper.getOptions(), args, false);
             List<Option> optionsList = Arrays.asList(cmd.getOptions());
 
             if (optionsList.isEmpty()) {
-                CLIOptions.printUsage();
+                CLIOptionsHelper.printUsage();
                 System.exit(ExitCode.OPTION_ERROR.getValue());
             }
 
-            for (Option option : CLIOptions.getHelpOptions().getOptions()) {
+            for (Option option : CLIOptionsHelper.getHelpOptions().getOptions()) {
                 if (optionsList.contains(option)) {
-                    CLIOptions.printUsage();
+                    CLIOptionsHelper.printUsage();
                     System.exit(ExitCode.OPTION_ERROR.getValue());
                 }
             }
@@ -43,19 +43,19 @@ public class OptionsParser {
         }
 
         try {
-            CommandLine cmd = parser.parse(CLIOptions.getOptions(), args);
-            initializeRunConfiguration(cmd);
+            CommandLine cmd = parser.parse(CLIOptionsHelper.getOptions(), args);
+            List<Option> options = Arrays.asList(cmd.getOptions());
+            initializeRunConfiguration(options);
+            CLIOptionsHelper.validateOptions(options);
         } catch (ParseException ex) {
-            CLIOptions.printParseError(ex);
-            CLIOptions.printUsage();
+            CLIOptionsHelper.printParseError(ex);
+            CLIOptionsHelper.printUsage();
             System.exit(ExitCode.OPTION_ERROR.getValue());
         }
     }
 
-    private static void initializeRunConfiguration(CommandLine cmd) {
-        List<Option> options = Arrays.asList(cmd.getOptions());
-        Consumer optionConsumer = CLIOptions.getOptionConsumer();
-
+    private static void initializeRunConfiguration(List<Option> options) {
+        Consumer<Option> optionConsumer = CLIOptionsHelper.getOptionConsumer();
         for (Option option : options) {
             optionConsumer.accept(option);
         }

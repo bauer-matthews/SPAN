@@ -1,4 +1,4 @@
-package process;
+package equivalence;
 
 import com.google.common.base.MoreObjects;
 

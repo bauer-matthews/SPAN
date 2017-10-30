@@ -1,4 +1,4 @@
-package kiss;
+package equivalence;
 
 import com.google.common.base.MoreObjects;
 
@@ -35,7 +35,7 @@ public class EquivalenceResult {
         return frame2;
     }
 
-    public boolean isEquivalent() {
+    boolean isEquivalent() {
         return equivalent;
     }
 

@@ -1,6 +1,6 @@
 package cache;
 
-import process.EquivalenceChecker;
+import equivalence.EquivalenceMethod;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -25,8 +25,9 @@ public class RunConfiguration {
 
     private static File protocolFile;
     private static Path dotFile;
-    private static EquivalenceChecker.EquivalenceMethod equivalenceMethod;
+    private static EquivalenceMethod equivalenceMethod;
     private static String kissPath;
+    private static String akissPath;
 
     private static Integer equivalenceCacheSize;
     private static Integer rewritingCacheSize;
@@ -42,7 +43,6 @@ public class RunConfiguration {
         printAttack = false;
         findMaxAttack = false;
         emptyOutputs = false;
-        equivalenceMethod = EquivalenceChecker.EquivalenceMethod.KISS;
     }
 
     public static void enableDebug() {
@@ -82,8 +82,12 @@ public class RunConfiguration {
         return outputToDot;
     }
 
-    public static EquivalenceChecker.EquivalenceMethod getEquivalenceMethod() {
+    public static EquivalenceMethod getEquivalenceMethod() {
         return equivalenceMethod;
+    }
+
+    public static void setEquivalenceMethod(EquivalenceMethod equivalenceMethod) {
+        RunConfiguration.equivalenceMethod = equivalenceMethod;
     }
 
     public static void setEquivalenceCacheSize(Integer equivalenceCacheSize) {
@@ -156,5 +160,13 @@ public class RunConfiguration {
 
     public static String getKissPath() {
         return RunConfiguration.kissPath;
+    }
+
+    public static void setAkissPath(String akissPath) {
+        RunConfiguration.akissPath = akissPath;
+    }
+
+    public static String getAkissPath() {
+        return akissPath;
     }
 }

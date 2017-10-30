@@ -10,7 +10,7 @@ package util;
  */
 public enum ExitCode {
 
-    GOOD(0), OPTION_ERROR(100), PROTOCOL_PARSE_ERROR(101), KISS_ERROR(202);
+    GOOD(0), OPTION_ERROR(100), PROTOCOL_PARSE_ERROR(101), EQUIVALENCE_ERROR(202);
 
     private final int id;
 

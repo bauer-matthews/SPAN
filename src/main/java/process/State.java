@@ -39,7 +39,7 @@ public class State {
         return new Observation(getRoleViews(), frame);
     }
 
-    List<RoleView> getRoleViews() throws ExecutionException {
+    public List<RoleView> getRoleViews() throws ExecutionException {
 
         List<RoleView> roleViews = new ArrayList<>();
 

@@ -1,7 +1,9 @@
-package kiss;
+package equivalence.kiss;
 
 import cache.GlobalDataCache;
 import com.google.common.base.Joiner;
+import equivalence.DeductionResult;
+import equivalence.EquivalenceResult;
 import process.State;
 import rewriting.Equality;
 import rewriting.Rewrite;
@@ -13,12 +15,13 @@ import rewriting.terms.VariableTerm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Created by mbauer on 8/2/2017.
  */
-public class KissEncoder {
+public class KissCodec {
 
     private static final Joiner COMMA_JOINER = Joiner.on(", ");
     private static final Joiner COMMA_RETURN_JOINER = Joiner.on(",\n");
@@ -124,8 +127,66 @@ public class KissEncoder {
             sb.deleteCharAt(sb.lastIndexOf("\n"));
         }
 
-        //System.out.println(sb.toString());
-
         return sb.toString();
+    }
+
+    static List<DeductionResult> decodeDeductionResults(String output) {
+        List<DeductionResult> results = new ArrayList<>();
+
+        String[] pieces = output.split("\n");
+
+        for (int i = 0; i < pieces.length; i++) {
+
+            String out = pieces[i];
+
+            if (out.contains(Resources.DEDUCTION_ID)) {
+                if (out.startsWith(Resources.TRUE)) {
+                    String values = out.substring(out.indexOf(Resources.TRUE) + 3,
+
+                            out.indexOf(Resources.RECIPE_ID)).trim();
+                    String[] valuePieces = values.split(Resources.DEDUCTION_ID_REGEX);
+
+                    results.add(new DeductionResult(valuePieces[1].trim(), true, valuePieces[0].trim(),
+                            Optional.of(out.substring(out.indexOf(Resources.RECIPE_ID) + 2))));
+
+                } else {
+                    String values = out.substring(out.indexOf(Resources.FALSE) + 3).trim();
+
+                    String[] valuePieces = values.split(Resources.DEDUCTION_ID_REGEX);
+
+                    results.add(new DeductionResult(valuePieces[1].trim(), false, valuePieces[0].trim(),
+                            Optional.empty()));
+                }
+            }
+        }
+
+        return results;
+    }
+
+    static List<EquivalenceResult> decodeEquivalenceResults(String output) {
+        List<EquivalenceResult> results = new ArrayList<>();
+
+        String[] pieces = output.split("\n");
+
+        for (int i = 0; i < pieces.length; i++) {
+
+            String out = pieces[i];
+            if (out.contains(Resources.EQUIVALENCE_ID)) {
+                if (out.startsWith(Resources.TRUE)) {
+
+                    String values = out.substring(out.indexOf(Resources.TRUE) + 3).trim();
+                    String[] valuePieces = values.split(Resources.EQUIVALENCE_ID);
+                    results.add(new EquivalenceResult(valuePieces[0].trim(), valuePieces[1].trim(), true));
+
+                } else {
+
+                    String values = out.substring(out.indexOf(Resources.FALSE) + 3).trim();
+                    String[] valuePieces = values.split(Resources.EQUIVALENCE_ID);
+                    results.add(new EquivalenceResult(valuePieces[0].trim(), valuePieces[1].trim(), false));
+                }
+            }
+        }
+
+        return results;
     }
 }

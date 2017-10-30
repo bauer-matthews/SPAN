@@ -1,6 +1,7 @@
 package process;
 
 import cache.EquivalenceCache;
+import equivalence.EquivalenceCheckResult;
 import org.apfloat.Aprational;
 
 import java.io.IOException;

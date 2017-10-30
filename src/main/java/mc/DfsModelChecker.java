@@ -51,10 +51,8 @@ public class DfsModelChecker extends AbstractModelChecker {
     private Aprational getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
-        if(RunConfiguration.getDebug()) {
-            GlobalDataCache.incrimentBeliefStateCounter();
-            GlobalDataCache.incrementStateCounter(beliefState.getBeliefs().size());
-        }
+        GlobalDataCache.incrimentBeliefStateCounter();
+        GlobalDataCache.incrementStateCounter(beliefState.getBeliefs().size());
 
         Optional<Aprational> attackProb = GlobalDataCache.hasPartialOrderReduction(
                 new Interleaving(beliefState.getActionHistory(), beliefState.getStateAttackProb()));

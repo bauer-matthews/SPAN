@@ -1,4 +1,4 @@
-package kiss;
+package equivalence.kiss;
 
 /**
  * SPAN - Stochastic Protocol Analyzer

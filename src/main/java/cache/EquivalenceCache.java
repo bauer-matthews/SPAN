@@ -3,8 +3,8 @@ package cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import process.EquivalenceCheckResult;
-import process.EquivalenceChecker;
+import equivalence.EquivalenceCheckResult;
+import equivalence.EquivalenceChecker;
 import process.State;
 import util.Pair;
 

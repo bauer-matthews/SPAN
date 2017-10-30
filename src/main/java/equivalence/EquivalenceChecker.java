@@ -1,14 +1,14 @@
-package process;
+package equivalence;
 
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import cache.SubstitutionCache;
-import kiss.DeductionResult;
-import kiss.EquivalenceResult;
-import kiss.Kiss;
-import kiss.KissEncoder;
+import equivalence.akiss.AkissEngine;
+import equivalence.kiss.KissEngine;
+import equivalence.kiss.KissCodec;
 import log.Console;
 import log.Severity;
+import process.State;
 import util.ExitCode;
 
 import java.io.IOException;
@@ -20,30 +20,20 @@ import java.util.concurrent.ExecutionException;
  */
 public class EquivalenceChecker {
 
-    private static String KISS_COMMAND = RunConfiguration.getKissPath();
-    private static final EquivalenceMethod method;
-
-    public enum EquivalenceMethod {
-        KISS;
-    }
+    private static final EquivalenceEngine ENGINE;
 
     static {
-        method = RunConfiguration.getEquivalenceMethod();
-    }
 
-    public static EquivalenceCheckResult check(State state1, State state2) throws IOException,
-            InterruptedException, ExecutionException {
-
-        switch (method) {
-            case KISS:
-                return checkKISS(state1, state2);
-            default:
-                Console.printMessage(Severity.INFO, "Reverting to default equivalence method");
-                return checkKISS(state1, state2);
+        if (RunConfiguration.getEquivalenceMethod().equals(EquivalenceMethod.KISS)) {
+            ENGINE = new KissEngine();
+        } else if (RunConfiguration.getEquivalenceMethod().equals(EquivalenceMethod.AKISS)) {
+            ENGINE = new AkissEngine();
+        } else {
+            ENGINE = null;
         }
     }
 
-    private static EquivalenceCheckResult checkKISS(State state1, State state2)
+    public static EquivalenceCheckResult check(State state1, State state2)
             throws IOException, InterruptedException, ExecutionException {
 
         // TODO: Need to handle the cases when one or the other is empty. Can probably just modify the call
@@ -52,24 +42,24 @@ public class EquivalenceChecker {
             return new EquivalenceCheckResult(true, false, false);
         }
 
-        String resultString = Kiss.invokeKiss(KISS_COMMAND,
-                KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
+        String resultString = ENGINE.invoke(
+                ENGINE.encode(GlobalDataCache.getProtocol().getSignature(),
                         GlobalDataCache.getProtocol().getRewrites(), state1, state2,
                         SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state1.getSubstitution()),
                         SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state2.getSubstitution())));
 
-        List<EquivalenceResult> results = Kiss.getEquivalenceResults(resultString);
+        List<EquivalenceResult> results = ENGINE.decodeEquivalenceResults(resultString);
 
         if (results.size() == 0) {
 
             if (RunConfiguration.getDebug()) {
 
-                System.out.println("Here is the problematic KISS encoding:");
+                System.out.println("Here is the problematic encoding:");
                 System.out.println();
 
-                System.out.println(KissEncoder.encode(GlobalDataCache.getProtocol().getSignature(),
+                System.out.println(KissCodec.encode(GlobalDataCache.getProtocol().getSignature(),
                         GlobalDataCache.getProtocol().getRewrites(), state1, state2,
                         SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state1.getSubstitution()),
@@ -77,8 +67,8 @@ public class EquivalenceChecker {
                                 .getSafetyProperty().getSecrets(), state2.getSubstitution())));
             }
 
-            Console.printError(Severity.ERROR, "Modeling checking failed due to KISS error");
-            System.exit(ExitCode.KISS_ERROR.getValue());
+            Console.printError(Severity.ERROR, "Modeling checking failed due to equivalence engine error");
+            System.exit(ExitCode.EQUIVALENCE_ERROR.getValue());
         }
 
         boolean equivalent = results.get(0).isEquivalent()
@@ -87,7 +77,7 @@ public class EquivalenceChecker {
         boolean phi1Attack = false;
         boolean phi2Attack = false;
 
-        for (DeductionResult deductionResult : Kiss.getDeductionResults(resultString)) {
+        for (DeductionResult deductionResult : ENGINE.decodeDeductionResults(resultString)) {
 
             if (deductionResult.isDeducible()) {
                 if (deductionResult.getFrame().equalsIgnoreCase("phi1")) {
