@@ -1,4 +1,4 @@
-package rewriting.unification;
+package rewriting.internal.unification;
 
 import rewriting.Equality;
 import rewriting.terms.FunctionTerm;

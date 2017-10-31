@@ -93,6 +93,10 @@ class CLIOptionsHelper {
         options.addOption(akiss);
         optionMap.put(akiss, akissConsumer);
 
+        // Maude
+        options.addOption(maude);
+        optionMap.put(maude, maudeConsumer);
+
         // Dot Output Option
         options.addOption(dot);
         optionMap.put(dot, dotConsumer);

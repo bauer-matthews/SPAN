@@ -44,6 +44,8 @@ public class AkissEngine implements EquivalenceEngine {
         String theString = org.apache.commons.io.IOUtils.toString(is, "ASCII");
         is.close();
 
+        process.destroy();
+
         return theString;
     }
 

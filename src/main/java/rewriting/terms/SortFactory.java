@@ -81,6 +81,10 @@ public class SortFactory {
         return subsortMap.get(sort2).contains(sort1) || sort1.equals(sort2);
     }
 
+    public static List<Sort> getSubsorts(Sort sort) {
+        return subsortMap.get(sort);
+    }
+
     public static Sort fromString(String sortString) throws ProtocolParseException {
 
         for (int i = 0; i < sorts.size(); i++) {

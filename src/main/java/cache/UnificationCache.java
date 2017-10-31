@@ -5,7 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import rewriting.Equality;
 import rewriting.terms.Term;
-import rewriting.unification.UnificationEngine;
+import rewriting.internal.unification.UnificationEngine;
 import util.Pair;
 
 import java.util.Collection;

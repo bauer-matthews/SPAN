@@ -3,8 +3,10 @@ package cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-
 import rewriting.RewriteEngine;
+import rewriting.RewriteMethod;
+import rewriting.internal.InternalEngine;
+import rewriting.maude.MaudeEngine;
 import rewriting.terms.Term;
 
 import java.util.concurrent.ExecutionException;
@@ -21,11 +23,12 @@ public class RewritingCache {
 
     private static final int DEFAULT_CACHE_SIZE = 20000;
 
+    private static final LoadingCache<Term, Term> REDUCED_TERMS;
+    private static final RewriteEngine REWRITE_ENGINE;
+
     private static long cacheLoads;
     private static long cacheCalls;
     private static int cacheSize;
-
-    private static final LoadingCache<Term, Term> reducedTerms;
 
     static {
 
@@ -38,22 +41,30 @@ public class RewritingCache {
             cacheSize = DEFAULT_CACHE_SIZE;
         }
 
-        reducedTerms = CacheBuilder.newBuilder()
+        if (RunConfiguration.getRewriteMethod().equals(RewriteMethod.MAUDE)) {
+            REWRITE_ENGINE = new MaudeEngine();
+        } else if (RunConfiguration.getRewriteMethod().equals(RewriteMethod.INTERNAL)) {
+            REWRITE_ENGINE = new InternalEngine();
+        } else {
+            // TODO: Exception
+            REWRITE_ENGINE = null;
+        }
+
+        REDUCED_TERMS = CacheBuilder.newBuilder()
                 .maximumSize(cacheSize)
                 .build(
                         new CacheLoader<Term, Term>() {
                             // TODO: tighten exception
                             public Term load(Term term) throws Exception {
                                 cacheLoads++;
-                                return RewriteEngine.reduce(term,
-                                        GlobalDataCache.getProtocol().getRewrites(), true);
+                                return REWRITE_ENGINE.reduce(term, true);
                             }
                         });
     }
 
     public static Term reduce(Term term) throws ExecutionException {
         cacheCalls++;
-        return reducedTerms.get(term);
+        return REDUCED_TERMS.get(term);
     }
 
     public static long getCacheLoads() {

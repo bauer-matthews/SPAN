@@ -3,6 +3,7 @@ package parser.cli;
 import cache.RunConfiguration;
 import equivalence.EquivalenceMethod;
 import org.apache.commons.cli.Option;
+import rewriting.RewriteMethod;
 import util.ExitCode;
 
 import java.io.File;
@@ -58,6 +59,18 @@ public class CLIOptions {
     static Consumer<Option> akissConsumer = (akissOpt) -> {
         RunConfiguration.setAkissPath(akissOpt.getValue());
         RunConfiguration.setEquivalenceMethod(EquivalenceMethod.AKISS);
+    };
+
+    // MAUDE engine
+    static Option maude = Option.builder("maude")
+            .desc("path to maude engine")
+            .hasArg()
+            .argName("location")
+            .required(false)
+            .build();
+    static Consumer<Option> maudeConsumer = (maudeOpt) -> {
+        RunConfiguration.setMaudePath(maudeOpt.getValue());
+        RunConfiguration.setRewriteMethod(RewriteMethod.MAUDE);
     };
 
     // Dot Output Option

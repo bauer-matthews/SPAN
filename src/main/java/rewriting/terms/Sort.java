@@ -2,6 +2,7 @@ package rewriting.terms;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -19,6 +20,14 @@ public class Sort {
 
     public String getName() {
         return name;
+    }
+
+    public List<Sort> getSubsorts() {
+        return SortFactory.getSubsorts(this);
+    }
+
+    public boolean hasSubsorts() {
+        return !SortFactory.getSubsorts(this).isEmpty();
     }
 
     @Override

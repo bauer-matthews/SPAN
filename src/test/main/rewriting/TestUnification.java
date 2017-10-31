@@ -6,7 +6,7 @@ import resources.signature.Pair;
 import rewriting.terms.FunctionTerm;
 import rewriting.terms.Term;
 import rewriting.terms.VariableTerm;
-import rewriting.unification.UnificationEngine;
+import rewriting.internal.unification.UnificationEngine;
 
 import java.util.ArrayList;
 import java.util.Collection;

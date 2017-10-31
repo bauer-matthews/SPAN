@@ -1,6 +1,7 @@
 package cache;
 
 import equivalence.EquivalenceMethod;
+import rewriting.RewriteMethod;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -26,8 +27,11 @@ public class RunConfiguration {
     private static File protocolFile;
     private static Path dotFile;
     private static EquivalenceMethod equivalenceMethod;
+    private static RewriteMethod rewriteMethod;
+
     private static String kissPath;
     private static String akissPath;
+    private static String maudePath;
 
     private static Integer equivalenceCacheSize;
     private static Integer rewritingCacheSize;
@@ -43,6 +47,7 @@ public class RunConfiguration {
         printAttack = false;
         findMaxAttack = false;
         emptyOutputs = false;
+        rewriteMethod = RewriteMethod.INTERNAL;
     }
 
     public static void enableDebug() {
@@ -168,5 +173,21 @@ public class RunConfiguration {
 
     public static String getAkissPath() {
         return akissPath;
+    }
+
+    public static void setMaudePath(String maudePath) {
+        RunConfiguration.maudePath = maudePath;
+    }
+
+    public static String getMaudePath() {
+        return maudePath;
+    }
+
+    public static void setRewriteMethod(RewriteMethod rewriteMethod) {
+        RunConfiguration.rewriteMethod = rewriteMethod;
+    }
+
+    public static RewriteMethod getRewriteMethod() {
+        return rewriteMethod;
     }
 }
