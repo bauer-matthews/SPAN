@@ -56,13 +56,20 @@ public class MaudeEngine implements RewriteEngine {
     @Override
     public Term reduce(Term term, boolean useCache) throws ExecutionException, IOException {
 
-        writer.write(MaudeCodec.encodeReduce(term) + "\n");
+        String reduceCommand = MaudeCodec.encodeReduce(term);
+        writer.write(reduceCommand);
         writer.flush();
 
         threadReader.run();
         threadReader.run();
         threadReader.run();
         threadReader.run();
+
+        // NOTE: if the reduce command is longer that 75 characters
+        // it gets split another another output line
+        for (int i = 0; i < (reduceCommand.length() / 75); i++) {
+            threadReader.run();
+        }
 
         String resultTerm = readLine.substring(readLine.indexOf(":") + 1).trim();
 

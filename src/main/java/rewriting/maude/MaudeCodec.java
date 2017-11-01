@@ -123,6 +123,6 @@ public class MaudeCodec {
     }
 
     static String encodeReduce(Term term) {
-        return "reduce in SPAN : " + term.toMathString() + " .";
+        return "reduce in SPAN : " + term.toMathString() + " .\n";
     }
 }
