@@ -1,6 +1,7 @@
 package rewriting.maude;
 
 import cache.RunConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import rewriting.RewriteEngine;
 import rewriting.terms.Term;
 import rewriting.terms.TermFactory;
@@ -54,7 +55,7 @@ public class MaudeEngine implements RewriteEngine {
     }
 
     @Override
-    public Term reduce(Term term, boolean useCache) throws ExecutionException, IOException {
+    public Term reduce(Term term, boolean useCache) throws ExecutionException, IOException, TermParseException {
 
         String reduceCommand = MaudeCodec.encodeReduce(term);
         writer.write(reduceCommand);
@@ -65,19 +66,24 @@ public class MaudeEngine implements RewriteEngine {
         threadReader.run();
         threadReader.run();
 
+        // TODO: Does the string line differ on different machines??
+
         // NOTE: if the reduce command is longer that 75 characters
         // it gets split another another output line
-        for (int i = 0; i < (reduceCommand.length() / 75); i++) {
+        for (int i = 0; i < (reduceCommand.length() / 78); i++) {
             threadReader.run();
         }
 
         String resultTerm = readLine.substring(readLine.indexOf(":") + 1).trim();
 
-        try {
-            return TermFactory.buildTerm(resultTerm);
-        } catch (TermParseException ex) {
-            return null;
+        // NOTE: Another hack to handle when result string is
+        // split onto multiple lines
+        while (StringUtils.countMatches(resultTerm, "(") != StringUtils.countMatches(resultTerm, ")")) {
+            threadReader.run();
+            resultTerm = resultTerm + readLine.trim();
         }
+
+        return TermFactory.buildTerm(resultTerm);
     }
 
     @Override

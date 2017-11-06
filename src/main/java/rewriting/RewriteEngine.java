@@ -1,6 +1,7 @@
 package rewriting;
 
 import rewriting.terms.Term;
+import rewriting.terms.TermParseException;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  */
 public interface RewriteEngine {
 
-    Term reduce(Term term, boolean useCache) throws ExecutionException, IOException;
+    Term reduce(Term term, boolean useCache) throws ExecutionException, IOException, TermParseException;
 
     void shutdown() throws IOException;
 }
