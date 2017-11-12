@@ -136,7 +136,15 @@ public class ProtocolParser {
 
         String version = null;
         Integer recipeSize = null;
+        boolean enableXOR = false;
+
         for (Statement statement : statements) {
+
+            if(statement.getCommand().trim().equalsIgnoreCase(Commands.XOR)) {
+                if(statement.getValue().equalsIgnoreCase("yes")) {
+                    enableXOR = true;
+                }
+            }
 
             if (statement.getCommand().trim().equalsIgnoreCase(Commands.VERSION)) {
 
@@ -205,7 +213,7 @@ public class ProtocolParser {
             throw new ProtocolParseException(Resources.NO_RECIPE_SIZE);
         }
 
-        return new Metadata(version, recipeSize.intValue());
+        return new Metadata(version, recipeSize.intValue(), enableXOR);
     }
 
     private static Map<String, Aprational> parseFractionConstants(String text) throws ProtocolParseException,

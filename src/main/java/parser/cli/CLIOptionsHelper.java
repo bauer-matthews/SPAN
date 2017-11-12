@@ -1,9 +1,12 @@
 package parser.cli;
 
+import cache.GlobalDataCache;
+import cache.RunConfiguration;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import rewriting.terms.FunctionSymbol;
 import util.ExitCode;
 
 import java.util.HashMap;
@@ -106,25 +109,46 @@ class CLIOptionsHelper {
         optionMap.put(protocol, protocolConsumer);
     }
 
-    static void validateOptions(List<Option> options) throws ParseException{
+    static void validateOptions(List<Option> options) throws ParseException {
         validateEquivalenceOptions(options);
+        validateXOROption(options);
+    }
+
+    private static void validateXOROption(List<Option> options) throws ParseException {
+
+        if (GlobalDataCache.getProtocol().getMetadata().enableXOR()) {
+
+            if (!options.contains(maude)) {
+                throw new ParseException("Maude must be enabled to use XOR");
+            }
+
+            if (!options.contains(akiss)) {
+                throw new ParseException("Akiss must be enabled to use XOR");
+            }
+
+            for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+                if (functionSymbol.getSymbol().equalsIgnoreCase("xor")) {
+                    throw new ParseException("The function symbol \"xor\" is reserved when the XOR option is enabled");
+                }
+            }
+        }
     }
 
     private static void validateEquivalenceOptions(List<Option> options) throws ParseException {
 
         int equivOptCount = 0;
-        for(Option option : options) {
+        for (Option option : options) {
 
-            if(option.equals(kiss)) {
+            if (option.equals(kiss)) {
                 equivOptCount++;
             }
 
-            if(option.equals(akiss)) {
+            if (option.equals(akiss)) {
                 equivOptCount++;
             }
         }
 
-        if(equivOptCount != 1) {
+        if (equivOptCount != 1) {
             throw new ParseException("Exactly one equivalence checker option must be present");
         }
     }

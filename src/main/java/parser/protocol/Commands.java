@@ -13,6 +13,7 @@ class Commands {
     // Metadata Commands
     static final String VERSION = "version";
     static final String RECIPE_DEPTH = "recipe depth";
+    static final String XOR = "xor";
 
     // Hidden Metadata Command
     static final String REWRITING_CACHE = "rewriting cache";

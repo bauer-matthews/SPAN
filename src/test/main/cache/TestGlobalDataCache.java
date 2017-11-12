@@ -67,7 +67,7 @@ public class TestGlobalDataCache {
     private static void initializeProtocol() {
 
         protocol = new ProtocolBuilder()
-                .metadata(new Metadata("1", 1))
+                .metadata(new Metadata("1", 1, false))
                 .signature(Simple.SIGNATURE)
                 .safetyProperty(new SafetyProperty(Collections.emptyList(), Aprational.ONE))
                 .fractionConstants(new HashMap<>())

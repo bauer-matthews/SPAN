@@ -20,13 +20,15 @@ public class Metadata {
 
     private final String version;
     private int recipeDepth;
+    private boolean enableXOR;
 
-    public Metadata(String version, int recipeDepth) {
+    public Metadata(String version, int recipeDepth, boolean enableXOR) {
 
         Objects.requireNonNull(version);
 
         this.version = version;
         this.recipeDepth = recipeDepth;
+        this.enableXOR = enableXOR;
     }
 
     public String getVersion() {
@@ -35,6 +37,10 @@ public class Metadata {
 
     public int getRecipeDepth() {
         return recipeDepth;
+    }
+
+    public boolean enableXOR() {
+        return enableXOR;
     }
 
     @VisibleForTesting
