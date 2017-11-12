@@ -4,7 +4,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 5;
+    recipe depth : 10;
 
 .constants
 

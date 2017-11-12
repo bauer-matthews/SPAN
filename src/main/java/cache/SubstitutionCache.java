@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class SubstitutionCache {
 
-    private static final int DEFAULT_CACHE_SIZE = 30000;
+    private static final int DEFAULT_CACHE_SIZE = 200000;
 
     private static long cacheLoads;
     private static long cacheCalls;

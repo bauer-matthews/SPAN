@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class EquivalenceCache {
 
-    private static final int DEFAULT_CACHE_SIZE = 20000;
+    private static final int DEFAULT_CACHE_SIZE = 200000;
 
     private static long cacheLoads;
     private static long cacheCalls;

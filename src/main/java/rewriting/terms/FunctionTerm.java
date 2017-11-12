@@ -23,7 +23,7 @@ public class FunctionTerm implements Term {
         Objects.requireNonNull(subterms);
 
         if (subterms.size() != rootSymbol.getArity()) {
-            throw new IllegalArgumentException(Resources.INVALID_NUM_SUBTERMS);
+            throw new IllegalArgumentException(Resources.INVALID_NUM_SUBTERMS + ": " + rootSymbol.getSymbol());
         }
 
         this.rootSymbol = rootSymbol;

@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class ActionFactory2Cache {
 
-    private static final int DEFAULT_CACHE_SIZE = 10000;
+    private static final int DEFAULT_CACHE_SIZE = 100000;
 
     private static long cacheLoads;
     private static long cacheCalls;

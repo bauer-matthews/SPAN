@@ -7,33 +7,37 @@ from subprocess import Popen, PIPE
 parser = argparse.ArgumentParser()
 parser.add_argument("test_files_dir")
 parser.add_argument("jar_location")
+parser.add_argument("kiss")
 args = parser.parse_args()
 
 outFile = open('./results.csv', 'w+')
 
-print >> outFile, "test name, recipe size, time, attack found, maximum attack prob, paths explored"
+print >> outFile, "test name, recipe size, time, attack found, maximum attack prob, belief states, states"
 
 for root, dirs, filenames in os.walk(args.test_files_dir):
 
     for f in filenames:
 
-        p = Popen(['java', '-jar', args.jar_location, "-maxAttack" ,'-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        output, err = p.communicate();
-
         testName = root[root.rfind('/') + 1:]
         tail = f[f.rfind('_')+1:]
         recipeSize = tail[0:tail.rfind('.')]
 
+        print("starting: " + testName + " " + recipeSize)
+
+        p = Popen(['java', '-jar', args.jar_location, "-maxAttack", "-kiss", args.kiss, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        output, err = p.communicate();
+
         if not err:
-            print(testName + " " + recipeSize)
+            print("completed: " + testName + " " + recipeSize)
         else:
-            print(testName + " " + recipeSize + " - failed!")
+            print("error: " + testName + " " + recipeSize + " - failed!")
             print(err)
 
 
         time = ''
         prob = ''
-        paths = ''
+        beliefs = ''
+        states = ''
         found = ''
 
         for item in output.split("\n"):
@@ -46,9 +50,13 @@ for root, dirs, filenames in os.walk(args.test_files_dir):
                 probLine = item.strip();
                 prob = probLine[probLine.rfind(':')+1:].strip(' \t\n\r')
 
-            if "Paths" in item:
-                pathsLine = item.strip();
-                paths = pathsLine[pathsLine.rfind(':')+1:].strip(' \t\n\r')
+            if "Belief" in item:
+                beliefsLine = item.strip();
+                beliefs = beliefsLine[beliefsLine.rfind(':')+1:].strip(' \t\n\r')
+
+            if "States" in item:
+                statesLine = item.strip();
+                states = statesLine[statesLine.rfind(':')+1:].strip(' \t\n\r')
 
             if "Attack found" in item:
                 found = "yes"
@@ -56,7 +64,7 @@ for root, dirs, filenames in os.walk(args.test_files_dir):
             if "No attack found" in item:
                 found = "no"
 
-        print >> outFile, testName + ", " + recipeSize + ", " + time + ", " + found + ", " + prob + ", " + paths
+        print >> outFile, testName + ", " + recipeSize + ", " + time + ", " + found + ", " + prob + ", " + beliefs + ", " + states
 
 exit(0)
 

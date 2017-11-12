@@ -46,15 +46,15 @@
 
     role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)), r2, pk(km)));
 
-    role :  {1} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)), r4, pk(km)));
+    role :  {2} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)), r4, pk(km)));
 
-    role:   {2} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
-            {2} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
-            {2} [y1 != y2] out(p -> adec(y1, sk(km)) @ adec(y2, sk(km)) +
+    role:   {3} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {3} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {3} [y1 != y2] out(p -> adec(y1, sk(km)) @ adec(y2, sk(km)) +
                                p -> adec(y2, sk(km)) @ adec(y1, sk(km)));
 
-    role:   {3} in(y3{aenc(m2, r3, pk(k2))}) .
-            {3} [ y3 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
+    role:   {4} in(y3{aenc(m2, r3, pk(k2))}) .
+            {4} [ y3 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

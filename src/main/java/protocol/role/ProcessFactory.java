@@ -136,13 +136,56 @@ public class ProcessFactory {
 
         Collection<ProbOutput> probOutputs = new ArrayList<>();
 
-        String[] outStrings = outString.substring(outString.indexOf("(") + 1, outString.length() - 1).split("\\+");
+        if (outString.trim().startsWith("permute")) {
 
-        for (String probOutString : outStrings) {
-            probOutputs.add(parseProbOutputs(probOutString));
+            List<Term> permuteTerms = parsePermuteTerms(
+                    outString.substring(outString.indexOf("(") + 1, outString.length() - 1));
+
+            List<List<Term>> permutations = generatePermutations(permuteTerms);
+            Aprational fraction = AprationalFactory.fromString("1/" + permutations.size());
+
+            for(List<Term> permutation : permutations) {
+                probOutputs.add(new ProbOutput(fraction, permutation, new Role(Collections.emptyList())));
+            }
+
+        } else if (outString.trim().startsWith("out")) {
+
+            String[] outStrings = outString.substring(outString.indexOf("(") + 1, outString.length() - 1).split("\\+");
+
+            for (String probOutString : outStrings) {
+                probOutputs.add(parseProbOutputs(probOutString));
+            }
+
+        } else {
+            throw new ActionParseException("Unable to parse output command: " + outString);
         }
 
         return new OutputProcess(guards, probOutputs, phase);
+    }
+
+    private static List<List<Term>> generatePermutations(List<Term> terms) {
+
+        List<List<Term>> permutations = new ArrayList<>();
+
+        if (terms.size() == 1) {
+            permutations.add(terms);
+        } else {
+
+            for (Term term : terms) {
+                List<Term> subList = new ArrayList<>();
+                subList.addAll(terms);
+                subList.remove(term);
+
+                for (List<Term> subListPerm : generatePermutations(subList)) {
+                    List<Term> perm = new ArrayList<>();
+                    perm.add(term);
+                    perm.addAll(subListPerm);
+                    permutations.add(perm);
+                }
+            }
+        }
+
+        return permutations;
     }
 
     private static ProbOutput parseProbOutputs(String probOutput) throws TermParseException, ActionParseException {
@@ -180,11 +223,24 @@ public class ProcessFactory {
             for (String outPiece : outPieces) {
                 outputTerms.add(validateTerm(TermFactory.buildTerm(outPiece.trim())));
             }
-        } else{
+        } else {
             RunConfiguration.enableEmptyOutputs();
         }
 
         return new ProbOutput(fraction, outputTerms, subrole);
+    }
+
+    private static List<Term> parsePermuteTerms(String permuteTermsString) throws TermParseException,
+            ActionParseException {
+
+        List<Term> outputTerms = new ArrayList<>();
+
+        String[] outPieces = permuteTermsString.split("\\@");
+        for (String outPiece : outPieces) {
+            outputTerms.add(validateTerm(TermFactory.buildTerm(outPiece.trim())));
+        }
+
+        return outputTerms;
     }
 
     private static Role getSubrole(String roleName) throws ActionParseException {

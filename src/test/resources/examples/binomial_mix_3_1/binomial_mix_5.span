@@ -4,7 +4,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 3;
+    recipe depth : 5;
 
 .constants
 
@@ -13,12 +13,16 @@
     sort : PKey, SKey, Nonce, Message;
     subsort : PKey, SKey, Nonce < Message;
 
+    # equational theory variables
     variables : m | Message;
     variables : k, r | Nonce;
 
+    # input variables
     variables : y1, y2, y3, y4, y5 | Message;
-    variables : vM | Message;
-    variables : vN | Nonce;
+
+    # input guard variables
+    variables : message | Message;
+    variables : nonce | Nonce;
 
     function : aenc | Message Nonce PKey -> Message;
     function : adec | Message SKey -> Message;
@@ -41,21 +45,21 @@
     role :  {0} [T] out(1 -> pk(km));
 
     role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)),r2, pk(km))) .
-            {1} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)),r4, pk(km))) .
-            {1} [T] out(1 -> aenc(aenc(m3, r5, pk(k3)),r6, pk(km)));
+            {2} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)),r4, pk(km))) .
+            {3} [T] out(1 -> aenc(aenc(m3, r5, pk(k3)),r6, pk(km)));
 
-    role:   {2} in(y1{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
-            {2} in(y2{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
-            {2} in(y3{aenc(aenc(vM, vN, pk(vN)),vN, pk(km))}) .
-            {2} [ y1 != y2 & y2 != y3 & y3 != y1 ] out(1/4 -> adec(y1, sk(km)) +
+    role:   {4} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {4} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {4} in(y3{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {4} [ y1 != y2 & y2 != y3 & y3 != y1 ] out(1/4 -> adec(y1, sk(km)) +
                                                        3/4 -> T) .
-            {2} [ y1 != y2 & y2 != y3 & y3 != y1 ] out(1/4 -> adec(y2, sk(km)) +
+            {4} [ y1 != y2 & y2 != y3 & y3 != y1 ] out(1/4 -> adec(y2, sk(km)) +
                                                        3/4 -> T) .
-            {2} [ y1 != y2 & y2 != y3 & y3 != y1 ] out(1/4 -> adec(y3, sk(km)) +
+            {4} [ y1 != y2 & y2 != y3 & y3 != y1 ] out(1/4 -> adec(y3, sk(km)) +
                                                        3/4 -> T);
 
-    role:   {3} in(y5{aenc(m2, r3, pk(k2))}) .
-            {3} [ y5 == aenc(m2,r3, pk(k2)) ] out(1 -> s);
+    role:   {5} in(y5{aenc(m2, r3, pk(k2))}) .
+            {5} [ y5 == aenc(m2, r3, pk(k2)) ] out(1 -> s);
 
 .safety
     secrecy : s >= 1/2;

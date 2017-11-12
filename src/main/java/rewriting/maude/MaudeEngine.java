@@ -1,3 +1,4 @@
+
 package rewriting.maude;
 
 import cache.RunConfiguration;
@@ -10,6 +11,7 @@ import rewriting.terms.TermParseException;
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 
+
 /**
  * SPAN - Stochastic Protocol Analyzer
  * <p>
@@ -18,6 +20,7 @@ import java.util.concurrent.ExecutionException;
  * @author Matthew S. Bauer
  * @version 1.0
  */
+
 public class MaudeEngine implements RewriteEngine {
 
     private static final String MAUDE_COMMAND = RunConfiguration.getMaudePath();
@@ -62,23 +65,17 @@ public class MaudeEngine implements RewriteEngine {
         writer.flush();
 
         threadReader.run();
-        threadReader.run();
-        threadReader.run();
-        threadReader.run();
 
-        // TODO: Does the string line differ on different machines??
-
-        // NOTE: if the reduce command is longer that 75 characters
-        // it gets split another another output line
-        for (int i = 0; i < (reduceCommand.length() / 78); i++) {
+        while (!readLine.startsWith("result")) {
             threadReader.run();
         }
 
         String resultTerm = readLine.substring(readLine.indexOf(":") + 1).trim();
 
-        // NOTE: Another hack to handle when result string is
+        // NOTE: Hack to handle when result string is
         // split onto multiple lines
-        while (StringUtils.countMatches(resultTerm, "(") != StringUtils.countMatches(resultTerm, ")")) {
+        while (StringUtils.countMatches(resultTerm, "(") !=
+                StringUtils.countMatches(resultTerm, ")")) {
             threadReader.run();
             resultTerm = resultTerm + readLine.trim();
         }
@@ -115,3 +112,4 @@ public class MaudeEngine implements RewriteEngine {
         }
     }
 }
+

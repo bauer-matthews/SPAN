@@ -86,52 +86,52 @@ public class GlobalDataCache {
 
         int size = interleaving.getActionList().size();
 
-        for (Interleaving explored : interleavings) {
-            if (explored.getActionList().size() == size && size >= 2) {
-
-                // Back-to-back outputs produce identical runs
-                if (interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION) &&
-                        interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION)) {
-
-                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
-                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
-
-                        // If there are empty outputs, the reduction is only sound if the
-                        // outputs are in different roles
-                        if (!RunConfiguration.containsEmptyOutputs()) {
-
-                            interleavingsExplored++;
-                            return Optional.of(explored.getAttackProb());
-
-                        } else {
-                            if (interleaving.getActionList().get(size - 1).getRoleIndex() !=
-                                    interleaving.getActionList().get(size - 2).getRoleIndex()) {
-
-                                interleavingsExplored++;
-                                return Optional.of(explored.getAttackProb());
-                            }
-                        }
-                    }
-                }
-
-                // Back-to-back inputs from different roles can be swapped
-                if ((!interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION)) &&
-                        (!interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION))) {
-
-                    // NOTE: This only allows swapping of identical recipes.
-                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
-                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
-
-                        if (interleaving.getActionList().get(size - 1).getRoleIndex() !=
-                                interleaving.getActionList().get(size - 2).getRoleIndex()) {
-
-                            interleavingsExplored++;
-                            return Optional.of(explored.getAttackProb());
-                        }
-                    }
-                }
-            }
-        }
+//        for (Interleaving explored : interleavings) {
+//            if (explored.getActionList().size() == size && size >= 2) {
+//
+//                // Back-to-back outputs produce identical runs
+//                if (interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION) &&
+//                        interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION)) {
+//
+//                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
+//                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
+//
+//                        // If there are empty outputs, the reduction is only sound if the
+//                        // outputs are in different roles
+//                        if (!RunConfiguration.containsEmptyOutputs()) {
+//
+//                            interleavingsExplored++;
+//                            return Optional.of(explored.getAttackProb());
+//
+//                        } else {
+//                            if (interleaving.getActionList().get(size - 1).getRoleIndex() !=
+//                                    interleaving.getActionList().get(size - 2).getRoleIndex()) {
+//
+//                                interleavingsExplored++;
+//                                return Optional.of(explored.getAttackProb());
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                // Back-to-back inputs from different roles can be swapped
+//                if ((!interleaving.getActionList().get(size - 1).getRecipe().equals(Resources.TAU_ACTION)) &&
+//                        (!interleaving.getActionList().get(size - 2).getRecipe().equals(Resources.TAU_ACTION))) {
+//
+//                    // NOTE: This only allows swapping of identical recipes.
+//                    if (explored.getActionList().get(size - 1).equals(interleaving.getActionList().get(size - 2)) &&
+//                            explored.getActionList().get(size - 2).equals(interleaving.getActionList().get(size - 1))) {
+//
+//                        if (interleaving.getActionList().get(size - 1).getRoleIndex() !=
+//                                interleaving.getActionList().get(size - 2).getRoleIndex()) {
+//
+//                            interleavingsExplored++;
+//                            return Optional.of(explored.getAttackProb());
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         return Optional.empty();
     }
