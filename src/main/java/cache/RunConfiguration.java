@@ -23,6 +23,7 @@ public class RunConfiguration {
     private static boolean findMaxAttack;
     private static boolean outputToDot;
     private static boolean emptyOutputs;
+    private static boolean xor;
 
     private static File protocolFile;
     private static Path dotFile;
@@ -48,6 +49,15 @@ public class RunConfiguration {
         findMaxAttack = false;
         emptyOutputs = false;
         rewriteMethod = RewriteMethod.INTERNAL;
+        xor = false;
+    }
+
+    public static void enableXOR() {
+        RunConfiguration.xor = true;
+    }
+
+    public static boolean isXor() {
+        return xor;
     }
 
     public static void enableDebug() {

@@ -4,7 +4,8 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 10;
+    recipe depth : 1;
+    xor : yes;
 
 .constants
 
@@ -16,7 +17,6 @@
     # equational theory variables
     variables : mes, mes1, mes2 | Message;
     variables : rand, key | Nonce;
-    variables : b1, b2 | Bit;
 
     # input variables
     variables : y0, y1, y2, y3 | Message;
@@ -31,9 +31,6 @@
     function : adec | Message SKey -> Message;
     function : pk | Nonce -> PKey;
     function : sk | Nonce -> SKey;
-    function : xor | Bit Bit -> Bit;
-    function : zero | -> Bit;
-    function : one | -> Bit;
     function : sign | Message SKey -> Message;
     function : checksign | Message PKey -> Bit;
     function : getsign | Message PKey -> Message;
@@ -41,6 +38,7 @@
     function : fst | Message -> Message;
     function : snd | Message -> Message;
     function : hash | Message -> Message;
+    function : ok | -> Bit;
 
     public names : a | Bit;
     public names : b | Message;
@@ -52,15 +50,10 @@
 .rewrites
 
     rewrite : adec(aenc(mes, rand, pk(key)), sk(key)) -> mes;
-    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> one;
+    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> ok;
     rewrite : getsign(sign(mes, sk(key)), pk(key)) -> mes;
     rewrite : fst(pair(mes1, mes2)) -> mes1;
     rewrite : snd(pair(mes1, mes2)) -> mes2;
-    rewrite : xor(b1, xor(b1, b2)) -> b2;
-    rewrite : xor(xor(b1, b2), b1) -> b2;
-    rewrite : xor(b1, b1) -> zero;
-    rewrite : xor(b1, zero) -> b1;
-    rewrite : xor(zero, b1) -> b1;
 
 .roles
 
@@ -71,28 +64,28 @@
             {0} [T] out(1 -> pk(kb2));
 
     # Voter 1 Process
-    role :  {1} [T] out(1/2 -> sign(pair(xor(g1, xor(g0, zero)),
+    role :  {1} [T] out(1/2 -> sign(pair(plus(g1, plus(g0, zero)),
                                     aenc(pair(g1, aenc(pair(g0, D0), r0, pk(kt0))), r1, pk(kt1))), sk(kb1)) # v1p1 +
-                        1/2 -> sign(pair(xor(g1, xor(g0, one)),
+                        1/2 -> sign(pair(plus(g1, plus(g0, one)),
                                     aenc(pair(g1, aenc(pair(g0, D0), r0, pk(kt0))), r1, pk(kt1))), sk(kb1)) # v1p2);
 
     # Voter 2 Process
-    role :  {1} [T] out(1/2 -> sign(pair(xor(g11, xor(g00, zero)),
+    role :  {1} [T] out(1/2 -> sign(pair(plus(g11, plus(g00, zero)),
                                     aenc(pair(g11, aenc(pair(g00, D00), r0, pk(kt0))), r1, pk(kt1))), sk(kb2)) +
-                        1/2 -> sign(pair(xor(g11, xor(g00, one)),
+                        1/2 -> sign(pair(plus(g11, plus(g00, one)),
                                     aenc(pair(g11, aenc(pair(g00, D00), r0, pk(kt0))), r1, pk(kt1))), sk(kb2)));
 
     # Teller
     role :  {3} in(y1{sign(message, sk(kb1))}) .
             {3} in(y2{sign(message, sk(kb2))}) .
-            {3} [ checksign(y1, pk(kb1)) == one & checksign(y2, pk(kb2)) == one ]
-                    out(1/2 ->  xor(xor(fst(getsign(y1, pk(kb1))), fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1)))),
+            {3} [ checksign(y1, pk(kb1)) == ok & checksign(y2, pk(kb2)) == ok ]
+                    out(1/2 ->  plus(plus(fst(getsign(y1, pk(kb1))), fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1)))),
                                     fst(adec(snd(adec(snd(getsign(y1, pk(kb1))), sk(kt1))), sk(kt0)))) @
-                                xor(xor(fst(getsign(y2, pk(kb2))), fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1)))),
+                                plus(plus(fst(getsign(y2, pk(kb2))), fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1)))),
                                     fst(adec(snd(adec(snd(getsign(y2, pk(kb2))), sk(kt1))), sk(kt0)))) +
-                        1/2 ->  xor(xor(fst(getsign(y2, pk(kb2))), fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1)))),
+                        1/2 ->  plus(plus(fst(getsign(y2, pk(kb2))), fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1)))),
                                     fst(adec(snd(adec(snd(getsign(y2, pk(kb2))), sk(kt1))), sk(kt0)))) @
-                                xor(xor(fst(getsign(y1, pk(kb1))), fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1)))),
+                                plus(plus(fst(getsign(y1, pk(kb1))), fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1)))),
                                     fst(adec(snd(adec(snd(getsign(y1, pk(kb1))), sk(kt1))), sk(kt0)))));
 
     # Voter 1 Test Party 1

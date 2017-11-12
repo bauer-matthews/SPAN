@@ -2,7 +2,6 @@ package protocol;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
-import parser.protocol.Statement;
 
 import java.util.Objects;
 
@@ -39,7 +38,7 @@ public class Metadata {
         return recipeDepth;
     }
 
-    public boolean enableXOR() {
+    public boolean isXOR() {
         return enableXOR;
     }
 

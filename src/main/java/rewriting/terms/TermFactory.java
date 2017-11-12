@@ -1,5 +1,6 @@
 package rewriting.terms;
 
+import cache.RunConfiguration;
 import rewriting.Signature;
 
 import java.util.*;
@@ -18,17 +19,29 @@ public class TermFactory {
     private static final String FRAME_VAR = "W";
     private static final String UNDERSCORE = "_";
 
+    private static final FunctionSymbol ZERO;
+    private static final FunctionSymbol ONE;
+    private static final FunctionSymbol PLUS;
+
     private static final List<String> RESERVED_STRINGS = new ArrayList<>();
 
     private static Collection<NameTerm> PRIVATE_NAMES = new ArrayList<>();
     private static Collection<NameTerm> PUBLIC_NAMES = new ArrayList<>();
     private static Collection<VariableTerm> VARIABLES = new ArrayList<>();
-    private static Collection<FunctionSymbol> FUNCTIONS = new ArrayList<>();
+    private static Collection<FunctionSymbol> USER_FUNCTIONS = new ArrayList<>();
+    private static Collection<FunctionSymbol> ALL_FUNCTIONS = new ArrayList<>();
 
     static {
         RESERVED_STRINGS.add(TOP);
         RESERVED_STRINGS.add(FRAME_VAR);
         RESERVED_STRINGS.add(UNDERSCORE);
+
+        List<Sort> paramList = new ArrayList<>();
+        paramList.add(new Sort("Bit"));
+        paramList.add(new Sort("Bit"));
+        PLUS = new FunctionSymbol("plus", paramList, new Sort("Bit"));
+        ZERO = new FunctionSymbol("zero", Collections.emptyList(), new Sort("Bit"));
+        ONE = new FunctionSymbol("one", Collections.emptyList(), new Sort("Bit"));
     }
 
     public static void initTermBuilder(Signature signature) {
@@ -36,7 +49,14 @@ public class TermFactory {
         PRIVATE_NAMES = signature.getPrivateNames();
         PUBLIC_NAMES = signature.getPublicNames();
         VARIABLES = signature.getVariables();
-        FUNCTIONS = signature.getFunctions();
+        USER_FUNCTIONS = signature.getFunctions();
+        ALL_FUNCTIONS.addAll(USER_FUNCTIONS);
+
+        if (RunConfiguration.isXor()) {
+            ALL_FUNCTIONS.add(ZERO);
+            ALL_FUNCTIONS.add(ONE);
+            ALL_FUNCTIONS.add(PLUS);
+        }
     }
 
     public static List<String> getReservedStrings() {
@@ -47,7 +67,7 @@ public class TermFactory {
 
         if (!termString.contains("(")) {
 
-            for (FunctionSymbol functionSymbol : FUNCTIONS) {
+            for (FunctionSymbol functionSymbol : ALL_FUNCTIONS) {
                 if ((functionSymbol.getArity() == 0) && (termString.equals(functionSymbol.getSymbol()))) {
                     return new FunctionTerm(functionSymbol, Collections.emptyList());
                 }
@@ -75,7 +95,7 @@ public class TermFactory {
                 String functionSymbol = termString.substring(0, termString.indexOf("(")).trim();
 
                 String subtermString = termString.substring(termString.indexOf("(") + 1, termString.length() - 1);
-                Collection<String> subterms = new ArrayList<>();
+                List<String> subterms = new ArrayList<>();
 
                 int openCount = 0;
                 int closedCount = 0;
@@ -108,7 +128,7 @@ public class TermFactory {
                 }
 
                 FunctionSymbol root = null;
-                for (FunctionSymbol fs : FUNCTIONS) {
+                for (FunctionSymbol fs : ALL_FUNCTIONS) {
                     if (fs.getSymbol().equals(functionSymbol)) {
                         root = fs;
                         break;
@@ -122,12 +142,43 @@ public class TermFactory {
 
                 List<Term> parsedSubterms = new ArrayList<>();
 
-                for (String subterm : subterms) {
-                    parsedSubterms.add(buildTerm(subterm));
+                if (root.equals(PLUS) && subterms.size() > 2) {
+
+                    parsedSubterms.add(buildTerm(subterms.get(0)));
+                    subterms.remove(0);
+                    parsedSubterms.add(createPlusSubterm(subterms));
+
+                } else {
+                    for (String subterm : subterms) {
+                        parsedSubterms.add(buildTerm(subterm));
+                    }
                 }
 
                 return new FunctionTerm(root, parsedSubterms);
             }
+        }
+    }
+
+    private static Term createPlusSubterm(List<String> subterms) throws TermParseException {
+
+        if (subterms.size() == 1) {
+            return buildTerm(subterms.get(0));
+        }
+
+        List<Term> terms = new ArrayList<>();
+
+        if (subterms.size() == 2) {
+
+            terms.add(buildTerm(subterms.get(0)));
+            terms.add(buildTerm(subterms.get(1)));
+            return new FunctionTerm(PLUS, terms);
+
+        } else {
+
+            terms.add(buildTerm(subterms.get(0)));
+            subterms.remove(0);
+            terms.add(createPlusSubterm(subterms));
+            return new FunctionTerm(PLUS, terms);
         }
     }
 }

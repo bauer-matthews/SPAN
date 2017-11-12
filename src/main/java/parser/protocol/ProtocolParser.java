@@ -2,6 +2,7 @@ package parser.protocol;
 
 import cache.GlobalDataCache;
 import cache.RunConfiguration;
+import equivalence.EquivalenceMethod;
 import log.Console;
 import log.Severity;
 import org.apfloat.Aprational;
@@ -14,6 +15,7 @@ import protocol.role.AtomicProcess;
 import protocol.role.ProcessFactory;
 import protocol.role.Role;
 import rewriting.Rewrite;
+import rewriting.RewriteMethod;
 import rewriting.Signature;
 import rewriting.terms.*;
 import util.CollectionUtils;
@@ -56,8 +58,51 @@ public class ProtocolParser {
                 .build();
 
         GlobalDataCache.setProtocol(protocol);
+        validateProtocol();
 
         return protocol;
+    }
+
+    private static void validateProtocol() throws ProtocolParseException {
+
+        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+
+            if (!RunConfiguration.getRewriteMethod().equals(RewriteMethod.MAUDE)) {
+                throw new ProtocolParseException("Maude must be enabled to use XOR");
+            }
+
+            if (!RunConfiguration.getEquivalenceMethod().equals(EquivalenceMethod.AKISS)) {
+                throw new ProtocolParseException("Akiss must be enabled to use XOR");
+            }
+
+            for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+                if (functionSymbol.getSymbol().equalsIgnoreCase("plus")) {
+                    throw new ProtocolParseException("The function symbol \"plus\" is " +
+                            "reserved when the XOR option is enabled");
+                }
+
+                if (functionSymbol.getSymbol().equalsIgnoreCase("one")) {
+                    throw new ProtocolParseException("The function symbol \"one\" is " +
+                            "reserved when the XOR option is enabled");
+                }
+
+                if (functionSymbol.getSymbol().equalsIgnoreCase("zero")) {
+                    throw new ProtocolParseException("The function symbol \"zero\" is " +
+                            "reserved when the XOR option is enabled");
+                }
+            }
+
+            for (VariableTerm variableTerm : GlobalDataCache.getProtocol().getSignature().getVariables()) {
+
+                if (variableTerm.getName().equalsIgnoreCase("b1") ||
+                        variableTerm.getName().equalsIgnoreCase("b2")) {
+
+                    throw new ProtocolParseException("The variable names \"b1\" and \"b2\" are " +
+                            "reserved when the XOR option is enabled");
+                }
+
+            }
+        }
     }
 
     private static Map<Section, String> parseSections(File protocolFile) throws ProtocolParseException {
@@ -86,7 +131,7 @@ public class ProtocolParser {
                     stringBuilder = new StringBuilder();
                 } else {
 
-                    if(!line.trim().startsWith("#")) {
+                    if (!line.trim().startsWith("#")) {
                         stringBuilder.append(line);
                     }
                 }
@@ -140,13 +185,12 @@ public class ProtocolParser {
 
         for (Statement statement : statements) {
 
-            if(statement.getCommand().trim().equalsIgnoreCase(Commands.XOR)) {
-                if(statement.getValue().equalsIgnoreCase("yes")) {
+            if (statement.getCommand().trim().equalsIgnoreCase(Commands.XOR)) {
+                if (statement.getValue().trim().equalsIgnoreCase("yes")) {
                     enableXOR = true;
+                    RunConfiguration.enableXOR();
                 }
-            }
-
-            if (statement.getCommand().trim().equalsIgnoreCase(Commands.VERSION)) {
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.VERSION)) {
 
                 version = statement.getValue();
 
@@ -597,7 +641,7 @@ public class ProtocolParser {
 
                 for (String probOutput : probOutputs) {
 
-                    if(probOutput.contains("#")) {
+                    if (probOutput.contains("#")) {
                         String[] subRoleChunk = probOutput.split("#");
                         String subRole = subRoleChunk[1].replaceAll("\\)", "").trim();
                         subroleStrings.add(subRole);

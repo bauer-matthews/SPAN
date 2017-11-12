@@ -61,14 +61,34 @@ public class MaudeCodec {
             }
 
             if (!sortVariables.isEmpty()) {
-                writer.println("vars "
-                        + SPACE_JOINER.join(sortVariables.stream()
-                        .map(VariableTerm::getName).collect(Collectors.toList()))
-                        + " : "
-                        + sort.getName()
-                        + " ."
-                );
+
+                if(sort.equals(new Sort("Bit"))) {
+
+                    writer.println("vars "
+                            + SPACE_JOINER.join(sortVariables.stream()
+                            .map(VariableTerm::getName).collect(Collectors.toList()))
+                            + " b1 b2 : "
+                            + sort.getName()
+                            + " ."
+                    );
+
+                } else {
+
+                    writer.println("vars "
+                            + SPACE_JOINER.join(sortVariables.stream()
+                            .map(VariableTerm::getName).collect(Collectors.toList()))
+                            + " : "
+                            + sort.getName()
+                            + " ."
+                    );
+                }
             }
+        }
+
+        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+            writer.println("op plus : Bit Bit -> Bit [assoc comm frozen] . ");
+            writer.println("op zero : -> Bit [frozen] . ");
+            writer.println("op one : -> Bit [frozen] . ");
         }
 
         for (FunctionSymbol function : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
@@ -83,17 +103,17 @@ public class MaudeCodec {
             );
         }
 
-        for(NameTerm name : GlobalDataCache.getProtocol().getSignature().getPrivateNames()) {
+        for (NameTerm name : GlobalDataCache.getProtocol().getSignature().getPrivateNames()) {
 
             writer.println("op "
-                + name.getName()
+                    + name.getName()
                     + " : -> "
                     + name.getSort().getName()
                     + " ."
             );
         }
 
-        for(NameTerm name : GlobalDataCache.getProtocol().getSignature().getPublicNames()) {
+        for (NameTerm name : GlobalDataCache.getProtocol().getSignature().getPublicNames()) {
 
             writer.println("op "
                     + name.getName()
@@ -110,6 +130,12 @@ public class MaudeCodec {
                     + rewrite.getRhs().toMathString()
                     + " [variant] ."
             );
+        }
+
+        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+            writer.println("eq plus(b1, b1) = zero [variant] .");
+            writer.println("eq plus(b2, plus(b1, b1)) = b2 [variant] .");
+            writer.println("eq plus(b1, zero) = b1 [variant] .");
         }
 
         writer.println("endfm");

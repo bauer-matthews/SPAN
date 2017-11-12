@@ -5,7 +5,6 @@ import cache.RunConfiguration;
 import cache.SubstitutionCache;
 import equivalence.akiss.AkissEngine;
 import equivalence.kiss.KissEngine;
-import equivalence.kiss.KissCodec;
 import log.Console;
 import log.Severity;
 import process.State;
@@ -59,7 +58,7 @@ public class EquivalenceChecker {
                 System.out.println("Here is the problematic encoding:");
                 System.out.println();
 
-                System.out.println(KissCodec.encode(GlobalDataCache.getProtocol().getSignature(),
+                System.out.println(ENGINE.encode(GlobalDataCache.getProtocol().getSignature(),
                         GlobalDataCache.getProtocol().getRewrites(), state1, state2,
                         SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
                                 .getSafetyProperty().getSecrets(), state1.getSubstitution()),

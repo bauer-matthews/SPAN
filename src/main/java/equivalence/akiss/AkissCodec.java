@@ -1,5 +1,6 @@
 package equivalence.akiss;
 
+import cache.GlobalDataCache;
 import com.google.common.base.Joiner;
 import equivalence.DeductionResult;
 import equivalence.EquivalenceResult;
@@ -40,10 +41,19 @@ class AkissCodec {
 
         StringBuilder sb = new StringBuilder();
 
+        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+            sb.append("#set xor;\n\n");
+        }
+
         sb.append("symbols ");
         sb.append(COMMA_JOINER.join(signature.getFunctions().stream()
                 .map(functionSymbol -> functionSymbol.getSymbol() + "/" + functionSymbol.getArity())
                 .collect(Collectors.toList())));
+
+        if(GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+            sb.append(", one/0");
+        }
+
         sb.append(";\n");
 
         sb.append("private ");
@@ -92,16 +102,16 @@ class AkissCodec {
         boolean attack = false;
         Term recipe = null;
 
-        for(Term term : frame1Secrets) {
+        for (Term term : frame1Secrets) {
 
-            for(Equality equality : state1.getFrame()) {
-                if(term.equals(equality.getRhs())) {
+            for (Equality equality : state1.getFrame()) {
+                if (term.equals(equality.getRhs())) {
                     attack = true;
                     recipe = equality.getLhs();
                 }
             }
 
-            if(attack) {
+            if (attack) {
                 deductionResults.add(new DeductionResult(term.toMathString(), true,
                         "phi1", Optional.ofNullable(recipe.toMathString())));
             } else {
@@ -110,16 +120,16 @@ class AkissCodec {
             }
         }
 
-        for(Term term : frame2Secrets) {
+        for (Term term : frame2Secrets) {
 
-            for(Equality equality : state2.getFrame()) {
-                if(term.equals(equality.getRhs())) {
+            for (Equality equality : state2.getFrame()) {
+                if (term.equals(equality.getRhs())) {
                     attack = true;
                     recipe = equality.getLhs();
                 }
             }
 
-            if(attack) {
+            if (attack) {
                 deductionResults.add(new DeductionResult(term.toMathString(), true,
                         "phi2", Optional.ofNullable(recipe.toMathString())));
             } else {
