@@ -44,7 +44,7 @@
     public names : b | Message;
     public names : c | Nonce;
 
-    private names : kt0, kt1, kb1, kb2, r0, r1, s, D0, D00 | Nonce;
+    private names : kt0, kt1, kb1, kb2, r0, r00, r1, r11, s, D0, D00 | Nonce;
     private names : g0, g1, g00, g11 | Bit;
 
 .rewrites
@@ -71,9 +71,9 @@
 
     # Voter 2 Process
     role :  {1} [T] out(1/2 -> sign(pair(plus(g11, plus(g00, zero)),
-                                    aenc(pair(g11, aenc(pair(g00, D00), r0, pk(kt0))), r1, pk(kt1))), sk(kb2)) +
+                                    aenc(pair(g11, aenc(pair(g00, D00), r00, pk(kt0))), r11, pk(kt1))), sk(kb2)) +
                         1/2 -> sign(pair(plus(g11, plus(g00, one)),
-                                    aenc(pair(g11, aenc(pair(g00, D00), r0, pk(kt0))), r1, pk(kt1))), sk(kb2)));
+                                    aenc(pair(g11, aenc(pair(g00, D00), r00, pk(kt0))), r11, pk(kt1))), sk(kb2)));
 
     # Teller
     role :  {3} in(y1{sign(message, sk(kb1))}) .
