@@ -71,10 +71,10 @@
             {0} [T] out(1 -> pk(kv2));
 
     # Ballot Selection
-    role :  {1} [T] out(1/2 -> aenc(pair(t1, pair(evenHash(g0), evenHash(g1))), n1, pk(kv1)) +
-                        1/2 -> aenc(pair(t1, pair(evenHash(g0p), oddHash(g1p))), n1, pk(kv1))) .
-            {1} [T] out(1/2 -> aenc(pair(t2, pair(evenHash(g00), evenHash(g11))), n2, pk(kv2)) +
-                        1/2 -> aenc(pair(t2, pair(evenHash(g00p), oddHash(g11p))), n2, pk(kv2)));
+    role :  {1} [T] out(3/4 -> aenc(pair(t1, pair(evenHash(g0), evenHash(g1))), n1, pk(kv1)) +
+                        1/4 -> aenc(pair(t1, pair(evenHash(g0p), oddHash(g1p))), n1, pk(kv1))) .
+            {1} [T] out(3/4 -> aenc(pair(t2, pair(evenHash(g00), evenHash(g11))), n2, pk(kv2)) +
+                        1/4 -> aenc(pair(t2, pair(evenHash(g00p), oddHash(g11p))), n2, pk(kv2)));
 
     # Voter 1 Process
     role :  {2} in(y1{aenc(pair(t1, message), nonce, pk(kv1))}) .
@@ -93,7 +93,7 @@
     # Teller
     role :  {3} in(y3{sign(message, sk(kv1))}) .
             {3} in(y4{sign(message, sk(kv2))}) .
-            {3} [ T ]
+            {3} [ checksign(y3, pk(kv1)) == ok & checksign(y4, pk(kv2)) == ok ]
                     out(1/2 ->  plus(plus(fst(getsign(y3, pk(kv1))), hashMod2(fst(adec(snd(getsign(y3, pk(kv1))), sk(kt1))))),
                                     hashMod2(fst(adec(snd(adec(snd(getsign(y3, pk(kv1))), sk(kt1))), sk(kt0))))) @
                                 plus(plus(fst(getsign(y4, pk(kv2))), hashMod2(fst(adec(snd(getsign(y4, pk(kv2))), sk(kt1))))),
