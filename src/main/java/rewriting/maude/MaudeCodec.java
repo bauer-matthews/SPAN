@@ -87,11 +87,13 @@ public class MaudeCodec {
 
         if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
             writer.println("op plus : Bit Bit -> Bit [assoc comm frozen] . ");
-            writer.println("op zero : -> Bit [frozen] . ");
-            writer.println("op one : -> Bit [frozen] . ");
+            writer.println("op zero : -> Bit . ");
+            writer.println("op one : -> Bit . ");
         }
 
         for (FunctionSymbol function : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+
+            // TODO: frozen option is not valid for 0-ary function symbols
             writer.println("op "
                     + function.getSymbol()
                     + " : "

@@ -3,6 +3,7 @@ package process;
 import cache.*;
 import rewriting.Equality;
 import rewriting.terms.*;
+import theories.Xor;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -17,7 +18,18 @@ import java.util.concurrent.ExecutionException;
  */
 public class ActionFactory2 {
 
-    public static List<Action> getAllRecipes(List<Equality> frame, Optional<Term> guard, int role)
+    private static final List<FunctionSymbol> FUNCTION_SYMBOLS;
+
+    static {
+        FUNCTION_SYMBOLS = new ArrayList<>();
+        FUNCTION_SYMBOLS.addAll(GlobalDataCache.getProtocol().getSignature().getFunctions());
+
+        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+            Xor.addXorFunctions(FUNCTION_SYMBOLS);
+        }
+    }
+
+    static List<Action> getAllRecipes(List<Equality> frame, Optional<Term> guard, int role)
             throws ExecutionException {
 
 
@@ -92,7 +104,7 @@ public class ActionFactory2 {
             if (guard.get().isNameTerm()) {
                 return terms;
             } else {
-                for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+                for (FunctionSymbol functionSymbol : FUNCTION_SYMBOLS) {
 
                     if (functionSymbol.getReturnType().equals(sort)) {
 
@@ -131,7 +143,7 @@ public class ActionFactory2 {
             // NOTE: for 0-arity compound terms Option.empty() is retained
         }
 
-        for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+        for (FunctionSymbol functionSymbol : FUNCTION_SYMBOLS) {
 
             if (rootGuardSymbol.isPresent() && rootGuardSymbol.get().equals(functionSymbol)) {
 
@@ -180,7 +192,7 @@ public class ActionFactory2 {
             }
         }
 
-        for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+        for (FunctionSymbol functionSymbol : FUNCTION_SYMBOLS) {
             if (functionSymbol.getArity() == 0) {
 
                 if (functionSymbol.getReturnType().equals(sort) &&

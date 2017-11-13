@@ -5,6 +5,7 @@
 
     version : 1.0;
     recipe depth : 1;
+    xor : yes;
 
 .constants
 
@@ -15,7 +16,7 @@
 
     # equational theory variables
     variables : mes, m1, m2 | Message;
-    variables : b, b1, b2 | Bit;
+    variables : b, bit1, bit2 | Bit;
     variables : key | Key;
 
     # input variables
@@ -29,9 +30,6 @@
     function : pair | Message Message -> Message;
     function : fst | Message -> Message;
     function : snd | Message -> Message;
-    function : xor | Bit Bit -> Bit;
-    function : zero | -> Bit;
-    function : one | -> Bit;
     function : val | Bit Bit Bit Bit -> Message;
 
     public names : a | Message;
@@ -47,12 +45,8 @@
     rewrite : sdec(senc(mes, key), key) -> mes;
     rewrite : fst(pair(m1, m2)) -> m1;
     rewrite : snd(pair(m1, m2)) -> m2;
-    rewrite : xor(one, one) -> zero;
-    rewrite : xor(one, zero) -> one;
-    rewrite : xor(zero, one) -> one;
-    rewrite : xor(zero, zero) -> zero;
-    rewrite : val(b, zero, b1, b2) -> pair(xor(b, b1), b2);
-    rewrite : val(b, one, b1, b2) -> pair(b1, xor(b,b2));
+    rewrite : val(b, zero, bit1, bit2) -> pair(plus(b, bit1), bit2);
+    rewrite : val(b, one, bit1, bit2) -> pair(bit1, plus(b, bit2));
 
 .roles
 
@@ -67,43 +61,43 @@
 
     subrole(000) :  {1} [T] out(1/2 -> val(zero, zero, zero, zero) # A +
                                 1/2 -> val(one, zero, zero, zero) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(zero, one), zero, zero) # A +
-                                1/2 -> val(one, xor(zero, one), zero, zero) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(zero, one), zero, zero) # A +
+                                1/2 -> val(one, plus(zero, one), zero, zero) # B );
 
     subrole(001) :  {1} [T] out(1/2 -> val(zero, zero, zero, one) # A +
                                 1/2 -> val(one, zero, zero, one) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(zero, one), zero, one) # A +
-                                1/2 -> val(one, xor(zero, one), zero, one) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(zero, one), zero, one) # A +
+                                1/2 -> val(one, plus(zero, one), zero, one) # B );
 
     subrole(010) :  {1} [T] out(1/2 -> val(zero, zero, one, zero) # A +
                                 1/2 -> val(one, zero, one, zero) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(zero, one), one, zero) # A +
-                                1/2 -> val(one, xor(zero, one), one, zero) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(zero, one), one, zero) # A +
+                                1/2 -> val(one, plus(zero, one), one, zero) # B );
 
     subrole(011) :  {1} [T] out(1/2 -> val(zero, zero, one, one) # A +
                                 1/2 -> val(one, zero, one, one) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(zero, one), one, one) # A +
-                                1/2 -> val(one, xor(zero, one), one, one) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(zero, one), one, one) # A +
+                                1/2 -> val(one, plus(zero, one), one, one) # B );
 
     subrole(111) :  {1} [T] out(1/2 -> val(zero, one, one, one) # A +
                                 1/2 -> val(one, one, one, one) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(one, one), one, one) # A +
-                                1/2 -> val(one, xor(one, one), one, one) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(one, one), one, one) # A +
+                                1/2 -> val(one, plus(one, one), one, one) # B );
 
     subrole(110) :  {1} [T] out(1/2 -> val(zero, one, one, zero) # A +
                                 1/2 -> val(one, one, one, zero) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(one, one), one, zero) # A +
-                                1/2 -> val(one, xor(one, one), one, zero) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(one, one), one, zero) # A +
+                                1/2 -> val(one, plus(one, one), one, zero) # B );
 
     subrole(101) :  {1} [T] out(1/2 -> val(zero, one, zero, one) # A +
                                 1/2 -> val(one, one, zero, one) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(one, one), zero, one) # A +
-                                1/2 -> val(one, xor(one, one), zero, one) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(one, one), zero, one) # A +
+                                1/2 -> val(one, plus(one, one), zero, one) # B );
 
     subrole(100) :  {1} [T] out(1/2 -> val(zero, one, zero, zero) # A +
                                 1/2 -> val(one, one, zero, zero) # B ) .
-                    {1} [T] out(1/2 -> val(zero, xor(one, one), zero, zero) # A +
-                                1/2 -> val(one, xor(one, one), zero, zero) # B );
+                    {1} [T] out(1/2 -> val(zero, plus(one, one), zero, zero) # A +
+                                1/2 -> val(one, plus(one, one), zero, zero) # B );
 
     subrole(A)  :   {2} in(y4{bit}) .
                     {2} [y4 == zero ] out(1 -> s);

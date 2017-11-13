@@ -2,6 +2,7 @@ package rewriting.terms;
 
 import cache.RunConfiguration;
 import rewriting.Signature;
+import theories.Xor;
 
 import java.util.*;
 
@@ -19,10 +20,6 @@ public class TermFactory {
     private static final String FRAME_VAR = "W";
     private static final String UNDERSCORE = "_";
 
-    private static final FunctionSymbol ZERO;
-    private static final FunctionSymbol ONE;
-    private static final FunctionSymbol PLUS;
-
     private static final List<String> RESERVED_STRINGS = new ArrayList<>();
 
     private static Collection<NameTerm> PRIVATE_NAMES = new ArrayList<>();
@@ -35,13 +32,6 @@ public class TermFactory {
         RESERVED_STRINGS.add(TOP);
         RESERVED_STRINGS.add(FRAME_VAR);
         RESERVED_STRINGS.add(UNDERSCORE);
-
-        List<Sort> paramList = new ArrayList<>();
-        paramList.add(new Sort("Bit"));
-        paramList.add(new Sort("Bit"));
-        PLUS = new FunctionSymbol("plus", paramList, new Sort("Bit"));
-        ZERO = new FunctionSymbol("zero", Collections.emptyList(), new Sort("Bit"));
-        ONE = new FunctionSymbol("one", Collections.emptyList(), new Sort("Bit"));
     }
 
     public static void initTermBuilder(Signature signature) {
@@ -53,9 +43,7 @@ public class TermFactory {
         ALL_FUNCTIONS.addAll(USER_FUNCTIONS);
 
         if (RunConfiguration.isXor()) {
-            ALL_FUNCTIONS.add(ZERO);
-            ALL_FUNCTIONS.add(ONE);
-            ALL_FUNCTIONS.add(PLUS);
+            Xor.addXorFunctions(ALL_FUNCTIONS);
         }
     }
 
@@ -142,7 +130,7 @@ public class TermFactory {
 
                 List<Term> parsedSubterms = new ArrayList<>();
 
-                if (root.equals(PLUS) && subterms.size() > 2) {
+                if (root.equals(Xor.getPLUS()) && subterms.size() > 2) {
 
                     parsedSubterms.add(buildTerm(subterms.get(0)));
                     subterms.remove(0);
@@ -171,14 +159,14 @@ public class TermFactory {
 
             terms.add(buildTerm(subterms.get(0)));
             terms.add(buildTerm(subterms.get(1)));
-            return new FunctionTerm(PLUS, terms);
+            return new FunctionTerm(Xor.getPLUS(), terms);
 
         } else {
 
             terms.add(buildTerm(subterms.get(0)));
             subterms.remove(0);
             terms.add(createPlusSubterm(subterms));
-            return new FunctionTerm(PLUS, terms);
+            return new FunctionTerm(Xor.getPLUS(), terms);
         }
     }
 }
