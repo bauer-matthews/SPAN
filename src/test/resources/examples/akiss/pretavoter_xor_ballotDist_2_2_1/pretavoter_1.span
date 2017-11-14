@@ -1,0 +1,115 @@
+# NAME: Pret a Voter
+# PARAMETERS: 2 parties, 2 voters, 1 teller
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 1;
+    xor : yes;
+
+.constants
+
+.signature
+
+    sort : SKey, PKey, Bit, Nonce, Message;
+    subsort : SKey, PKey, Nonce, Bit < Message;
+
+    # equational theory variables
+    variables : mes, mes1, mes2 | Message;
+    variables : rand, key | Nonce;
+
+    # input variables
+    variables : y0, y1, y2, y3, y4, y5 | Message;
+
+    # input guard variables
+    variables : message | Message;
+    variables : pkey | PKey;
+    variables : skey | SKey;
+    variables : bit | Bit;
+    variables : nonce | Nonce;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : sign | Message SKey -> Message;
+    function : checksign | Message PKey -> Bit;
+    function : getsign | Message PKey -> Message;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : hashMod2 | Message -> Bit;
+    function : evenHash | Message -> Message;
+    function : oddHash | Message -> Message;
+    function : ok | -> Bit;
+
+    public names : a | Bit;
+    public names : b | Message;
+    public names : d | Nonce;
+
+    private names : n1, n2, t1, t2 | Nonce;
+    private names : kt0, kt1, kv1, kv2, r0, r00, r1, r11, s, D0, D00 | Nonce;
+    private names : g0, g1, g00, g11 | Bit;
+    private names : g0p, g1p, g00p, g11p | Bit;
+
+.rewrites
+
+    rewrite : adec(aenc(mes, rand, pk(key)), sk(key)) -> mes;
+    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> ok;
+    rewrite : getsign(sign(mes, sk(key)), pk(key)) -> mes;
+    rewrite : fst(pair(mes1, mes2)) -> mes1;
+    rewrite : snd(pair(mes1, mes2)) -> mes2;
+    rewrite : hashMod2(evenHash(mes)) -> zero;
+    rewrite : hashMod2(oddHash(mes)) -> one;
+
+.roles
+
+    # PK setup
+    role :  {0} [T] out(1 -> pk(kt0)) .
+            {0} [T] out(1 -> pk(kt1)) .
+            {0} [T] out(1 -> pk(kv1)) .
+            {0} [T] out(1 -> pk(kv2));
+
+    # Ballot Selection
+    role :  {1} [T] out(3/4 -> aenc(pair(t1, pair(evenHash(g0), evenHash(g1))), n1, pk(kv1)) +
+                        1/4 -> aenc(pair(t1, pair(evenHash(g0p), oddHash(g1p))), n1, pk(kv1))) .
+            {1} [T] out(3/4 -> aenc(pair(t2, pair(evenHash(g00), evenHash(g11))), n2, pk(kv2)) +
+                        1/4 -> aenc(pair(t2, pair(evenHash(g00p), oddHash(g11p))), n2, pk(kv2)));
+
+    # Voter 1 Process
+    role :  {2} in(y1{aenc(pair(t1, message), nonce, pk(kv1))}) .
+            {2} [fst(adec(y1, sk(kv1))) == t1] out(1/2 -> sign(pair(plus(hashMod2(snd(snd(adec(y1, sk(kv1))))), plus(hashMod2(fst(snd(adec(y1, sk(kv1))))), zero)),
+                    aenc(pair(snd(snd(adec(y1, sk(kv1)))), aenc(pair(fst(snd(adec(y1, sk(kv1)))), D0), r0, pk(kt0))), r1, pk(kt1))), sk(kv1)) # v1p1 +
+                                                  1/2 -> sign(pair(plus(hashMod2(snd(snd(adec(y1, sk(kv1))))), plus(hashMod2(fst(snd(adec(y1, sk(kv1))))), one)),
+                    aenc(pair(snd(snd(adec(y1, sk(kv1)))), aenc(pair(fst(snd(adec(y1, sk(kv1)))), D0), r0, pk(kt0))), r1, pk(kt1))), sk(kv1)) # v1p2);
+
+    # Voter 2 Process
+    role :  {2} in(y2{aenc(pair(t2, message), nonce, pk(kv2))}) .
+            {2} [fst(adec(y2, sk(kv2))) == t2] out(1/2 -> sign(pair(plus(hashMod2(snd(snd(adec(y2, sk(kv2))))), plus(hashMod2(fst(snd(adec(y2, sk(kv2))))), zero)),
+                    aenc(pair(snd(snd(adec(y2, sk(kv2)))), aenc(pair(fst(snd(adec(y2, sk(kv2)))), D00), r00, pk(kt0))), r11, pk(kt1))), sk(kv2)) +
+                                                   1/2 -> sign(pair(plus(hashMod2(snd(snd(adec(y2, sk(kv2))))), plus(hashMod2(fst(snd(adec(y2, sk(kv2))))), one)),
+                    aenc(pair(snd(snd(adec(y2, sk(kv2)))), aenc(pair(fst(snd(adec(y2, sk(kv2)))), D00), r00, pk(kt0))), r11, pk(kt1))), sk(kv2)));
+
+    # Teller
+    role :  {3} in(y3{sign(message, sk(kv1))}) .
+            {3} in(y4{sign(message, sk(kv2))}) .
+            {3} [ checksign(y3, pk(kv1)) == ok & checksign(y4, pk(kv2)) == ok ]
+                    out(1/2 ->  plus(plus(fst(getsign(y3, pk(kv1))), hashMod2(fst(adec(snd(getsign(y3, pk(kv1))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y3, pk(kv1))), sk(kt1))), sk(kt0))))) @
+                                plus(plus(fst(getsign(y4, pk(kv2))), hashMod2(fst(adec(snd(getsign(y4, pk(kv2))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y4, pk(kv2))), sk(kt1))), sk(kt0))))) +
+                        1/2 ->  plus(plus(fst(getsign(y4, pk(kv2))), hashMod2(fst(adec(snd(getsign(y4, pk(kv2))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y4, pk(kv2))), sk(kt1))), sk(kt0))))) @
+                                plus(plus(fst(getsign(y3, pk(kv1))), hashMod2(fst(adec(snd(getsign(y3, pk(kv1))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y3, pk(kv1))), sk(kt1))), sk(kt0))))));
+
+    # Voter 1 Test Party 1
+    subrole(v1p1) :     {4} in(y5{bit}) .
+                        {4} [ y5 == zero ] out( 1 -> s);
+
+    # Voter 1 Test Party 2
+    subrole(v1p2) :     {4} in(y5{bit}) .
+                        {4} [ y5 == one ] out( 1 -> s);
+
+.safety
+    secrecy : s >= 1/4;

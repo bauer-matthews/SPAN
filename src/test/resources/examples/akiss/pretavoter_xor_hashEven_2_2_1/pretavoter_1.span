@@ -42,7 +42,7 @@
 
     public names : a | Bit;
     public names : b | Message;
-    public names : c | Nonce;
+    public names : d | Nonce;
 
     private names : kt0, kt1, kb1, kb2, r0, r00, r1, r11, s, D0, D00 | Nonce;
     private names : g0, g1, g00, g11 | Bit;

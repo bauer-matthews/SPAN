@@ -33,7 +33,7 @@
     function : val | Bit Bit Bit Bit -> Message;
 
     public names : a | Message;
-    public names : c | Nonce;
+    public names : d | Nonce;
     public names : g | Bit;
 
     private names : s | Nonce;

@@ -4,7 +4,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 1;
+    recipe depth : 4;
     xor : yes;
 
 .constants
@@ -45,7 +45,7 @@
 
     public names : a | Bit;
     public names : b | Message;
-    public names : c | Nonce;
+    public names : d | Nonce;
 
     private names : n1, n2, t1, t2 | Nonce;
     private names : kt0, kt1, kv1, kv2, r0, r00, r1, r11, s, D0, D00 | Nonce;

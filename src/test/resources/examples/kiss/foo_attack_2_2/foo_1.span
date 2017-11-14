@@ -57,7 +57,7 @@
     private names : r1, r11, r111, b1, k1 | Nonce;
     private names : r2, r22, r222, b2, k2 | Nonce;
     private names : secret | Nonce;
-    private names : t1, t11, t2, t22 | Token;
+    private names : t1, t2 | Token;
 
 .rewrites
 
@@ -83,14 +83,14 @@
                                  1/2 -> pair( getHost(pk(k1)), sign(blind(commit(party2, r1),b1), sk(k1))) # v1p2 );
 
     subrole(v1p1) : {1} in(y1{sign(blind(commit(party1, r1), b1), sk(ka))}) .
-                    {3} [ checksign(y1, pk(ka)) == blind(commit(party1, r1),b1) ]
+                    {2} [ checksign(y1, pk(ka)) == blind(commit(party1, r1),b1) ]
                             out( 1 -> aenc(pair(t1, unblind(y1, b1)), r11, pk(km)) ) .
                     {3} [ T ] out(1 -> aenc(pair(t1, r1), r111, pk(km))) .
                     {4} in(y2{vote}) .
                     {4} [ y2 == party1 ] out(1 -> secret);
 
     subrole(v1p2) : {1} in(y1{sign(blind(commit(party1, r1), b1), sk(ka))}) .
-                    {3} [ checksign(y1, pk(ka)) == blind(commit(party2, r1),b1) ]
+                    {2} [ checksign(y1, pk(ka)) == blind(commit(party2, r1),b1) ]
                             out( 1 -> aenc(pair(t1, unblind(y1, b1)), r11, pk(km)) ) .
                     {3} [ T ] out(1 -> aenc(pair(t1, r1), r111, pk(km))) .
                     {4} in(y2{vote}) .
@@ -98,15 +98,15 @@
 
     # voter 2
     role :          {1} [T] out(1/2 -> pair( getHost(pk(k2)), sign(blind(commit(party1, r2),b2), sk(k2))) # v2p1 +
-                                1/2 -> pair( getHost(pk(k2)), sign(blind(commit(party2, r2),b2), sk(k2))) # v2p2 );
+                                 1/2 -> pair( getHost(pk(k2)), sign(blind(commit(party2, r2),b2), sk(k2))) # v2p2 );
 
     subrole(v2p1) : {1} in(y3{sign(blind(commit(party1, r2), b2), sk(ka))}) .
-                    {3} [ checksign(y3, pk(ka)) == blind(commit(party1, r2), b2) ]
+                    {2} [ checksign(y3, pk(ka)) == blind(commit(party1, r2), b2) ]
                             out( 1 -> aenc(pair(t2, unblind(y3, b2)), r22, pk(km))) .
                     {3} [ T ] out(1 -> aenc(pair(t2, r2), r222, pk(km))) ;
 
     subrole(v2p2) : {1} in(y3{sign(blind(commit(party1, r2), b2), sk(ka))}) .
-                    {3} [ checksign(y3, pk(ka)) == blind(commit(party2, r2), b2) ]
+                    {2} [ checksign(y3, pk(ka)) == blind(commit(party2, r2), b2) ]
                             out( 1 -> aenc(pair(t2, unblind(y3, b2)), r22, pk(km))) .
                     {3} [ T ] out(1 -> aenc(pair(t2, r2), r222, pk(km))) ;
 
@@ -120,10 +120,10 @@
 
     # collector process with anonymous channels
     role:
-                    {3} in(y7{aenc(pair(t1, sign(message, sk(ka))), nonce, pk(km))}) .
-                    {3} in(y8{aenc(pair(t2, sign(message, sk(ka))), nonce, pk(km))}) .
+                    {2} in(y7{aenc(pair(t1, sign(message, sk(ka))), nonce, pk(km))}) .
+                    {2} in(y8{aenc(pair(t2, sign(message, sk(ka))), nonce, pk(km))}) .
 
-                    {3} [ t1 == fst(adec(y7, sk(km))) & t2 == fst(adec(y8, sk(km))) ]
+                    {2} [ t1 == fst(adec(y7, sk(km))) & t2 == fst(adec(y8, sk(km))) ]
                             out(1/2 -> pair(l1, snd(adec(y7, sk(km)))) @ pair(l2, snd(adec(y8, sk(km)))) +
                                 1/2 -> pair(l2, snd(adec(y8, sk(km)))) @ pair(l1, snd(adec(y7, sk(km))))) .
 
