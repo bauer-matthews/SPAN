@@ -50,6 +50,15 @@ class AkissCodec {
                 .map(functionSymbol -> functionSymbol.getSymbol() + "/" + functionSymbol.getArity())
                 .collect(Collectors.toList())));
 
+        if(signature.getFunctions().size() != 0) {
+            sb.append(", ");
+        }
+
+        sb.append(COMMA_JOINER.join(signature.getPublicNames().stream()
+                .map(name -> name.getName() + "/0" )
+                .collect(Collectors.toList())));
+
+
         if(GlobalDataCache.getProtocol().getMetadata().isXOR()) {
             sb.append(", one/0");
         }

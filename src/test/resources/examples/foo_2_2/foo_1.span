@@ -25,8 +25,8 @@
     variables : skey1 | Skey;
     variables : token | Token;
     variables : vote | Vote;
-    variables : nonce | Nonce;
     variables : host | Host;
+    variables : nonce | Nonce;
     variables : message | Message;
 
     function : pk | Nonce -> PKey;
@@ -37,7 +37,7 @@
     function : checksign | Message PKey -> Message;
     function : blind | Message Nonce -> Message;
     function : unblind | Message Nonce -> Message;
-    function : host | PKey -> Host;
+    function : getHost | PKey -> Host;
     function : getpk | Host -> PKey;
     function : pair | Message Message -> Message;
     function : fst | Message -> Message;
@@ -61,7 +61,7 @@
 
 .rewrites
 
-    rewrite : getpk(host(pk(k))) -> pk(k);
+    rewrite : getpk(getHost(pk(k))) -> pk(k);
     rewrite : open(commit(m,r),r) -> m;
     rewrite : checksign(sign(m, sk(k)), pk(k)) -> m;
     rewrite : unblind(blind(m,r),r) -> m;
@@ -79,8 +79,8 @@
                     {0} [T] out(1 -> pk(km));
 
     # voter 1
-    role :          {1} [T] out(1/2 -> pair( host(pk(k1)), sign(blind(commit(party1, r1),b1), sk(k1))) # v1p1 +
-                                 1/2 -> pair( host(pk(k1)), sign(blind(commit(party2, r1),b1), sk(k1))) # v1p2 );
+    role :          {1} [T] out(1/2 -> pair( getHost(pk(k1)), sign(blind(commit(party1, r1),b1), sk(k1))) # v1p1 +
+                                 1/2 -> pair( getHost(pk(k1)), sign(blind(commit(party2, r1),b1), sk(k1))) # v1p2 );
 
     subrole(v1p1) : {1} in(y1{sign(blind(commit(party1, r1), b1), sk(ka))}) .
                     {2} [ checksign(y1, pk(ka)) == blind(commit(party1, r1),b1) ]
@@ -97,8 +97,8 @@
                     {4} [ y2 == party2 ] out(1 -> secret);
 
     # voter 2
-    role :          {1} [T] out(1/2 -> pair( host(pk(k2)), sign(blind(commit(party1, r2),b2), sk(k2))) # v2p1 +
-                                 1/2 -> pair( host(pk(k2)), sign(blind(commit(party2, r2),b2), sk(k2))) # v2p2 );
+    role :          {1} [T] out(1/2 -> pair( getHost(pk(k2)), sign(blind(commit(party1, r2),b2), sk(k2))) # v2p1 +
+                                 1/2 -> pair( getHost(pk(k2)), sign(blind(commit(party2, r2),b2), sk(k2))) # v2p2 );
 
     subrole(v2p1) : {1} in(y3{sign(blind(commit(party1, r2), b2), sk(ka))}) .
                     {2} [ checksign(y3, pk(ka)) == blind(commit(party1, r2), b2) ]
