@@ -7,10 +7,12 @@ import equivalence.akiss.AkissEngine;
 import equivalence.kiss.KissEngine;
 import log.Console;
 import log.Severity;
+import parser.protocol.ProtocolType;
 import process.State;
 import util.ExitCode;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -42,12 +44,15 @@ public class EquivalenceChecker {
         }
 
         String resultString = ENGINE.invoke(
-                ENGINE.encode(GlobalDataCache.getProtocol().getSignature(),
-                        GlobalDataCache.getProtocol().getRewrites(), state1, state2,
-                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
-                                .getSafetyProperty().getSecrets(), state1.getSubstitution()),
-                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
-                                .getSafetyProperty().getSecrets(), state2.getSubstitution())));
+                ENGINE.encode(GlobalDataCache.getSignature(),
+                        GlobalDataCache.getRewrites(), state1, state2,
+                        (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY) ?
+                                SubstitutionCache.applySubstitution(GlobalDataCache.getReachabilityProtocol()
+                                .getSafetyProperty().getSecrets(), state1.getSubstitution()) : Collections.emptyList()),
+                        (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY) ?
+                                SubstitutionCache.applySubstitution(GlobalDataCache.getReachabilityProtocol()
+                                .getSafetyProperty().getSecrets(), state2.getSubstitution()) : Collections.emptyList())));
+
 
         List<EquivalenceResult> results = ENGINE.decodeEquivalenceResults(resultString);
 
@@ -58,12 +63,14 @@ public class EquivalenceChecker {
                 System.out.println("Here is the problematic encoding:");
                 System.out.println();
 
-                System.out.println(ENGINE.encode(GlobalDataCache.getProtocol().getSignature(),
-                        GlobalDataCache.getProtocol().getRewrites(), state1, state2,
-                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
-                                .getSafetyProperty().getSecrets(), state1.getSubstitution()),
-                        SubstitutionCache.applySubstitution(GlobalDataCache.getProtocol()
-                                .getSafetyProperty().getSecrets(), state2.getSubstitution())));
+                System.out.println(ENGINE.encode(GlobalDataCache.getSignature(),
+                        GlobalDataCache.getRewrites(), state1, state2,
+                        (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY) ?
+                                SubstitutionCache.applySubstitution(GlobalDataCache.getReachabilityProtocol()
+                                .getSafetyProperty().getSecrets(), state1.getSubstitution()) : Collections.emptyList()),
+                        (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY) ?
+                                SubstitutionCache.applySubstitution(GlobalDataCache.getReachabilityProtocol()
+                                .getSafetyProperty().getSecrets(), state2.getSubstitution()) : Collections.emptyList())));
             }
 
             Console.printError(Severity.ERROR, "Modeling checking failed due to equivalence engine error");

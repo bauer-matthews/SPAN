@@ -57,7 +57,7 @@ public class AttackTree implements Tree {
     public boolean attackFound() {
 
         return GlobalDataCache.getAttackTree().getAttackProbability()
-                .compareTo(Aprational.ONE.subtract(GlobalDataCache.getProtocol()
+                .compareTo(Aprational.ONE.subtract(GlobalDataCache.getReachabilityProtocol()
                         .getSafetyProperty().getProbability())) > 0;
     }
 

@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class InternalEngine implements RewriteEngine {
 
-    private static final Collection<Rewrite> REWRITES = GlobalDataCache.getProtocol().getRewrites();
+    private static final Collection<Rewrite> REWRITES = GlobalDataCache.getRewrites();
 
     @Override
     public Term reduce(Term term, boolean useCache) throws ExecutionException {

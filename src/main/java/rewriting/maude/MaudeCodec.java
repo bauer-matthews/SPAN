@@ -33,12 +33,12 @@ public class MaudeCodec {
 
         writer.println("fmod SPAN is");
         writer.println("sorts "
-                + SPACE_JOINER.join(GlobalDataCache.getProtocol().getSignature().getSorts().stream()
+                + SPACE_JOINER.join(GlobalDataCache.getSignature().getSorts().stream()
                 .map(Sort::getName)
                 .collect(Collectors.toList()))
                 + " .");
 
-        for (Sort sort : GlobalDataCache.getProtocol().getSignature().getSorts()) {
+        for (Sort sort : GlobalDataCache.getSignature().getSorts()) {
 
             if (sort.hasSubsorts()) {
                 writer.println("subsort "
@@ -50,11 +50,11 @@ public class MaudeCodec {
             }
         }
 
-        for (Sort sort : GlobalDataCache.getProtocol().getSignature().getSorts()) {
+        for (Sort sort : GlobalDataCache.getSignature().getSorts()) {
 
             List<VariableTerm> sortVariables = new ArrayList<>();
 
-            for (VariableTerm var : GlobalDataCache.getProtocol().getSignature().getVariables()) {
+            for (VariableTerm var : GlobalDataCache.getSignature().getVariables()) {
                 if (var.getSort().equals(sort)) {
                     sortVariables.add(var);
                 }
@@ -85,13 +85,13 @@ public class MaudeCodec {
             }
         }
 
-        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+        if (GlobalDataCache.getMetadata().isXOR()) {
             writer.println("op plus : Bit Bit -> Bit [assoc comm frozen] . ");
             writer.println("op zero : -> Bit . ");
             writer.println("op one : -> Bit . ");
         }
 
-        for (FunctionSymbol function : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+        for (FunctionSymbol function : GlobalDataCache.getSignature().getFunctions()) {
 
             // TODO: frozen option is not valid for 0-ary function symbols
             writer.println("op "
@@ -105,7 +105,7 @@ public class MaudeCodec {
             );
         }
 
-        for (NameTerm name : GlobalDataCache.getProtocol().getSignature().getPrivateNames()) {
+        for (NameTerm name : GlobalDataCache.getSignature().getPrivateNames()) {
 
             writer.println("op "
                     + name.getName()
@@ -115,7 +115,7 @@ public class MaudeCodec {
             );
         }
 
-        for (NameTerm name : GlobalDataCache.getProtocol().getSignature().getPublicNames()) {
+        for (NameTerm name : GlobalDataCache.getSignature().getPublicNames()) {
 
             writer.println("op "
                     + name.getName()
@@ -125,7 +125,7 @@ public class MaudeCodec {
             );
         }
 
-        for (Rewrite rewrite : GlobalDataCache.getProtocol().getRewrites()) {
+        for (Rewrite rewrite : GlobalDataCache.getRewrites()) {
             writer.println("eq "
                     + rewrite.getLhs().toMathString()
                     + " = "
@@ -134,7 +134,7 @@ public class MaudeCodec {
             );
         }
 
-        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+        if (GlobalDataCache.getMetadata().isXOR()) {
             writer.println("eq plus(b1, b1) = zero [variant] .");
             writer.println("eq plus(b2, plus(b1, b1)) = b2 [variant] .");
             writer.println("eq plus(b1, zero) = b1 [variant] .");

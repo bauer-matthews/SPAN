@@ -2,13 +2,13 @@ package parser.protocol;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
- *
- * Created: 5/22/17
+ * <p>
+ * Created: 12/27/17
  *
  * @author Matthew S. Bauer
  * @version 1.0
  */
-enum Section {
+public enum ProtocolType {
 
-    METADATA, CONSTANTS, SIGNATURE, REWRITES, ROLES, SAFETY, ROLES1, ROLES2
+    REACHABILITY, INDISTINGUISHABILITY
 }

@@ -6,10 +6,7 @@ import equivalence.EquivalenceMethod;
 import log.Console;
 import log.Severity;
 import org.apfloat.Aprational;
-import protocol.Metadata;
-import protocol.Protocol;
-import protocol.ProtocolBuilder;
-import protocol.SafetyProperty;
+import protocol.*;
 import protocol.role.ActionParseException;
 import protocol.role.AtomicProcess;
 import protocol.role.ProcessFactory;
@@ -42,30 +39,57 @@ public class ProtocolParser {
     private static final String LINE_DELIMITER = ";";
     private static final String STATEMENT_DELIMITER = ":";
 
-    public static Protocol parse() throws ProtocolParseException, TermParseException, ActionParseException {
+    public static void parse() throws ProtocolParseException, TermParseException, ActionParseException {
 
         File protocolFile = RunConfiguration.getProtocolFile();
 
         Map<Section, String> sectionText = parseSections(protocolFile);
 
-        Protocol protocol = new ProtocolBuilder()
-                .metadata(parseMetadata(sectionText.get(Section.METADATA)))
-                .fractionConstants(parseFractionConstants(sectionText.get(Section.CONSTANTS)))
-                .signature(parseSignature(sectionText.get(Section.SIGNATURE)))
-                .rewrites(parseRewrites(sectionText.get(Section.REWRITES)))
-                .roles(parseRoles(sectionText.get(Section.ROLES)))
-                .safetyProperty(parseSafetyProperties(sectionText.get(Section.SAFETY)))
-                .build();
+        Metadata metadata = parseMetadata(sectionText.get(Section.METADATA));
 
-        GlobalDataCache.setProtocol(protocol);
-        validateProtocol();
+        if (metadata.getProtocolType().equals(ProtocolType.REACHABILITY)) {
 
-        return protocol;
+            ReachabilityProtocol protocol = new ProtocolBuilder()
+                    .metadata(metadata)
+                    .fractionConstants(parseFractionConstants(sectionText.get(Section.CONSTANTS)))
+                    .signature(parseSignature(sectionText.get(Section.SIGNATURE)))
+                    .rewrites(parseRewrites(sectionText.get(Section.REWRITES)))
+                    .roles(parseRoles(sectionText.get(Section.ROLES)))
+                    .safetyProperty(parseSafetyProperties(sectionText.get(Section.SAFETY)))
+                    .buildReachabilityProtocol();
+
+            GlobalDataCache.setReachabilityProtocol(protocol);
+            validateReachabilityProtocol();
+
+        } else {
+
+            IndistinguishabilityProtocol protocol = new ProtocolBuilder()
+                    .metadata(metadata)
+                    .fractionConstants(parseFractionConstants(sectionText.get(Section.CONSTANTS)))
+                    .signature(parseSignature(sectionText.get(Section.SIGNATURE)))
+                    .rewrites(parseRewrites(sectionText.get(Section.REWRITES)))
+                    .roles(parseRoles(sectionText.get(Section.ROLES1)))
+                    .roles2(parseRoles(sectionText.get(Section.ROLES2)))
+                    .buildIndistinguishabilityProtocol();
+
+            GlobalDataCache.setIndistinguishabilityProtocol(protocol);
+            validateIndistinguishabilityProtocol();
+        }
     }
 
-    private static void validateProtocol() throws ProtocolParseException {
+    private static void validateReachabilityProtocol() throws ProtocolParseException {
 
-        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+            validateXOR();
+    }
+
+    private static void validateIndistinguishabilityProtocol() throws ProtocolParseException {
+
+            validateXOR();
+    }
+
+    private static void validateXOR() throws ProtocolParseException {
+
+        if(GlobalDataCache.getMetadata().isXOR()) {
 
             if (!RunConfiguration.getRewriteMethod().equals(RewriteMethod.MAUDE)) {
                 throw new ProtocolParseException("Maude must be enabled to use XOR");
@@ -75,7 +99,7 @@ public class ProtocolParser {
                 throw new ProtocolParseException("Akiss must be enabled to use XOR");
             }
 
-            for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+            for (FunctionSymbol functionSymbol : GlobalDataCache.getSignature().getFunctions()) {
                 if (functionSymbol.getSymbol().equalsIgnoreCase("plus")) {
                     throw new ProtocolParseException("The function symbol \"plus\" is " +
                             "reserved when the XOR option is enabled");
@@ -92,7 +116,7 @@ public class ProtocolParser {
                 }
             }
 
-            for (VariableTerm variableTerm : GlobalDataCache.getProtocol().getSignature().getVariables()) {
+            for (VariableTerm variableTerm : GlobalDataCache.getSignature().getVariables()) {
 
                 if (variableTerm.getName().equalsIgnoreCase("b1") ||
                         variableTerm.getName().equalsIgnoreCase("b2")) {
@@ -148,10 +172,11 @@ public class ProtocolParser {
             System.exit(ExitCode.PROTOCOL_PARSE_ERROR.getValue());
         }
 
-        List<Section> sectionList = Arrays.asList(Section.values());
-        if (!sectionText.keySet().containsAll(sectionList)) {
-            throw new ProtocolParseException(Resources.MISSING_INVALID_SECTIONS);
-        }
+        // TODO: Re-enable
+        //List<Section> sectionList = Arrays.asList(Section.values());
+        //if (!sectionText.keySet().containsAll(sectionList)) {
+        //    throw new ProtocolParseException(Resources.MISSING_INVALID_SECTIONS);
+        //}
 
         return sectionText;
     }
@@ -168,6 +193,10 @@ public class ProtocolParser {
                 return Section.REWRITES;
             case "roles":
                 return Section.ROLES;
+            case "roles1":
+                return Section.ROLES1;
+            case "roles2":
+                return Section.ROLES2;
             case "safety":
                 return Section.SAFETY;
             default:
@@ -182,6 +211,7 @@ public class ProtocolParser {
         String version = null;
         Integer recipeSize = null;
         boolean enableXOR = false;
+        ProtocolType protocolType = ProtocolType.REACHABILITY;
 
         for (Statement statement : statements) {
 
@@ -189,6 +219,10 @@ public class ProtocolParser {
                 if (statement.getValue().trim().equalsIgnoreCase("yes")) {
                     enableXOR = true;
                     RunConfiguration.enableXOR();
+                }
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.EQUIV)) {
+                if (statement.getValue().trim().equalsIgnoreCase("yes")) {
+                    protocolType = ProtocolType.INDISTINGUISHABILITY;
                 }
             } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.VERSION)) {
 
@@ -257,7 +291,8 @@ public class ProtocolParser {
             throw new ProtocolParseException(Resources.NO_RECIPE_SIZE);
         }
 
-        return new Metadata(version, recipeSize.intValue(), enableXOR);
+        GlobalDataCache.setProtocolType(protocolType);
+        return new Metadata(version, recipeSize.intValue(), enableXOR, protocolType);
     }
 
     private static Map<String, Aprational> parseFractionConstants(String text) throws ProtocolParseException,

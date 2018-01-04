@@ -19,31 +19,32 @@ import java.util.Objects;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class Protocol {
+public class IndistinguishabilityProtocol {
 
     private final Metadata metadata;
     private final Signature signature;
     private final Collection<Rewrite> rewrites;
     private final Map<String, Aprational> fractionConstants;
-    private final List<Role> roles;
-    private final SafetyProperty safetyProperty;
+    private final List<Role> roles1;
+    private final List<Role> roles2;
 
-    Protocol(Metadata metadata, Signature signature, Collection<Rewrite> rewrites,
-             Map<String, Aprational> fractionConstants, List<Role> roles, SafetyProperty safetyProperty) {
+
+    IndistinguishabilityProtocol(Metadata metadata, Signature signature, Collection<Rewrite> rewrites,
+                                 Map<String, Aprational> fractionConstants, List<Role> roles1, List<Role> roles2) {
 
         Objects.requireNonNull(metadata);
         Objects.requireNonNull(signature);
         Objects.requireNonNull(rewrites);
         Objects.requireNonNull(fractionConstants);
-        Objects.requireNonNull(roles);
-        Objects.requireNonNull(safetyProperty);
+        Objects.requireNonNull(roles1);
+        Objects.requireNonNull(roles2);
 
         this.metadata = metadata;
         this.signature = signature;
         this.rewrites = rewrites;
         this.fractionConstants = fractionConstants;
-        this.roles = roles;
-        this.safetyProperty = safetyProperty;
+        this.roles1 = roles1;
+        this.roles2 = roles2;
     }
 
     public String getProtocolVersion() {
@@ -62,38 +63,38 @@ public class Protocol {
         return this.fractionConstants;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public List<Role> getRoles1() {
+        return roles1;
+    }
+
+    public List<Role> getRoles2() {
+        return roles2;
     }
 
     public Metadata getMetadata() {
         return metadata;
     }
 
-    public SafetyProperty getSafetyProperty() {
-        return safetyProperty;
-    }
-
     @Override
     public boolean equals(Object o) {
 
-        if (!(o instanceof Protocol)) {
+        if (!(o instanceof IndistinguishabilityProtocol)) {
             return false;
         }
 
-        if (!metadata.equals(((Protocol) o).metadata)) return false;
-        if (!signature.equals(((Protocol) o).signature)) return false;
-        if (!rewrites.equals(((Protocol) o).rewrites)) return false;
-        if (!fractionConstants.equals(((Protocol) o).fractionConstants)) return false;
-        if (!roles.equals(((Protocol) o).roles)) return false;
-        if (!safetyProperty.equals(((Protocol) o).safetyProperty)) return false;
+        if (!metadata.equals(((IndistinguishabilityProtocol) o).metadata)) return false;
+        if (!signature.equals(((IndistinguishabilityProtocol) o).signature)) return false;
+        if (!rewrites.equals(((IndistinguishabilityProtocol) o).rewrites)) return false;
+        if (!fractionConstants.equals(((IndistinguishabilityProtocol) o).fractionConstants)) return false;
+        if (!roles1.equals(((IndistinguishabilityProtocol) o).roles1)) return false;
+        if (!roles2.equals(((IndistinguishabilityProtocol) o).roles2)) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(metadata, signature, rewrites, fractionConstants, roles, safetyProperty);
+        return Objects.hash(metadata, signature, rewrites, fractionConstants, roles1, roles2);
     }
 
     @Override
@@ -103,8 +104,8 @@ public class Protocol {
                 .add("signature", signature)
                 .add("rewrites", rewrites)
                 .add("fraction constants", fractionConstants)
-                .add("roles", roles)
-                .add("safety property", safetyProperty)
+                .add("first roles", roles1)
+                .add("second roles", roles2)
                 .toString();
     }
 }

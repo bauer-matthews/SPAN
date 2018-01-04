@@ -1,4 +1,4 @@
-package mc;
+package mc.reachability;
 
 import attacker.AttackTree;
 import attacker.Node;
@@ -18,11 +18,16 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created by mbauer on 8/9/2017.
  */
-public class DfsModelChecker extends AbstractModelChecker {
+public class OnTheFlyModelChecker extends AbstractModelChecker {
 
     private final boolean max;
+    private final State initialState;
 
-    public DfsModelChecker(boolean max) {
+    public OnTheFlyModelChecker(State initialState, boolean max) {
+
+        Objects.requireNonNull(initialState);
+
+        this.initialState = initialState;
         this.max = max;
     }
 
@@ -51,7 +56,7 @@ public class DfsModelChecker extends AbstractModelChecker {
     private Aprational getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
-        GlobalDataCache.incrimentBeliefStateCounter();
+        GlobalDataCache.incrementBeliefStateCounter();
         GlobalDataCache.incrementStateCounter(beliefState.getBeliefs().size());
 
         Optional<Aprational> attackProb = GlobalDataCache.hasPartialOrderReduction(
@@ -162,5 +167,10 @@ public class DfsModelChecker extends AbstractModelChecker {
             GlobalDataCache.addAttackNode(transitionNode);
             GlobalDataCache.addAttackNode(node);
         }
+    }
+
+    @Override
+    public void run() throws InvalidActionException, InterruptedException, IOException, ExecutionException {
+        check(initialState);
     }
 }

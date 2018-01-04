@@ -2,9 +2,12 @@ import cache.GlobalDataCache;
 import cache.RunConfiguration;
 import log.Console;
 import log.Severity;
-import mc.DfsModelChecker;
 import mc.ModelChecker;
+import mc.indistinguishability.IndistinguishabilityModelChecker;
+import mc.reachability.OnTheFlyModelChecker;
+import mc.reachability.ReachabilityModelChecker;
 import parser.Parser;
+import parser.protocol.ProtocolType;
 import process.State;
 
 import java.util.Collections;
@@ -19,22 +22,41 @@ import java.util.Collections;
  */
 public class CLI {
 
-    private static long startTime;
-    private static long stopTime;
-
     public static void main(String[] args) {
 
         Parser.parseOptions(args);
         Parser.parseProtocol();
 
-        // Construct initial state from the now loaded cache
-        State initialState = new State(Collections.emptyList(), Collections.emptyList(),
-                GlobalDataCache.getProtocol().getRoles());
-        try {
+        if (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY)) {
 
-            ModelChecker mc = new DfsModelChecker(RunConfiguration.findMaxAttack());
+            // Construct initial state from the now loaded cache
+            State initialState = new State(Collections.emptyList(), Collections.emptyList(),
+                    GlobalDataCache.getReachabilityProtocol().getRoles());
+
+            ReachabilityModelChecker mc = new OnTheFlyModelChecker(initialState, RunConfiguration.findMaxAttack());
+            runModelChecker(mc);
+        }
+
+        if(GlobalDataCache.getProtocolType().equals(ProtocolType.INDISTINGUISHABILITY)) {
+
+            // Construct initial states from the now loaded cache
+            State initialState1 = new State(Collections.emptyList(), Collections.emptyList(),
+                    GlobalDataCache.getIndistinguishabilityProtocol().getRoles1());
+
+            State initialState2 = new State(Collections.emptyList(), Collections.emptyList(),
+                    GlobalDataCache.getIndistinguishabilityProtocol().getRoles2());
+
+            IndistinguishabilityModelChecker mc = new mc.indistinguishability.
+                    OnTheFlyModelChecker(initialState1, initialState2);
+            runModelChecker(mc);
+        }
+    }
+
+    private static void runModelChecker(ModelChecker mc) {
+
+        try {
             mc.setStartTime(System.currentTimeMillis());
-            mc.check(initialState);
+            mc.run();
             mc.setStopTime(System.currentTimeMillis());
             mc.printResults();
 

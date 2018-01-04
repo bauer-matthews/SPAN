@@ -1,9 +1,6 @@
 package parser.cli;
 
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import util.ExitCode;
 
 import java.util.HashMap;
@@ -107,10 +104,10 @@ class CLIOptionsHelper {
     }
 
     static void validateOptions(List<Option> options) throws ParseException {
-        validateEquivalenceOptions(options);
+        validateEquivalenceEngineOptions(options);
     }
 
-    private static void validateEquivalenceOptions(List<Option> options) throws ParseException {
+    private static void validateEquivalenceEngineOptions(List<Option> options) throws ParseException {
 
         int equivOptCount = 0;
         for (Option option : options) {

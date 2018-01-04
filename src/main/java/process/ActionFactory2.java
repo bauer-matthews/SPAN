@@ -22,9 +22,9 @@ public class ActionFactory2 {
 
     static {
         FUNCTION_SYMBOLS = new ArrayList<>();
-        FUNCTION_SYMBOLS.addAll(GlobalDataCache.getProtocol().getSignature().getFunctions());
+        FUNCTION_SYMBOLS.addAll(GlobalDataCache.getSignature().getFunctions());
 
-        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+        if (GlobalDataCache.getMetadata().isXOR()) {
             Xor.addXorFunctions(FUNCTION_SYMBOLS);
         }
     }
@@ -52,7 +52,7 @@ public class ActionFactory2 {
 
         List<Term> terms = new ArrayList<>();
         for (Term recipe : ActionFactory2Cache.getRecipes(new RecipeParameter(frameVariableTerms, frameVariableTermMap,
-                guardSort, GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(), guard))) {
+                guardSort, GlobalDataCache.getMetadata().getRecipeDepth(), guard))) {
 
             terms.add(recipe);
         }
@@ -185,7 +185,7 @@ public class ActionFactory2 {
             }
         }
 
-        for (NameTerm name : GlobalDataCache.getProtocol().getSignature().getPublicNames()) {
+        for (NameTerm name : GlobalDataCache.getSignature().getPublicNames()) {
 
             if (name.hasSort(sort) && matchesGuard(guard, name)) {
                 baseRecipes.add(name);

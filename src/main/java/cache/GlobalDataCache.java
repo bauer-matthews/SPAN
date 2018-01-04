@@ -3,11 +3,16 @@ package cache;
 import attacker.AttackTree;
 import attacker.Node;
 import org.apfloat.Aprational;
-import process.Resources;
+import parser.protocol.ProtocolType;
+import protocol.IndistinguishabilityProtocol;
 import protocol.Interleaving;
-import protocol.Protocol;
+import protocol.Metadata;
+import protocol.ReachabilityProtocol;
+import rewriting.Rewrite;
+import rewriting.Signature;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +35,9 @@ public class GlobalDataCache {
     private static long beliefStateCounter;
 
     private static AttackTree attackTree;
-    private static Protocol protocol;
-
+    private static ReachabilityProtocol reachabilityProtocol;
+    private static IndistinguishabilityProtocol indistinguishabilityProtocol;
+    private static ProtocolType protocolType;
 
     static {
         interleavings = new ArrayList<>();
@@ -136,12 +142,47 @@ public class GlobalDataCache {
         return Optional.empty();
     }
 
-    public static void setProtocol(Protocol protocolInstance) {
-        protocol = protocolInstance;
+    public static void setReachabilityProtocol(ReachabilityProtocol protocolInstance) {
+        reachabilityProtocol = protocolInstance;
     }
 
-    public static Protocol getProtocol() {
-        return protocol;
+    public static ReachabilityProtocol getReachabilityProtocol() {
+        return reachabilityProtocol;
+    }
+
+    public static IndistinguishabilityProtocol getIndistinguishabilityProtocol() {
+        return indistinguishabilityProtocol;
+    }
+
+    public static void setIndistinguishabilityProtocol(IndistinguishabilityProtocol indistinguishabilityProtocol) {
+        GlobalDataCache.indistinguishabilityProtocol = indistinguishabilityProtocol;
+    }
+
+    public static Signature getSignature() {
+
+        if (protocolType.equals(ProtocolType.REACHABILITY)) {
+            return reachabilityProtocol.getSignature();
+        } else {
+            return indistinguishabilityProtocol.getSignature();
+        }
+    }
+
+    public static Metadata getMetadata() {
+
+        if (protocolType.equals(ProtocolType.REACHABILITY)) {
+            return reachabilityProtocol.getMetadata();
+        } else {
+            return indistinguishabilityProtocol.getMetadata();
+        }
+    }
+
+    public static Collection<Rewrite> getRewrites() {
+
+        if (protocolType.equals(ProtocolType.REACHABILITY)) {
+            return reachabilityProtocol.getRewrites();
+        } else {
+            return indistinguishabilityProtocol.getRewrites();
+        }
     }
 
     public static int getFreshBranchIndex() {
@@ -157,11 +198,19 @@ public class GlobalDataCache {
         return stateCounter;
     }
 
-    public static void incrimentBeliefStateCounter() {
+    public static void incrementBeliefStateCounter() {
         GlobalDataCache.beliefStateCounter++;
     }
 
     public static void incrementStateCounter(long numStates) {
         GlobalDataCache.stateCounter = stateCounter + numStates;
+    }
+
+    public static ProtocolType getProtocolType() {
+        return protocolType;
+    }
+
+    public static void setProtocolType(ProtocolType protocolType) {
+        GlobalDataCache.protocolType = protocolType;
     }
 }

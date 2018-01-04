@@ -5,7 +5,6 @@ import log.Severity;
 import parser.cli.OptionsParser;
 import parser.protocol.ProtocolParseException;
 import parser.protocol.ProtocolParser;
-import protocol.Protocol;
 import protocol.role.ActionParseException;
 import rewriting.terms.TermParseException;
 import util.ExitCode;
@@ -24,14 +23,13 @@ public class Parser {
         OptionsParser.parse(args);
     }
 
-    public static Protocol parseProtocol() {
+    public static void parseProtocol() {
 
         try {
-            return ProtocolParser.parse();
+            ProtocolParser.parse();
         } catch (ProtocolParseException | TermParseException | ActionParseException ex) {
             Console.printError(Severity.ERROR, ex.getMessage());
             System.exit(ExitCode.PROTOCOL_PARSE_ERROR.getValue());
-            return null;
         }
     }
 }

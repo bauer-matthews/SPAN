@@ -14,6 +14,7 @@ class Commands {
     static final String VERSION = "version";
     static final String RECIPE_DEPTH = "recipe depth";
     static final String XOR = "xor";
+    static final String EQUIV = "equiv";
 
     // Hidden Metadata Command
     static final String REWRITING_CACHE = "rewriting cache";
@@ -36,7 +37,7 @@ class Commands {
     // Rewrite Commands
     static final String REWRITE = "rewrite";
 
-    // Protocol Commands
+    // ReachabilityProtocol Commands
     static final String ROLE = "role";
     static final String SUBROLE = "subrole";
 

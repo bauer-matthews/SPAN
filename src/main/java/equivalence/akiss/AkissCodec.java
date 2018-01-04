@@ -41,7 +41,7 @@ class AkissCodec {
 
         StringBuilder sb = new StringBuilder();
 
-        if (GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+        if (GlobalDataCache.getMetadata().isXOR()) {
             sb.append("#set xor;\n\n");
         }
 
@@ -59,7 +59,7 @@ class AkissCodec {
                 .collect(Collectors.toList())));
 
 
-        if(GlobalDataCache.getProtocol().getMetadata().isXOR()) {
+        if(GlobalDataCache.getMetadata().isXOR()) {
             sb.append(", one/0");
         }
 

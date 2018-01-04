@@ -31,6 +31,10 @@ public class BeliefState {
         return actionHistory;
     }
 
+    public State getStateRepresentative() throws ExecutionException {
+        return beliefs.get(0).getState();
+    }
+
     public Observation getObservation() throws ExecutionException {
         return beliefs.get(0).getState().getObservation();
     }

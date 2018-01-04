@@ -1,10 +1,6 @@
-package mc;
+package mc.indistinguishability;
 
 import cache.*;
-import dot.DotEncoder;
-import log.Console;
-import log.Severity;
-import org.apfloat.Aprational;
 import process.InvalidActionException;
 import process.State;
 import util.ExitCode;
@@ -15,34 +11,28 @@ import java.util.concurrent.ExecutionException;
 /**
  * SPAN - Stochastic Protocol Analyzer
  * <p>
- * Created: 8/24/17
+ * Created: 12/27/17
  *
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public abstract class AbstractModelChecker implements ModelChecker {
+public abstract class AbstractModelChecker implements IndistinguishabilityModelChecker {
 
     private long startTime;
     private long stopTime;
 
-    public abstract Aprational check(State initialState) throws InvalidActionException,
-            InterruptedException, IOException, ExecutionException;
+    private boolean equivalent;
 
-    public abstract boolean findMaximum();
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setStopTime(long stopTime) {
-        this.stopTime = stopTime;
+    void setEquivalent(boolean equivalent) {
+        this.equivalent = equivalent;
     }
 
     @Override
-    public void printResults() {
+    public abstract boolean check(State initialState1, State initialState2) throws InvalidActionException,
+            InterruptedException, IOException, ExecutionException;
 
-        Aprational attackProbFound = GlobalDataCache.getAttackTree().getAttackProbability();
-        boolean attackFound = GlobalDataCache.getAttackTree().attackFound();
+    @Override
+    public void printResults() {
 
         if(RunConfiguration.getDebug()) {
             System.out.println();
@@ -52,25 +42,11 @@ public abstract class AbstractModelChecker implements ModelChecker {
         System.out.println("------------------Results------------------");
         System.out.println();
 
-        if (!attackFound) {
-            System.out.println("No attack found!");
-            System.out.print("Maximum attack probability: ");
-
-        } else {
-
-            System.out.println("Attack found!");
-            if (findMaximum()) {
-                System.out.print("Maximum attack probability: ");
-            } else {
-                System.out.print("Attack probability: ");
-            }
-        }
-
-        System.out.println(attackProbFound.toString(true));
+        System.out.println("Equivalent: " + equivalent);
         System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
         //System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
         System.out.println("Belief states explored: " + GlobalDataCache.getBeliefStateCounter());
-        System.out.println("States explored: " + GlobalDataCache.getStateCounter());
+        //System.out.println("States explored: " + GlobalDataCache.getStateCounter());
         System.out.println();
 
         if (RunConfiguration.getDebug()) {
@@ -101,25 +77,19 @@ public abstract class AbstractModelChecker implements ModelChecker {
             System.out.println();
         }
 
-        if ((RunConfiguration.printAttack() && attackFound)) {
-
-            System.out.println("----------------Attack Tree----------------");
-            System.out.println();
-            System.out.println(GlobalDataCache.getAttackTree().toString());
-        }
-
         System.out.println("-------------------------------------------");
-
-        if ((RunConfiguration.outputToDot()) && (attackFound ||
-                (RunConfiguration.findMaxAttack() &&
-                        GlobalDataCache.getAttackTree().getAttackProbability().compareTo(Aprational.ZERO) > 0))) {
-            try {
-                DotEncoder.printToDotFile(RunConfiguration.getDotFile(), GlobalDataCache.getAttackTree());
-            } catch (IOException ex) {
-                Console.printError(Severity.ERROR, ex.getMessage());
-            }
-        }
 
         System.exit(ExitCode.GOOD.getValue());
     }
+
+    @Override
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
+
+    @Override
+    public void setStopTime(long stopTime) {
+        this.stopTime = stopTime;
+    }
+
 }

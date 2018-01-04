@@ -24,7 +24,10 @@ public class ProtocolBuilder {
     private Signature signature;
     private Collection<Rewrite> rewrites;
     private Map<String, Aprational> fractionConstants;
-    private List<Role> roles;
+    private List<Role> roles1;
+    private List<Role> roles2;
+
+
     private SafetyProperty safetyProperty;
 
     public ProtocolBuilder() {
@@ -51,8 +54,13 @@ public class ProtocolBuilder {
         return this;
     }
 
-    public ProtocolBuilder roles(List<Role> roles) {
-        this.roles = roles;
+    public ProtocolBuilder roles(List<Role> roles1) {
+        this.roles1 = roles1;
+        return this;
+    }
+
+    public ProtocolBuilder roles2(List<Role> roles2) {
+        this.roles2 = roles2;
         return this;
     }
 
@@ -61,13 +69,23 @@ public class ProtocolBuilder {
         return this;
     }
 
-    public Protocol build() throws IllegalStateException {
+    public ReachabilityProtocol buildReachabilityProtocol() throws IllegalStateException {
 
         if (metadata == null || signature == null || rewrites == null || fractionConstants == null ||
-                roles == null || safetyProperty == null) {
+                roles1 == null || safetyProperty == null) {
             throw new IllegalStateException("Builder is missing required fields");
         }
 
-        return new Protocol(metadata, signature, rewrites, fractionConstants, roles, safetyProperty);
+        return new ReachabilityProtocol(metadata, signature, rewrites, fractionConstants, roles1, safetyProperty);
+    }
+
+    public IndistinguishabilityProtocol buildIndistinguishabilityProtocol() throws IllegalStateException {
+
+        if (metadata == null || signature == null || rewrites == null || fractionConstants == null ||
+                roles1 == null || roles2 == null) {
+            throw new IllegalStateException("Builder is missing required fields");
+        }
+
+        return new IndistinguishabilityProtocol(metadata, signature, rewrites, fractionConstants, roles1, roles2);
     }
 }

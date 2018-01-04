@@ -21,7 +21,7 @@ public class ActionFactory {
 
         Collection<Term> terms = new ArrayList<>();
 
-        for (int i = 1; i <= GlobalDataCache.getProtocol().getMetadata().getRecipeDepth(); i++) {
+        for (int i = 1; i <= GlobalDataCache.getMetadata().getRecipeDepth(); i++) {
             if (i == 1) {
                 terms = getBaseRecipes(numFrameVariables);
             } else {
@@ -94,11 +94,11 @@ public class ActionFactory {
             baseRecipes.add(new FrameVariableTerm("W", i));
         }
 
-        for (NameTerm name : GlobalDataCache.getProtocol().getSignature().getPublicNames()) {
+        for (NameTerm name : GlobalDataCache.getSignature().getPublicNames()) {
             baseRecipes.add(name);
         }
 
-        for (FunctionSymbol functionSymbol : GlobalDataCache.getProtocol().getSignature().getFunctions()) {
+        for (FunctionSymbol functionSymbol : GlobalDataCache.getSignature().getFunctions()) {
             if (functionSymbol.getArity() == 0) {
                 baseRecipes.add(new FunctionTerm(functionSymbol, Collections.emptyList()));
             }
@@ -118,7 +118,7 @@ public class ActionFactory {
 
         int currentArity = 1;
 
-        for (FunctionSymbol functionSymbol : orderByArity(GlobalDataCache.getProtocol().getSignature().getFunctions())) {
+        for (FunctionSymbol functionSymbol : orderByArity(GlobalDataCache.getSignature().getFunctions())) {
 
             if (functionSymbol.getArity() == 0) {
                 // ignore, already handled

@@ -79,7 +79,7 @@ public class KissCodec {
         sb.append("\t\t");
         sb.append("phi1 = new ");
 
-        sb.append(COMMA_JOINER.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
+        sb.append(COMMA_JOINER.join(GlobalDataCache.getSignature().getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
 
@@ -92,7 +92,7 @@ public class KissCodec {
         sb.append("\t\t");
         sb.append("phi2 = new ");
 
-        sb.append(COMMA_JOINER.join(GlobalDataCache.getProtocol().getSignature().getPrivateNames().stream()
+        sb.append(COMMA_JOINER.join(GlobalDataCache.getSignature().getPrivateNames().stream()
                 .map(NameTerm::toMathString)
                 .collect(Collectors.toList())));
 
