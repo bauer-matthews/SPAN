@@ -47,7 +47,7 @@ public abstract class AbstractModelChecker implements ReachabilityModelChecker {
         Aprational attackProbFound = GlobalDataCache.getAttackTree().getAttackProbability();
         boolean attackFound = GlobalDataCache.getAttackTree().attackFound();
 
-        if(RunConfiguration.getDebug()) {
+        if (RunConfiguration.getDebug()) {
             System.out.println();
             System.out.println();
         }
@@ -72,8 +72,12 @@ public abstract class AbstractModelChecker implements ReachabilityModelChecker {
         System.out.println(attackProbFound.toString(true));
         System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
         //System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
-        System.out.println("Belief states explored: " + GlobalDataCache.getBeliefStateCounter());
-        System.out.println("States explored: " + GlobalDataCache.getStateCounter());
+
+        if (GlobalDataCache.getMetadata().getReachabilityMethod().equals(ReachabilityMethod.OTF)) {
+            System.out.println("Belief states explored: " + GlobalDataCache.getBeliefStateCounter());
+        }
+
+        //System.out.println("States explored: " + GlobalDataCache.getStateCounter());
         System.out.println();
 
         if (RunConfiguration.getDebug()) {

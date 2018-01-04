@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class TransitionSystem {
 
-    static Collection<Transition> applyAction(State state, Action action)
+   public static Collection<Transition> applyAction(State state, Action action)
             throws InvalidActionException, ExecutionException {
 
         if (!(action.getRoleIndex() < state.getRoles().size())) {

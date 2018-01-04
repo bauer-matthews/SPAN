@@ -3,7 +3,9 @@ import cache.RunConfiguration;
 import log.Console;
 import log.Severity;
 import mc.ModelChecker;
+import mc.indistinguishability.IndistinguishabilityMethod;
 import mc.indistinguishability.IndistinguishabilityModelChecker;
+import mc.indistinguishability.PfaModelChecker;
 import mc.reachability.OnTheFlyModelChecker;
 import mc.reachability.ReachabilityModelChecker;
 import parser.Parser;
@@ -37,7 +39,7 @@ public class CLI {
             runModelChecker(mc);
         }
 
-        if(GlobalDataCache.getProtocolType().equals(ProtocolType.INDISTINGUISHABILITY)) {
+        if (GlobalDataCache.getProtocolType().equals(ProtocolType.INDISTINGUISHABILITY)) {
 
             // Construct initial states from the now loaded cache
             State initialState1 = new State(Collections.emptyList(), Collections.emptyList(),
@@ -46,9 +48,16 @@ public class CLI {
             State initialState2 = new State(Collections.emptyList(), Collections.emptyList(),
                     GlobalDataCache.getIndistinguishabilityProtocol().getRoles2());
 
-            IndistinguishabilityModelChecker mc = new mc.indistinguishability.
-                    OnTheFlyModelChecker(initialState1, initialState2);
-            runModelChecker(mc);
+            if (GlobalDataCache.getMetadata().getIndistinguishabilityMethod().equals(IndistinguishabilityMethod.OTF)) {
+                IndistinguishabilityModelChecker mc = new mc.indistinguishability.
+                        OnTheFlyModelChecker(initialState1, initialState2);
+                runModelChecker(mc);
+            }
+
+            if(GlobalDataCache.getMetadata().getIndistinguishabilityMethod().equals(IndistinguishabilityMethod.PFA)) {
+                PfaModelChecker mc = new PfaModelChecker(initialState1, initialState2);
+                runModelChecker(mc);
+            }
         }
     }
 

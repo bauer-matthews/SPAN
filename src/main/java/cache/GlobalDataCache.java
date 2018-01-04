@@ -31,7 +31,8 @@ public class GlobalDataCache {
     private static int interleavingsExplored;
     private static int maxActionSetSize;
     private static int branchIndexCounter;
-    private static long stateCounter;
+    private static long protcol1StateCounter;
+    private static long protcol2StateCounter;
     private static long beliefStateCounter;
 
     private static AttackTree attackTree;
@@ -44,7 +45,8 @@ public class GlobalDataCache {
         interleavingsExplored = 0;
         maxActionSetSize = 0;
         branchIndexCounter = 0;
-        stateCounter = 0;
+        protcol1StateCounter = 0;
+        protcol2StateCounter = 0;
         beliefStateCounter = 0;
     }
 
@@ -194,16 +196,24 @@ public class GlobalDataCache {
         return beliefStateCounter;
     }
 
-    public static long getStateCounter() {
-        return stateCounter;
+    public static long getProtcol1StateCounter() {
+        return protcol1StateCounter;
+    }
+
+    public static long getProtcol2StateCounter() {
+        return protcol2StateCounter;
     }
 
     public static void incrementBeliefStateCounter() {
         GlobalDataCache.beliefStateCounter++;
     }
 
-    public static void incrementStateCounter(long numStates) {
-        GlobalDataCache.stateCounter = stateCounter + numStates;
+    public static void setProtcol1StateCounter(long numStates) {
+        GlobalDataCache.protcol1StateCounter = numStates;
+    }
+
+    public static void setProtcol2StateCounter(long numStates) {
+        GlobalDataCache.protcol2StateCounter = numStates;
     }
 
     public static ProtocolType getProtocolType() {

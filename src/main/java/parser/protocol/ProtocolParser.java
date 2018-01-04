@@ -5,6 +5,8 @@ import cache.RunConfiguration;
 import equivalence.EquivalenceMethod;
 import log.Console;
 import log.Severity;
+import mc.indistinguishability.IndistinguishabilityMethod;
+import mc.reachability.ReachabilityMethod;
 import org.apfloat.Aprational;
 import protocol.*;
 import protocol.role.ActionParseException;
@@ -212,6 +214,8 @@ public class ProtocolParser {
         Integer recipeSize = null;
         boolean enableXOR = false;
         ProtocolType protocolType = ProtocolType.REACHABILITY;
+        IndistinguishabilityMethod indMethod = IndistinguishabilityMethod.OTF;
+        ReachabilityMethod reachabilityMethod = ReachabilityMethod.OTF;
 
         for (Statement statement : statements) {
 
@@ -224,6 +228,18 @@ public class ProtocolParser {
                 if (statement.getValue().trim().equalsIgnoreCase("yes")) {
                     protocolType = ProtocolType.INDISTINGUISHABILITY;
                 }
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.REACH_METHOD)) {
+                if(statement.getValue().trim().equalsIgnoreCase("otf")) {
+                    reachabilityMethod = ReachabilityMethod.OTF;
+                }
+            } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.EQUIV_METHOD)) {
+
+                if(statement.getValue().trim().equalsIgnoreCase("pfa")) {
+                    indMethod = IndistinguishabilityMethod.PFA;
+                } else if(statement.getValue().trim().equalsIgnoreCase("otf")) {
+                    indMethod = IndistinguishabilityMethod.OTF;
+                }
+
             } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.VERSION)) {
 
                 version = statement.getValue();
@@ -292,7 +308,7 @@ public class ProtocolParser {
         }
 
         GlobalDataCache.setProtocolType(protocolType);
-        return new Metadata(version, recipeSize.intValue(), enableXOR, protocolType);
+        return new Metadata(version, recipeSize, enableXOR, protocolType, reachabilityMethod, indMethod);
     }
 
     private static Map<String, Aprational> parseFractionConstants(String text) throws ProtocolParseException,

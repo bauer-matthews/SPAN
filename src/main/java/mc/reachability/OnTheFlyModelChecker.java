@@ -57,7 +57,6 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
         GlobalDataCache.incrementBeliefStateCounter();
-        GlobalDataCache.incrementStateCounter(beliefState.getBeliefs().size());
 
         Optional<Aprational> attackProb = GlobalDataCache.hasPartialOrderReduction(
                 new Interleaving(beliefState.getActionHistory(), beliefState.getStateAttackProb()));

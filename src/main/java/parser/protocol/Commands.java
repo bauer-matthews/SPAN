@@ -15,6 +15,8 @@ class Commands {
     static final String RECIPE_DEPTH = "recipe depth";
     static final String XOR = "xor";
     static final String EQUIV = "equiv";
+    static final String EQUIV_METHOD = "equiv method";
+    static final String REACH_METHOD = "reach method";
 
     // Hidden Metadata Command
     static final String REWRITING_CACHE = "rewriting cache";

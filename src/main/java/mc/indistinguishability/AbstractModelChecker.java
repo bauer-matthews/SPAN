@@ -34,7 +34,7 @@ public abstract class AbstractModelChecker implements IndistinguishabilityModelC
     @Override
     public void printResults() {
 
-        if(RunConfiguration.getDebug()) {
+        if (RunConfiguration.getDebug()) {
             System.out.println();
             System.out.println();
         }
@@ -44,8 +44,20 @@ public abstract class AbstractModelChecker implements IndistinguishabilityModelC
 
         System.out.println("Equivalent: " + equivalent);
         System.out.println("Running time: " + (stopTime - startTime) + " milliseconds");
+        System.out.println("Indistinguishability method: " +
+                GlobalDataCache.getMetadata().getIndistinguishabilityMethod());
+
         //System.out.println("Paths explored: " + GlobalDataCache.getInterleavingsExplored());
-        System.out.println("Belief states explored: " + GlobalDataCache.getBeliefStateCounter());
+
+        if (GlobalDataCache.getMetadata().getIndistinguishabilityMethod().equals(IndistinguishabilityMethod.OTF)) {
+            System.out.println("Belief states explored: " + GlobalDataCache.getBeliefStateCounter());
+        }
+
+        if (GlobalDataCache.getMetadata().getIndistinguishabilityMethod().equals(IndistinguishabilityMethod.PFA)) {
+            System.out.println("Protocol 1 states explored: " + GlobalDataCache.getProtcol1StateCounter());
+            System.out.println("Protocol 2 states explored: " + GlobalDataCache.getProtcol2StateCounter());
+        }
+
         //System.out.println("States explored: " + GlobalDataCache.getStateCounter());
         System.out.println();
 
