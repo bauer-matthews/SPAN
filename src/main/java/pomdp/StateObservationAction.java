@@ -12,19 +12,25 @@ import java.util.Objects;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-public class StateAction {
+public class StateObservationAction {
 
     private final long stateIndex;
+    private final long observationIndex;
     private final long actionIndex;
 
-    public StateAction(long stateIndex, long actionIndex) {
+    public StateObservationAction(long stateIndex, long observationIndex, long actionIndex) {
 
         this.stateIndex = stateIndex;
+        this.observationIndex = observationIndex;
         this.actionIndex = actionIndex;
     }
 
     public long getActionIndex() {
         return actionIndex;
+    }
+
+    public long getObservationIndex() {
+        return observationIndex;
     }
 
     public long getStateIndex() {
@@ -34,25 +40,27 @@ public class StateAction {
     @Override
     public boolean equals(Object o) {
 
-        if (!(o instanceof StateAction)) {
+        if (!(o instanceof StateObservationAction)) {
             return false;
         }
 
-        if (stateIndex != ((StateAction) o).stateIndex) return false;
-        if (actionIndex != ((StateAction) o).actionIndex) return false;
+        if (stateIndex != ((StateObservationAction) o).stateIndex) return false;
+        if (observationIndex != ((StateObservationAction) o).observationIndex) return false;
+        if (actionIndex != ((StateObservationAction) o).actionIndex) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stateIndex, actionIndex);
+        return Objects.hash(stateIndex, observationIndex, actionIndex);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("state index", stateIndex)
+                .add("observation index", observationIndex)
                 .add("action index", actionIndex)
                 .toString();
     }

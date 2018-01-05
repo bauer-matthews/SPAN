@@ -16,10 +16,10 @@ import java.util.Set;
 public class SymbolicTransition {
 
 
-    private final StateAction stateAction;
-    private final Set<StateProb> stateProbSet;
+    private final StateObservationAction stateAction;
+    private final Set<StateObsProb> stateProbSet;
 
-    SymbolicTransition(StateAction stateAction, Set<StateProb> stateProbSet) {
+    SymbolicTransition(StateObservationAction stateAction, Set<StateObsProb> stateProbSet) {
         this.stateAction = stateAction;
         this.stateProbSet = stateProbSet;
     }

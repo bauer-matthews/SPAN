@@ -1,7 +1,9 @@
 package mc.indistinguishability;
 
 import cache.GlobalDataCache;
+import pomdp.Pomdp;
 import pomdp.PomdpFactory;
+import pomdp.StateObservationAction;
 import process.InvalidActionException;
 import process.State;
 
@@ -35,11 +37,23 @@ public class PfaModelChecker extends AbstractModelChecker {
     public boolean check(State state1, State state2) throws InvalidActionException,
             InterruptedException, IOException, ExecutionException {
 
-        PomdpFactory.generate(state1);
+        Pomdp Pomdp1 = PomdpFactory.generate(state1);
         GlobalDataCache.setProtcol1StateCounter(PomdpFactory.getNumStates());
 
-        PomdpFactory.generate(state2);
+        Pomdp Pomdp2 = PomdpFactory.generate(state2);
         GlobalDataCache.setProtcol2StateCounter(PomdpFactory.getNumStates());
+
+        // TODO: Simple check - action size/obs size are different
+
+        for(StateObservationAction sa : Pomdp1.getTransitions().keySet()) {
+            System.out.println("S" + sa.getStateIndex() + " O" + sa.getObservationIndex() + " A" + sa.getActionIndex());
+        }
+
+        System.out.println();
+
+        for(StateObservationAction sa : Pomdp2.getTransitions().keySet()) {
+            System.out.println("S" + sa.getStateIndex() + " O" + sa.getObservationIndex() + " A" + sa.getActionIndex());
+        }
 
         return true;
     }

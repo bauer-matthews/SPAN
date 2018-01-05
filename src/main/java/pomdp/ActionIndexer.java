@@ -38,6 +38,10 @@ class ActionIndexer {
         return index;
     }
 
+    long getNumActions () {
+        return actionMap.size();
+    }
+
     void reset() {
         actionMap.clear();
         freshIndex = 0;

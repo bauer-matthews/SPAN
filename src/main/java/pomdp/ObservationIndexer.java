@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 class ObservationIndexer {
 
     private final Map<Observation, Long> observationMap;
-    private final Map<State, Long> representativeMap;
+    private final Map<Integer, Map<State, Long>> representativeMap;
     private long freshIndex;
 
     ObservationIndexer() {
@@ -38,11 +38,14 @@ class ObservationIndexer {
             return index;
         } else {
 
-            for (State representative : representativeMap.keySet()) {
+            int frameSize = state.getFrame().size();
+            representativeMap.computeIfAbsent(frameSize, k -> new HashMap<>());
+
+            for (State representative : representativeMap.get(frameSize).keySet()) {
 
                 if (EquivalenceCache.checkEquivalence(representative, state).isEquivalent()) {
 
-                    index = representativeMap.get(representative);
+                    index = representativeMap.get(frameSize).get(representative);
                     observationMap.put(state.getObservation(), index);
                     return index;
                 }
@@ -51,13 +54,17 @@ class ObservationIndexer {
             index = freshIndex;
 
             if(!state.getFrame().isEmpty()) {
-                representativeMap.put(state, index);
+                representativeMap.get(frameSize).put(state, index);
             }
 
             observationMap.put(state.getObservation(), index);
             freshIndex++;
             return index;
         }
+    }
+
+    long getNumObservations() {
+        return observationMap.size();
     }
 
     void reset() {
