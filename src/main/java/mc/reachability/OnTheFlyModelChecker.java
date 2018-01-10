@@ -22,6 +22,7 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
 
     private final boolean max;
     private final State initialState;
+    private final Map<List<Belief>, Aprational> beliefsVisited;
 
     public OnTheFlyModelChecker(State initialState, boolean max) {
 
@@ -29,6 +30,7 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
 
         this.initialState = initialState;
         this.max = max;
+        this.beliefsVisited = new HashMap<>();
     }
 
     @Override
@@ -56,7 +58,9 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
     private Aprational getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
-        GlobalDataCache.incrementBeliefStateCounter();
+        if(beliefsVisited.get(beliefState.getBeliefs()) != null) {
+            return beliefsVisited.get(beliefState.getBeliefs());
+        }
 
         Optional<Aprational> attackProb = GlobalDataCache.hasPartialOrderReduction(
                 new Interleaving(beliefState.getActionHistory(), beliefState.getStateAttackProb()));
@@ -150,6 +154,8 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
                 printResults();
             }
         }
+
+        beliefsVisited.put(beliefState.getBeliefs(), maxProb);
 
         return maxProb;
     }

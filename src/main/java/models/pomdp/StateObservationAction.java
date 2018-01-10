@@ -1,4 +1,4 @@
-package pomdp;
+package models.pomdp;
 
 import com.google.common.base.MoreObjects;
 
@@ -14,26 +14,26 @@ import java.util.Objects;
  */
 public class StateObservationAction {
 
-    private final long stateIndex;
-    private final long observationIndex;
-    private final long actionIndex;
+    private final int stateIndex;
+    private final int observationIndex;
+    private final int actionIndex;
 
-    public StateObservationAction(long stateIndex, long observationIndex, long actionIndex) {
+    public StateObservationAction(int stateIndex, int observationIndex, int actionIndex) {
 
         this.stateIndex = stateIndex;
         this.observationIndex = observationIndex;
         this.actionIndex = actionIndex;
     }
 
-    public long getActionIndex() {
+    public int getActionIndex() {
         return actionIndex;
     }
 
-    public long getObservationIndex() {
+    public int getObservationIndex() {
         return observationIndex;
     }
 
-    public long getStateIndex() {
+    public int getStateIndex() {
         return stateIndex;
     }
 

@@ -1,8 +1,8 @@
-package pomdp;
+package models.pomdp;
 
 import com.google.common.base.MoreObjects;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,14 +16,14 @@ import java.util.Objects;
  */
 public class Pomdp {
 
-    private final Map<StateObservationAction, Collection<StateObsProb>> transitions;
+    private final Map<Integer, List<SymbolicTransition>> transitions;
 
-    private final long numObservations;
-    private final long numStates;
-    private final long numActions;
+    private final int numObservations;
+    private final int numStates;
+    private final int numActions;
 
-    public Pomdp(long numStates, long numActions, long numObservations,
-                 Map<StateObservationAction, Collection<StateObsProb>> transitions ) {
+    public Pomdp(int numStates, int numActions, int numObservations,
+                 Map<Integer, List<SymbolicTransition>> transitions ) {
 
         Objects.requireNonNull(transitions);
 
@@ -33,19 +33,19 @@ public class Pomdp {
         this.transitions = transitions;
     }
 
-    public long getNumObservations() {
+    public int getNumObservations() {
         return numObservations;
     }
 
-    public long getNumActions() {
+    public int getNumActions() {
         return numActions;
     }
 
-    public long getNumStates() {
+    public int getNumStates() {
         return numStates;
     }
 
-    public Map<StateObservationAction, Collection<StateObsProb>> getTransitions() {
+    public Map<Integer, List<SymbolicTransition>> getTransitions() {
         return transitions;
     }
 

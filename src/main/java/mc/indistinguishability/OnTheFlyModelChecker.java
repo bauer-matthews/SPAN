@@ -4,6 +4,7 @@ import cache.EquivalenceCache;
 import cache.GlobalDataCache;
 import org.apfloat.Aprational;
 import process.*;
+import util.Pair;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,6 +22,7 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
 
     private final State initialState1;
     private final State initialState2;
+    private final Map<Pair<List<Belief>, List<Belief>>, Boolean> beliefPairsVisited;
 
     public OnTheFlyModelChecker(State initialState1, State initialState2) {
 
@@ -29,6 +31,7 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
 
         this.initialState1 = initialState1;
         this.initialState2 = initialState2;
+        this.beliefPairsVisited = new HashMap<>();
     }
 
     @Override
@@ -48,6 +51,11 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
 
     private boolean equivalent(BeliefState beliefState1, BeliefState beliefState2)
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
+
+        if(beliefPairsVisited.get(new Pair<>(beliefState1.getBeliefs(), beliefState2.getBeliefs())) != null) {
+            return true;
+        }
+        beliefPairsVisited.put(new Pair<>(beliefState1.getBeliefs(), beliefState2.getBeliefs()), Boolean.TRUE);
 
         GlobalDataCache.incrementBeliefStateCounter();
 

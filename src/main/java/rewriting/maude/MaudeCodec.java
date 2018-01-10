@@ -26,7 +26,7 @@ public class MaudeCodec {
 
     static File encodeTheory() throws IOException {
 
-        File maudeTheory = maudeTheory = File.createTempFile("SPAN-", "");
+        File maudeTheory = File.createTempFile("SPAN-", "");
         maudeTheory.deleteOnExit();
 
         PrintWriter writer = new PrintWriter(maudeTheory, "UTF-8");

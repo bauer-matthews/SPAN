@@ -1,4 +1,4 @@
-package pomdp;
+package models;
 
 import cache.EquivalenceCache;
 import process.Observation;
@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutionException;
  */
 class ObservationIndexer {
 
-    private final Map<Observation, Long> observationMap;
-    private final Map<Integer, Map<State, Long>> representativeMap;
-    private long freshIndex;
+    private final Map<Observation, Integer> observationMap;
+    private final Map<Integer, Map<State, Integer>> representativeMap;
+    private int freshIndex;
 
     ObservationIndexer() {
 
@@ -30,9 +30,9 @@ class ObservationIndexer {
         freshIndex = 0;
     }
 
-    long getObservationIndex(State state) throws IOException, InterruptedException, ExecutionException {
+    int getObservationIndex(State state) throws IOException, InterruptedException, ExecutionException {
 
-        Long index = observationMap.get(state.getObservation());
+        Integer index = observationMap.get(state.getObservation());
 
         if (index != null) {
             return index;
@@ -53,7 +53,7 @@ class ObservationIndexer {
 
             index = freshIndex;
 
-            if(!state.getFrame().isEmpty()) {
+            if (!state.getFrame().isEmpty()) {
                 representativeMap.get(frameSize).put(state, index);
             }
 
@@ -63,7 +63,7 @@ class ObservationIndexer {
         }
     }
 
-    long getNumObservations() {
+    int getNumObservations() {
         return observationMap.size();
     }
 

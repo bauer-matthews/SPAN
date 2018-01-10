@@ -81,17 +81,24 @@ public class ProtocolParser {
 
     private static void validateReachabilityProtocol() throws ProtocolParseException {
 
-            validateXOR();
+        validateXOR();
     }
 
     private static void validateIndistinguishabilityProtocol() throws ProtocolParseException {
 
-            validateXOR();
+        validateXOR();
+
+        if (GlobalDataCache.getMetadata().getIndistinguishabilityMethod() == IndistinguishabilityMethod.PFA) {
+            if (RunConfiguration.getGlpkPath() == null) {
+                throw new ProtocolParseException("The glpk option must be given with the indistinguishability " +
+                        "method is set to PFA");
+            }
+        }
     }
 
     private static void validateXOR() throws ProtocolParseException {
 
-        if(GlobalDataCache.getMetadata().isXOR()) {
+        if (GlobalDataCache.getMetadata().isXOR()) {
 
             if (!RunConfiguration.getRewriteMethod().equals(RewriteMethod.MAUDE)) {
                 throw new ProtocolParseException("Maude must be enabled to use XOR");
@@ -229,14 +236,14 @@ public class ProtocolParser {
                     protocolType = ProtocolType.INDISTINGUISHABILITY;
                 }
             } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.REACH_METHOD)) {
-                if(statement.getValue().trim().equalsIgnoreCase("otf")) {
+                if (statement.getValue().trim().equalsIgnoreCase("otf")) {
                     reachabilityMethod = ReachabilityMethod.OTF;
                 }
             } else if (statement.getCommand().trim().equalsIgnoreCase(Commands.EQUIV_METHOD)) {
 
-                if(statement.getValue().trim().equalsIgnoreCase("pfa")) {
+                if (statement.getValue().trim().equalsIgnoreCase("pfa")) {
                     indMethod = IndistinguishabilityMethod.PFA;
-                } else if(statement.getValue().trim().equalsIgnoreCase("otf")) {
+                } else if (statement.getValue().trim().equalsIgnoreCase("otf")) {
                     indMethod = IndistinguishabilityMethod.OTF;
                 }
 

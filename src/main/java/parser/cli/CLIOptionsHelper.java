@@ -94,6 +94,10 @@ class CLIOptionsHelper {
         options.addOption(maude);
         optionMap.put(maude, maudeConsumer);
 
+        // Glpk
+        options.addOption(glpk);
+        optionMap.put(glpk, glpkConsumer);
+
         // Dot Output Option
         options.addOption(dot);
         optionMap.put(dot, dotConsumer);

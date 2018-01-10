@@ -1,12 +1,15 @@
 package mc.indistinguishability;
 
-import cache.GlobalDataCache;
-import pomdp.Pomdp;
-import pomdp.PomdpFactory;
-import pomdp.StateObservationAction;
+import lp.PfaEquivLp;
+import lp.glpk.CplexCodec;
+import lp.glpk.GlpkEngine;
+import models.ModelPairFactory;
+import models.pfa.Pfa;
 import process.InvalidActionException;
 import process.State;
+import util.Pair;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -37,22 +40,21 @@ public class PfaModelChecker extends AbstractModelChecker {
     public boolean check(State state1, State state2) throws InvalidActionException,
             InterruptedException, IOException, ExecutionException {
 
-        Pomdp Pomdp1 = PomdpFactory.generate(state1);
-        GlobalDataCache.setProtcol1StateCounter(PomdpFactory.getNumStates());
+        Pair<Pfa, Pfa> pfas = ModelPairFactory.generatePfaPair(state1, state2);
+        Pfa pfa1 = pfas.getKey();
+        Pfa pfa2 = pfas.getValue();
 
-        Pomdp Pomdp2 = PomdpFactory.generate(state2);
-        GlobalDataCache.setProtcol2StateCounter(PomdpFactory.getNumStates());
+        PfaEquivLp lp = new PfaEquivLp(pfa1, pfa2);
 
-        // TODO: Simple check - action size/obs size are different
+        for (int i = 0; i < Math.max(pfa1.getLength(), pfa2.getLength()); i++) {
 
-        for(StateObservationAction sa : Pomdp1.getTransitions().keySet()) {
-            System.out.println("S" + sa.getStateIndex() + " O" + sa.getObservationIndex() + " A" + sa.getActionIndex());
-        }
+            lp.updateConstraints();
+            File lpFile = CplexCodec.encodeLinearProg(lp);
 
-        System.out.println();
+            if (!CplexCodec.decode(GlpkEngine.invoke(lpFile))) {
+                return false;
+            }
 
-        for(StateObservationAction sa : Pomdp2.getTransitions().keySet()) {
-            System.out.println("S" + sa.getStateIndex() + " O" + sa.getObservationIndex() + " A" + sa.getActionIndex());
         }
 
         return true;

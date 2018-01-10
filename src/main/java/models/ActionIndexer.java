@@ -1,6 +1,6 @@
-package pomdp;
+package models;
 
-import process.State;
+import process.Action;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,37 +13,37 @@ import java.util.Map;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-class StateIndexer {
+class ActionIndexer {
 
     // Mapping from state to observation index
-    private final Map<State, Long> stateMap;
-    private long freshIndex;
+    private final Map<Action, Integer> actionMap;
+    private int freshIndex;
 
-    StateIndexer() {
+    ActionIndexer() {
 
-        stateMap = new HashMap<>();
+        actionMap = new HashMap<>();
         freshIndex = 0;
     }
 
-    Long getStateIndex(State state) {
+    int getActionIndex(Action action) {
 
-        Long index = stateMap.get(state);
+        Integer index = actionMap.get(action);
 
         if (index == null) {
             index = freshIndex;
-            stateMap.put(state, freshIndex);
+            actionMap.put(action, freshIndex);
             freshIndex++;
         }
 
         return index;
     }
 
-    long getNumStates() {
-        return stateMap.size();
+    int getNumActions() {
+        return actionMap.size();
     }
 
     void reset() {
-        stateMap.clear();
+        actionMap.clear();
         freshIndex = 0;
     }
 }

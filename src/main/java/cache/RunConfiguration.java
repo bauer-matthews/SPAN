@@ -33,6 +33,7 @@ public class RunConfiguration {
     private static String kissPath;
     private static String akissPath;
     private static String maudePath;
+    private static String glpkPath;
 
     private static Integer equivalenceCacheSize;
     private static Integer rewritingCacheSize;
@@ -191,6 +192,14 @@ public class RunConfiguration {
 
     public static String getMaudePath() {
         return maudePath;
+    }
+
+    public static void setGlpkPath(String glpkPath) {
+        RunConfiguration.glpkPath = glpkPath;
+    }
+
+    public static String getGlpkPath() {
+        return glpkPath;
     }
 
     public static void setRewriteMethod(RewriteMethod rewriteMethod) {

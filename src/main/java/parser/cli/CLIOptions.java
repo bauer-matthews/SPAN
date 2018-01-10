@@ -73,6 +73,17 @@ public class CLIOptions {
         RunConfiguration.setRewriteMethod(RewriteMethod.MAUDE);
     };
 
+    // GLPK engine
+    static Option glpk = Option.builder("glpk")
+            .desc("path to glpk engine")
+            .hasArg()
+            .argName("location")
+            .required(false)
+            .build();
+    static Consumer<Option> glpkConsumer = (glpkOpt) -> {
+        RunConfiguration.setGlpkPath(glpkOpt.getValue());
+    };
+
     // Dot Output Option
     static Option dot = Option.builder("dot")
             .desc("output attack tree to dot file")

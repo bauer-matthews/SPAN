@@ -1,9 +1,9 @@
-package pomdp;
+package models.pfa;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Multiset;
 
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -15,13 +15,14 @@ import java.util.Set;
  */
 public class SymbolicTransition {
 
+    private final Multiset<StateProb> stateProbSet;
 
-    private final StateObservationAction stateAction;
-    private final Set<StateObsProb> stateProbSet;
-
-    SymbolicTransition(StateObservationAction stateAction, Set<StateObsProb> stateProbSet) {
-        this.stateAction = stateAction;
+    public SymbolicTransition(Multiset<StateProb> stateProbSet) {
         this.stateProbSet = stateProbSet;
+    }
+
+    public Multiset<StateProb> getStateProbSet() {
+        return stateProbSet;
     }
 
     @Override
@@ -31,7 +32,6 @@ public class SymbolicTransition {
             return false;
         }
 
-        if (stateAction != ((SymbolicTransition) o).stateAction) return false;
         if (!stateProbSet.equals(((SymbolicTransition) o).stateProbSet)) return false;
 
         return true;
@@ -39,15 +39,13 @@ public class SymbolicTransition {
 
     @Override
     public int hashCode() {
-        return Objects.hash(stateAction, stateProbSet);
+        return Objects.hash(stateProbSet);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("state action", stateAction)
                 .add("state prob set", stateProbSet)
                 .toString();
     }
-
 }
