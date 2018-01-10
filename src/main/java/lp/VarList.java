@@ -73,17 +73,20 @@ public class VarList {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(constList[0]);
+        sb.append(constList[0].doubleValue());
         sb.append(" ");
         sb.append(varName);
         sb.append(0);
 
         for (int i = 1; i < constList.length; i++) {
-            sb.append(symbol);
-            sb.append(constList[i]);
-            sb.append(" ");
-            sb.append(varName);
-            sb.append(i);
+
+            if (!constList[i].equals(Aprational.ZERO)) {
+                sb.append(symbol);
+                sb.append(constList[i].doubleValue());
+                sb.append(" ");
+                sb.append(varName);
+                sb.append(i);
+            }
         }
 
         return sb.toString();

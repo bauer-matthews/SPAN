@@ -104,14 +104,35 @@ public class CplexCodec {
         }
     }
 
-    private static void printLines(PrintWriter writer, String string) {
+    private static void printLines(PrintWriter writer, String string) throws IOException {
 
-        for (int i = 0; i < string.length(); i += LINE_LENGTH) {
-            writer.println(string.substring(i, Math.min(i + LINE_LENGTH, string.length())));
+        int printed = 0;
+        int length = string.length();
+
+        while (printed < length) {
+
+            if (printed + LINE_LENGTH > length) {
+                writer.println(string.substring(printed, Math.min(printed + LINE_LENGTH, length)));
+                printed = length;
+            } else {
+
+                int offset = string.substring(printed, printed + LINE_LENGTH).lastIndexOf(' ');
+
+                if (offset == -1) {
+                    throw new IOException("Unable to encode cplex file");
+                }
+                writer.println(string.substring(printed, printed + offset));
+                printed = printed + offset;
+            }
         }
     }
 
-    public static boolean decode(String output) {
+    public static boolean decode(String output) throws IOException {
+
+        if (output.contains("CPLEX LP file processing error")) {
+            throw new IOException("CPLEX parsing error in GLPK");
+        }
+
         return output.contains("OPTIMAL SOLUTION FOUND");
     }
 }
