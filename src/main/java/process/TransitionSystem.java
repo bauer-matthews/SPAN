@@ -1,10 +1,7 @@
 package process;
 
 import org.apfloat.Aprational;
-import protocol.role.AtomicProcess;
-import protocol.role.InputProcess;
-import protocol.role.OutputProcess;
-import protocol.role.ProbOutput;
+import protocol.role.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +13,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class TransitionSystem {
 
-   public static Collection<Transition> applyAction(State state, Action action)
+    public static Collection<Transition> applyAction(State state, Action action)
             throws InvalidActionException, ExecutionException {
 
         if (!(action.getRoleIndex() < state.getRoles().size())) {
@@ -40,13 +37,30 @@ public class TransitionSystem {
         }
 
         Collection<Transition> transitions = new ArrayList<>();
-        for (ProbOutput output : ((OutputProcess) atomic).getProbOutputs()) {
 
-            transitions.add(new Transition(output.getProbability(), state,
-                    state.outputTerms(output.getOutputTerms(), action.getRoleIndex(), output.getSubrole())));
+        if (atomic instanceof ConditionalOutputProcess) {
+
+            ConditionalOutputProcess condOut = ((ConditionalOutputProcess) atomic);
+
+            if (condOut.checkGuards(state.getSubstitution())) {
+                addTransitions(transitions, condOut.getIfProbOutputs(), state, action);
+            } else {
+                addTransitions(transitions, condOut.getThenProbOutputs(), state, action);
+            }
+        } else {
+            addTransitions(transitions, ((OutputProcess) atomic).getProbOutputs(), state, action);
         }
 
         return transitions;
+    }
+
+    private static void addTransitions(Collection<Transition> transitions, Collection<ProbOutput> probOutputs,
+                                       State state, Action action) throws ExecutionException {
+
+        for (ProbOutput output : probOutputs) {
+            transitions.add(new Transition(output.getProbability(), state,
+                    state.outputTerms(output.getOutputTerms(), action.getRoleIndex(), output.getSubrole())));
+        }
     }
 
     private static Collection<Transition> executeInput(State state, Action action)

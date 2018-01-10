@@ -14,6 +14,8 @@ import java.util.Collection;
  */
 public interface AtomicProcess {
 
+    boolean isConditionalOutput();
+
     boolean isOutput();
 
     boolean isInput();

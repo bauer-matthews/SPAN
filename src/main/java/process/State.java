@@ -46,11 +46,16 @@ public class State {
         for (int i = 0; i < roles.size(); i++) {
             if (roles.get(i).getAtomicProcesses().isEmpty()) {
                 roleViews.add(new RoleView(i, RoleView.Status.NONE));
-            } else if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
-                if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
+            } else if (roles.get(i).getAtomicProcesses().get(0).isOutput()) {
+
+                if (roles.get(i).getAtomicProcesses().get(0).isConditionalOutput()) {
                     roleViews.add(new RoleView(i, RoleView.Status.OUTPUT));
                 } else {
-                    roleViews.add(new RoleView(i, RoleView.Status.NONE));
+                    if (((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).checkGuards(substitution)) {
+                        roleViews.add(new RoleView(i, RoleView.Status.OUTPUT));
+                    } else {
+                        roleViews.add(new RoleView(i, RoleView.Status.NONE));
+                    }
                 }
             } else {
                 roleViews.add(new RoleView(i, RoleView.Status.INPUT));
@@ -69,7 +74,7 @@ public class State {
             if (!role.getAtomicProcesses().isEmpty()) {
 
                 if (role.getHead() instanceof OutputProcess) {
-                    if (checkGuards(((OutputProcess) role.getHead()).getGuards())) {
+                    if (((OutputProcess) role.getHead()).checkGuards(substitution)) {
                         if (role.getHead().getPhase() < minPhase) {
                             minPhase = role.getHead().getPhase();
                         }
@@ -96,32 +101,20 @@ public class State {
 
                 if (roles.get(i).getHead().getPhase() == minPhase) {
 
-                    if (roles.get(i).getAtomicProcesses().get(0) instanceof OutputProcess) {
+                    if (roles.get(i).getAtomicProcesses().get(0).isOutput()) {
 
-                        if (checkGuards(((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).getGuards())) {
+                        if (roles.get(i).getAtomicProcesses().get(0).isConditionalOutput()) {
                             actions.add(new Action(Resources.TAU_ACTION, i));
+                        } else {
+                            if (((OutputProcess) roles.get(i).getAtomicProcesses().get(0)).checkGuards(substitution)) {
+                                actions.add(new Action(Resources.TAU_ACTION, i));
+                            }
                         }
 
                     } else {
 
                         Optional<Term> guard = ((InputProcess) roles.get(i).getAtomicProcesses().get(0)).getInputGuard();
-
                         actions.addAll(ActionFactory2.getAllRecipes(frame, guard, i));
-
-                        // OLD ACTION FACTORY CODE
-//                        if (guard.isPresent()) {
-//
-//                            for (Term recipe : ActionFactory.getRecipesWithGuard(frame.size(), guard.get(), frame)) {
-//                                actions.add(new Action(recipe, i));
-//                            }
-//
-//
-//
-//                        } else {
-//                            for (Term recipe : GlobalDataCache.getRecipes(frame.size())) {
-//                                actions.add(new Action(recipe, i));
-//                            }
-//                        }
                     }
                 }
             }
@@ -136,19 +129,6 @@ public class State {
         }
 
         return actions;
-    }
-
-    private boolean checkGuards(Collection<Guard> guards) throws ExecutionException {
-
-        boolean guardPassed = true;
-
-        for (Guard guard : guards) {
-            if (!guard.check(substitution)) {
-                guardPassed = false;
-                break;
-            }
-        }
-        return guardPassed;
     }
 
     public List<Role> getRoles() {
@@ -185,7 +165,7 @@ public class State {
             newFrame.add(equality);
         }
 
-        if(!terms.isEmpty()) {
+        if (!terms.isEmpty()) {
             int index = newFrame.size();
             for (Term term : terms) {
                 newFrame.add(new Equality(new FrameVariableTerm("W", index),

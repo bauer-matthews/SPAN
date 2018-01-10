@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -45,10 +46,22 @@ public class OutputProcess implements AtomicProcess {
         }
     }
 
+    public boolean checkGuards(List<Equality> substitution) throws ExecutionException {
+
+        boolean guardPassed = true;
+
+        for (Guard guard : guards) {
+            if (!guard.check(substitution)) {
+                guardPassed = false;
+                break;
+            }
+        }
+        return guardPassed;
+    }
+
     public Collection<Guard> getGuards() {
         return guards;
     }
-
 
     public Collection<ProbOutput> getProbOutputs() {
         return probOutputs;
@@ -110,6 +123,11 @@ public class OutputProcess implements AtomicProcess {
         }
 
         return new OutputProcess(newGuards, newProbOutputs, phase);
+    }
+
+    @Override
+    public boolean isConditionalOutput() {
+        return false;
     }
 
     @Override

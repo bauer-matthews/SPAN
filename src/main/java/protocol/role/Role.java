@@ -88,8 +88,20 @@ public class Role {
 
             if (process.isOutput()) {
 
-                for (ProbOutput probOutput : ((OutputProcess) process).getProbOutputs()) {
-                    variableTerms.addAll(probOutput.getSubrole().getInputVariables());
+                if (process.isConditionalOutput()) {
+
+                    for (ProbOutput probOutput : ((ConditionalOutputProcess) process).getIfProbOutputs()) {
+                        variableTerms.addAll(probOutput.getSubrole().getInputVariables());
+                    }
+
+                    for (ProbOutput probOutput : ((ConditionalOutputProcess) process).getThenProbOutputs()) {
+                        variableTerms.addAll(probOutput.getSubrole().getInputVariables());
+                    }
+
+                } else {
+                    for (ProbOutput probOutput : ((OutputProcess) process).getProbOutputs()) {
+                        variableTerms.addAll(probOutput.getSubrole().getInputVariables());
+                    }
                 }
             }
         }

@@ -57,6 +57,11 @@ public class InputProcess implements AtomicProcess {
     }
 
     @Override
+    public boolean isConditionalOutput() {
+        return false;
+    }
+
+    @Override
     public boolean isOutput() {
         return false;
     }

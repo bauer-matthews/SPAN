@@ -63,6 +63,8 @@ public class ProcessFactory {
             return parseInput(processActionString, phase);
         } else if (processActionString.startsWith("[")) {
             return parseOutput(processActionString, phase);
+        } else if (processActionString.startsWith("IF")) {
+            return parseConditionalOutput(actionString, phase);
         } else {
             throw new ActionParseException(Resources.BAD_ACTION.evaluate(Collections.singletonList(actionString)));
         }
@@ -118,21 +120,37 @@ public class ProcessFactory {
         return term;
     }
 
+    private static AtomicProcess parseConditionalOutput(String actionString, int phase)
+            throws TermParseException, ActionParseException {
+
+        String[] guardAndRemainder = actionString.split("THEN");
+        String guardString = extractGuardString(guardAndRemainder[0]);
+
+        String[] ifAndRemainder = guardAndRemainder[1].split("ELSE");
+        String ifString = ifAndRemainder[0].trim();
+        String thenString = ifAndRemainder[1].trim();
+
+        Collection<Guard> guards = generateGuards(guardString);
+        Collection<ProbOutput> ifProbOutputs = extractProbOutputs(ifString);
+        Collection<ProbOutput> thenProbOutputs = extractProbOutputs(thenString);
+
+        return new ConditionalOutputProcess(guards, ifProbOutputs, thenProbOutputs, phase);
+    }
 
     private static AtomicProcess parseOutput(String actionString, int phase)
             throws TermParseException, ActionParseException {
 
-        String guardString = actionString.substring(actionString.indexOf("[") + 1, actionString.indexOf("]"));
+        String guardString = extractGuardString(actionString);
         String outString = actionString.substring(actionString.indexOf("]") + 1);
 
-        Collection<Guard> guards = new ArrayList<>();
-        String[] guardStrings = guardString.split(Resources.TEST_DELIMITER);
+        Collection<Guard> guards = generateGuards(guardString);
+        Collection<ProbOutput> probOutputs = extractProbOutputs(outString);
 
-        for (String guardString1 : guardStrings) {
-            if (!guardString1.trim().equalsIgnoreCase(Resources.NULL_TEST)) {
-                guards.add(parseGuard(guardString1.trim()));
-            }
-        }
+        return new OutputProcess(guards, probOutputs, phase);
+    }
+
+    private static Collection<ProbOutput> extractProbOutputs(String outString) throws TermParseException,
+            ActionParseException {
 
         Collection<ProbOutput> probOutputs = new ArrayList<>();
 
@@ -144,7 +162,7 @@ public class ProcessFactory {
             List<List<Term>> permutations = generatePermutations(permuteTerms);
             Aprational fraction = AprationalFactory.fromString("1/" + permutations.size());
 
-            for(List<Term> permutation : permutations) {
+            for (List<Term> permutation : permutations) {
                 probOutputs.add(new ProbOutput(fraction, permutation, new Role(Collections.emptyList())));
             }
 
@@ -160,7 +178,26 @@ public class ProcessFactory {
             throw new ActionParseException("Unable to parse output command: " + outString);
         }
 
-        return new OutputProcess(guards, probOutputs, phase);
+        return probOutputs;
+    }
+
+    private static String extractGuardString(String string) {
+        return string.substring(string.indexOf("[") + 1, string.indexOf("]"));
+    }
+
+    private static Collection<Guard> generateGuards(String guardString) throws TermParseException, ActionParseException {
+
+        Collection<Guard> guards = new ArrayList<>();
+
+        String[] guardStrings = guardString.split(Resources.TEST_DELIMITER);
+
+        for (String guardString1 : guardStrings) {
+            if (!guardString1.trim().equalsIgnoreCase(Resources.NULL_TEST)) {
+                guards.add(parseGuard(guardString1.trim()));
+            }
+        }
+
+        return guards;
     }
 
     private static List<List<Term>> generatePermutations(List<Term> terms) {
