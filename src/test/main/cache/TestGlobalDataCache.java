@@ -1,11 +1,14 @@
 package cache;
 
+import mc.indistinguishability.IndistinguishabilityMethod;
+import mc.reachability.ReachabilityMethod;
 import org.apfloat.Aprational;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import parser.protocol.ProtocolType;
 import protocol.Metadata;
-import protocol.Protocol;
+import protocol.ReachabilityProtocol;
 import protocol.ProtocolBuilder;
 import protocol.SafetyProperty;
 import resources.signature.Simple;
@@ -26,17 +29,17 @@ import java.util.HashMap;
  */
 public class TestGlobalDataCache {
 
-    private static Protocol protocol;
+    private static ReachabilityProtocol protocol;
 
     @BeforeClass
     public static void setUp() {
         initializeProtocol();
-        GlobalDataCache.setProtocol(protocol);
+        GlobalDataCache.setReachabilityProtocol(protocol);
     }
 
     @AfterClass
     public static void tearDown() {
-        GlobalDataCache.setProtocol(null);
+        GlobalDataCache.setReachabilityProtocol(null);
     }
 
     @Test
@@ -57,7 +60,7 @@ public class TestGlobalDataCache {
     public void generateRecipes_Depth2() throws Exception {
 
         protocol.getMetadata().setRecipeDepth(2);
-        GlobalDataCache.setProtocol(protocol);
+        GlobalDataCache.setReachabilityProtocol(protocol);
 
         Collection<Term> recipes = ActionFactoryCache.getRecipes(1);
 
@@ -67,12 +70,13 @@ public class TestGlobalDataCache {
     private static void initializeProtocol() {
 
         protocol = new ProtocolBuilder()
-                .metadata(new Metadata("1", 1, false))
+                .metadata(new Metadata("1", 1, false, ProtocolType.REACHABILITY,
+                        ReachabilityMethod.OTF, IndistinguishabilityMethod.OTF))
                 .signature(Simple.SIGNATURE)
                 .safetyProperty(new SafetyProperty(Collections.emptyList(), Aprational.ONE))
                 .fractionConstants(new HashMap<>())
                 .rewrites(Collections.emptyList())
                 .roles(Collections.emptyList())
-                .build();
+                .buildReachabilityProtocol();
     }
 }

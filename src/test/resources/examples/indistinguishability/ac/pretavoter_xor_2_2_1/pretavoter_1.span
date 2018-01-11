@@ -1,0 +1,116 @@
+# NAME: Pret a Voter
+# PARAMETERS: 2 parties, 2 voters, 1 teller
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 1;
+    xor : yes;
+    equiv : yes;
+    equiv method : otf;
+
+.constants
+
+.signature
+
+    sort : SKey, PKey, Bit, Nonce, Message;
+    subsort : SKey, PKey, Nonce, Bit < Message;
+
+    # equational theory variables
+    variables : mes, mes1, mes2 | Message;
+    variables : rand, key | Nonce;
+
+    # input variables
+    variables : y0, y1, y2, y3 | Message;
+
+    # input guard variables
+    variables : message | Message;
+    variables : pkey | PKey;
+    variables : skey | SKey;
+    variables : bit | Bit;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : sign | Message SKey -> Message;
+    function : checksign | Message PKey -> Bit;
+    function : getsign | Message PKey -> Message;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : hashMod2 | Message -> Bit;
+    function : ok | -> Bit;
+
+    public names : a | Bit;
+    public names : b | Message;
+    public names : d | Nonce;
+
+    private names : kt0, kt1, kb1, kb2, r0, r00, r1, r11, s, D0, D00 | Nonce;
+    private names : g0, g1, g00, g11 | Bit;
+
+.rewrites
+
+    rewrite : adec(aenc(mes, rand, pk(key)), sk(key)) -> mes;
+    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> ok;
+    rewrite : getsign(sign(mes, sk(key)), pk(key)) -> mes;
+    rewrite : fst(pair(mes1, mes2)) -> mes1;
+    rewrite : snd(pair(mes1, mes2)) -> mes2;
+
+.roles1
+
+    # PK setup
+    role :  {0} [T] out(1 -> pk(kt0)) .
+            {0} [T] out(1 -> pk(kt1)) .
+            {0} [T] out(1 -> pk(kb1)) .
+            {0} [T] out(1 -> pk(kb2));
+
+    # Voter 1 Process
+    role :  {1} [T] out(1 -> sign(pair(plus(hashMod2(g1), plus(hashMod2(g0), zero)),
+                                    aenc(pair(g1, aenc(pair(g0, D0), r0, pk(kt0))), r1, pk(kt1))), sk(kb1)));
+
+    # Voter 2 Process
+    role :  {1} [T] out(1 -> sign(pair(plus(hashMod2(g11), plus(hashMod2(g00), one)),
+                                    aenc(pair(g11, aenc(pair(g00, D00), r00, pk(kt0))), r11, pk(kt1))), sk(kb2)));
+
+    # Teller
+    role :  {3} in(y1{sign(message, sk(kb1))}) .
+            {3} in(y2{sign(message, sk(kb2))}) .
+            {3} [ checksign(y1, pk(kb1)) == ok & checksign(y2, pk(kb2)) == ok ]
+                    out(1/2 ->  plus(plus(fst(getsign(y1, pk(kb1))), hashMod2(fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y1, pk(kb1))), sk(kt1))), sk(kt0))))) @
+                                plus(plus(fst(getsign(y2, pk(kb2))), hashMod2(fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y2, pk(kb2))), sk(kt1))), sk(kt0))))) +
+                        1/2 ->  plus(plus(fst(getsign(y2, pk(kb2))), hashMod2(fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y2, pk(kb2))), sk(kt1))), sk(kt0))))) @
+                                plus(plus(fst(getsign(y1, pk(kb1))), hashMod2(fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y1, pk(kb1))), sk(kt1))), sk(kt0))))));
+
+.roles2
+
+    # PK setup
+    role :  {0} [T] out(1 -> pk(kt0)) .
+            {0} [T] out(1 -> pk(kt1)) .
+            {0} [T] out(1 -> pk(kb1)) .
+            {0} [T] out(1 -> pk(kb2));
+
+    # Voter 1 Process
+    role :  {1} [T] out(1 -> sign(pair(plus(hashMod2(g1), plus(hashMod2(g0), one)),
+                                    aenc(pair(g1, aenc(pair(g0, D0), r0, pk(kt0))), r1, pk(kt1))), sk(kb1)));
+
+    # Voter 2 Process
+    role :  {1} [T] out(1 -> sign(pair(plus(hashMod2(g11), plus(hashMod2(g00), zero)),
+                                    aenc(pair(g11, aenc(pair(g00, D00), r00, pk(kt0))), r11, pk(kt1))), sk(kb2)));
+
+    # Teller
+    role :  {3} in(y1{sign(message, sk(kb1))}) .
+            {3} in(y2{sign(message, sk(kb2))}) .
+            {3} [ checksign(y1, pk(kb1)) == ok & checksign(y2, pk(kb2)) == ok ]
+                    out(1/2 ->  plus(plus(fst(getsign(y1, pk(kb1))), hashMod2(fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y1, pk(kb1))), sk(kt1))), sk(kt0))))) @
+                                plus(plus(fst(getsign(y2, pk(kb2))), hashMod2(fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y2, pk(kb2))), sk(kt1))), sk(kt0))))) +
+                        1/2 ->  plus(plus(fst(getsign(y2, pk(kb2))), hashMod2(fst(adec(snd(getsign(y2, pk(kb2))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y2, pk(kb2))), sk(kt1))), sk(kt0))))) @
+                                plus(plus(fst(getsign(y1, pk(kb1))), hashMod2(fst(adec(snd(getsign(y1, pk(kb1))), sk(kt1))))),
+                                    hashMod2(fst(adec(snd(adec(snd(getsign(y1, pk(kb1))), sk(kt1))), sk(kt0))))));

@@ -1,0 +1,68 @@
+# NAME: Threshold Mix Protocol
+# PARAMETERS: 2 parties, 1 round
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 10;
+    equiv : yes;
+    equiv method : otf;
+
+.constants
+
+    fraction p : 1/2;
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message;
+    subsort : PKey, SKey, Nonce < Message;
+
+    variables : m | Message;
+    variables : r, k | Nonce;
+
+    # input variables
+    variables : y1, y2, y3 | Message;
+
+    # input guard variables
+    variables : nonce | Nonce;
+    variables : message | Message;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+
+    public names : a | Nonce;
+    public names : b | Message;
+
+    private names : m1 , m2 | Message;
+    private names : s, r1, r2, r3, r4, k1, k2, k3, km | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(m,r,pk(k)), sk(k)) -> m;
+
+.roles1
+
+    role :  {0} [T] out(1 -> pk(km));
+
+    role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)), r2, pk(km)));
+
+    role :  {2} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)), r4, pk(km)));
+
+    role:   {3} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {3} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {3} [y1 != y2] out(p -> adec(y1, sk(km)) @ adec(y2, sk(km)) +
+                               p -> adec(y2, sk(km)) @ adec(y1, sk(km)));
+.roles2
+
+    role :  {0} [T] out(1 -> pk(km));
+
+    role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)), r2, pk(km)));
+
+    role :  {2} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)), r4, pk(km)));
+
+    role:   {3} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {3} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
+            {3} [y1 != y2] out(p -> aenc(m1, r1, pk(k1)) @ aenc(m2, r3, pk(k2)) +
+                               p -> aenc(m2, r3, pk(k2)) @ aenc(m1, r1, pk(k1)));
