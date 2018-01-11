@@ -52,13 +52,16 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
         AttackTree attackTree = new AttackTree(root, Collections.singletonList(root));
         GlobalDataCache.initializeAttackTree(attackTree);
 
-        return getMaximumAttackProb(initialBeliefState, root);
+        Aprational maxProb = getMaximumAttackProb(initialBeliefState, root);
+        GlobalDataCache.setBeliefStateCounter(beliefsVisited.size());
+
+        return maxProb;
     }
 
     private Aprational getMaximumAttackProb(BeliefState beliefState, Node parentAttackNode)
             throws InvalidActionException, InterruptedException, IOException, ExecutionException {
 
-        if(beliefsVisited.get(beliefState.getBeliefs()) != null) {
+        if (beliefsVisited.get(beliefState.getBeliefs()) != null) {
             return beliefsVisited.get(beliefState.getBeliefs());
         }
 

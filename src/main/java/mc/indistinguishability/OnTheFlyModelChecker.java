@@ -46,7 +46,10 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
         BeliefState beliefState2 = new BeliefState(
                 Collections.singletonList(belief2), Collections.emptyList());
 
-        return equivalent(beliefState1, beliefState2);
+        boolean equiv =  equivalent(beliefState1, beliefState2);
+        GlobalDataCache.setBeliefStateCounter(beliefPairsVisited.size());
+
+        return equiv;
     }
 
     private boolean equivalent(BeliefState beliefState1, BeliefState beliefState2)
@@ -56,8 +59,6 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
             return true;
         }
         beliefPairsVisited.put(new Pair<>(beliefState1.getBeliefs(), beliefState2.getBeliefs()), Boolean.TRUE);
-
-        GlobalDataCache.incrementBeliefStateCounter();
 
         if (!EquivalenceCache.checkEquivalence(beliefState1.getStateRepresentative(),
                 beliefState2.getStateRepresentative()).isEquivalent()) {

@@ -204,8 +204,8 @@ public class GlobalDataCache {
         return protcol2StateCounter;
     }
 
-    public static void incrementBeliefStateCounter() {
-        GlobalDataCache.beliefStateCounter++;
+    public static void setBeliefStateCounter(long beliefStatesVisited) {
+        GlobalDataCache.beliefStateCounter = beliefStatesVisited;
     }
 
     public static void setProtcol1StateCounter(long numStates) {
