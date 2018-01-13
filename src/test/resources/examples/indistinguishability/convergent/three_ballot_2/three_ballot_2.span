@@ -1,0 +1,238 @@
+# NAME: Pret a Voter
+# PARAMETERS: 2 parties, 2 voters, 1 teller
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 2;
+    xor : no;
+    equiv : yes;
+    equiv method : otf;
+
+.constants
+
+.signature
+
+    sort : SKey, PKey, Bit, Nonce, Mark, Message;
+    subsort : SKey, PKey, Nonce, Mark, Bit < Message;
+
+    # equational theory variables
+    variables : mes, mes1, mes2, mes3 | Message;
+    variables : rand, key | Nonce;
+    variables : vmark | Mark;
+
+    # input variables
+    variables : y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 | Message;
+
+    # input guard variables
+    variables : message | Message;
+    variables : pkey | PKey;
+    variables : skey | SKey;
+    variables : bit | Bit;
+    variables : nonce | Nonce;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : enc | Message Nonce -> Message;
+    function : dec | Message Nonce -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : sign | Message SKey -> Message;
+    function : checksign | Message PKey -> Bit;
+    function : getsign | Message PKey -> Message;
+    function : ok | -> Bit;
+    function : mark | -> Mark;
+    function : nomark | -> Mark;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : ballot | Mark Mark -> Message;
+    function : marked1 | Message -> Bit;
+    function : marked2 | Message -> Bit;
+    function : vote1 | Message -> Message;
+    function : vote2 | Message -> Message;
+
+    public names : a | Bit;
+    public names : b | Message;
+    public names : d | Nonce;
+    public names : party1, party2 | Nonce;
+
+    private names : kVa, kVb, kVM, kRA, kVC1, kVC2, kVR1, kVR2, kVR3, kVCVa, kVCVb | Nonce;
+    private names : rid1, rid2 | Nonce;
+    private names : r1, r2, r3, r4, r5, r6, r7, r8 | Nonce;
+    private names : r00, r01, r02, r03, r04, r05, r06, r07, r08, r09, r010, r011 | Nonce;
+    private names : s | Nonce;
+    private names : bidsA, bidsB | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(mes, rand, pk(key)), sk(key)) -> mes;
+    rewrite : dec(enc(mes, key), key) -> mes;
+    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> ok;
+    rewrite : getsign(sign(mes, sk(key)), pk(key)) -> mes;
+    rewrite : fst(pair(mes1, mes2)) -> mes1;
+    rewrite : snd(pair(mes1, mes2)) -> mes2;
+    rewrite : marked1(ballot(mark, vmark)) -> ok;
+    rewrite : marked2(ballot(vmark, mark)) -> ok;
+    rewrite : vote1(ballot(nomark, vmark)) -> ballot(mark, vmark);
+    rewrite : vote2(ballot(vmark, nomark)) -> ballot(vmark, mark);
+
+.roles1
+
+    # PK setup
+    role :  {0} [T] out(1 -> pk(kVa)) .
+            {0} [T] out(1 -> pk(kVb)) .
+            {0} [T] out(1 -> pk(kVM)) .
+            {0} [T] out(1 -> pk(kRA)) .
+            {0} [T] out(1 -> pk(kVC1)) .
+            {0} [T] out(1 -> pk(kVC2)) .
+            {0} [T] out(1 -> pk(kVR1)) .
+            {0} [T] out(1 -> pk(kVR2)) .
+            {0} [T] out(1 -> pk(kVR3));
+
+    # Vote Manager RID Setup
+    role :  {1} [T] out(1 -> sign(aenc(rid1, r1, pk(kVC1)), sk(kVM)));
+    role :  {1} [T] out(1 -> sign(aenc(rid2, r2, pk(kVC2)), sk(kVM)));
+
+    # Registration Authority Authentication
+    role :  {1} in(y1{sign(message, sk(kVM))}) .
+            {1} in(y2{sign(message, sk(kVM))}) .
+            {1} [ checksign(y1, pk(kVM)) == ok & checksign(y2, pk(kVM)) == ok & y1 != y2 ] out(1 -> T) .
+            {1} [T] out(1 -> aenc(sign(getsign(y1, pk(kVM)), sk(kRA)), r3, pk(kVa))) .
+            {1} [T] out(1 -> aenc(sign(getsign(y2, pk(kVM)), sk(kRA)), r4, pk(kVb)));
+
+    # Authentication/Voting Voter A
+    role :  {1} in(y3{aenc(sign(message, sk(kRA)), nonce, pk(kVa))}) .
+            {1} [checksign(adec(y3, sk(kVa)), pk(kRA)) == ok] out(1 -> enc(adec(y3, sk(kVa)), kVCVa));
+
+    # Authentication/Voting Voter B
+    role :  {1} in(y4{aenc(sign(message, sk(kRA)), nonce, pk(kVb))}) .
+            {1} [checksign(adec(y4, sk(kVb)), pk(kRA)) == ok] out(1 -> enc(adec(y4, sk(kVb)), kVCVb)) ;
+
+    # Voting console Voter A
+    role :  {2} in(y5{enc(message, kVCVa)}) .
+            {2} [checksign(dec(y5, kVCVa), pk(kRA)) == ok]
+                out (1 -> aenc(adec(getsign(dec(y5, kVCVa), pk(kRA)), sk(kVC1)), r5, pk(kVM))) .
+            {2} in(y9{aenc(pair(bidsA, message), nonce, pk(kVC1))}) .
+            {2} [ fst(adec(y9, sk(kVC1))) == bidsA ] out(1 -> T) .
+            {2} IF [ marked1(fst(snd(adec(y9, sk(kVC1))))) == ok ]
+                THEN out( 1 -> aenc(fst(snd(adec(y9, sk(kVC1)))), r00, pk(kVR1)) @
+                             aenc(vote1(fst(snd(snd(adec(y9, sk(kVC1)))))), r01, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)))
+                ELSE out( 1 -> aenc(vote1(fst(snd(adec(y9, sk(kVC1))))), r03, pk(kVR1)) @
+                             aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r04, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r05, pk(kVR3)));
+
+    # Vote Manager Ballot Generation Voter A
+    role :  {2} in(y7{aenc(rid1, nonce, pk(kVM))}) .
+            {2} [ adec(y7, sk(kVM)) ==  rid1 ]
+                out(1/6 -> aenc(pair(bidsA, pair(ballot(nomark, nomark), pair(ballot(mark,nomark), ballot(nomark,mark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(nomark, nomark), pair(ballot(nomark,mark), ballot(mark,nomark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(mark, nomark), pair(ballot(nomark,nomark), ballot(nomark,mark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(nomark, mark), pair(ballot(nomark,nomark), ballot(mark,nomark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(mark, nomark), pair(ballot(nomark,mark), ballot(nomark,nomark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(nomark, mark), pair(ballot(mark,nomark), ballot(nomark,nomark)))), r7, pk(kVC1)));
+
+     # Voting console Voter B
+    role :  {3} in(y6{enc(message, kVCVb)}) .
+            {3} [checksign(dec(y6, kVCVb), pk(kRA)) == ok]
+                 out (1 -> aenc(adec(getsign(dec(y6, kVCVb), pk(kRA)), sk(kVC2)), r6, pk(kVM))) .
+            {3} in(y10{aenc(pair(bidsB, message), nonce, pk(kVC2))}) .
+            {3} [fst(adec(y10, sk(kVC2))) == bidsB] out(1 -> T) .
+            {3} IF [ marked2(fst(snd(adec(y10, sk(kVC2))))) == ok ]
+                THEN out(1 -> aenc(fst(snd(adec(y10, sk(kVC2)))), r06, pk(kVR1)) @
+                             aenc(vote2(fst(snd(snd(adec(y10, sk(kVC2)))))), r07, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)))
+                ELSE out(1 -> aenc(vote2(fst(snd(adec(y10, sk(kVC2))))), r09, pk(kVR1)) @
+                             aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r010, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r011, pk(kVR3)));
+
+    # Vote Manager Ballot Generation Voter B
+    role :  {3} in(y8{aenc(rid2, nonce, pk(kVM))}) .
+            {3} [ adec(y8, sk(kVM)) ==  rid2 ]
+                out(1/6 -> aenc(pair(bidsB, pair(ballot(nomark, nomark), pair(ballot(mark,nomark), ballot(nomark,mark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(nomark, nomark), pair(ballot(nomark,mark), ballot(mark,nomark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(mark, nomark), pair(ballot(nomark,nomark), ballot(nomark,mark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(nomark, mark), pair(ballot(nomark,nomark), ballot(mark,nomark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(mark, nomark), pair(ballot(nomark,mark), ballot(nomark,nomark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(nomark, mark), pair(ballot(mark,nomark), ballot(nomark,nomark)))), r8, pk(kVC2)));
+
+.roles2
+
+    # PK setup
+    role :  {0} [T] out(1 -> pk(kVa)) .
+            {0} [T] out(1 -> pk(kVb)) .
+            {0} [T] out(1 -> pk(kVM)) .
+            {0} [T] out(1 -> pk(kRA)) .
+            {0} [T] out(1 -> pk(kVC1)) .
+            {0} [T] out(1 -> pk(kVC2)) .
+            {0} [T] out(1 -> pk(kVR1)) .
+            {0} [T] out(1 -> pk(kVR2)) .
+            {0} [T] out(1 -> pk(kVR3));
+
+    # Vote Manager RID Setup
+    role :  {1} [T] out(1 -> sign(aenc(rid1, r1, pk(kVC1)), sk(kVM)));
+    role :  {1} [T] out(1 -> sign(aenc(rid2, r2, pk(kVC2)), sk(kVM)));
+
+    # Registration Authority Authentication
+    role :  {1} in(y1{sign(message, sk(kVM))}) .
+            {1} in(y2{sign(message, sk(kVM))}) .
+            {1} [ checksign(y1, pk(kVM)) == ok & checksign(y2, pk(kVM)) == ok & y1 != y2 ] out(1 -> T) .
+            {1} [T] out(1 -> aenc(sign(getsign(y1, pk(kVM)), sk(kRA)), r3, pk(kVa))) .
+            {1} [T] out(1 -> aenc(sign(getsign(y2, pk(kVM)), sk(kRA)), r4, pk(kVb)));
+
+    # Authentication/Voting Voter A
+    role :  {1} in(y3{aenc(sign(message, sk(kRA)), nonce, pk(kVa))}) .
+            {1} [checksign(adec(y3, sk(kVa)), pk(kRA)) == ok] out(1 -> enc(adec(y3, sk(kVa)), kVCVa));
+
+    # Authentication/Voting Voter B
+    role :  {1} in(y4{aenc(sign(message, sk(kRA)), nonce, pk(kVb))}) .
+            {1} [checksign(adec(y4, sk(kVb)), pk(kRA)) == ok] out(1 -> enc(adec(y4, sk(kVb)), kVCVb)) ;
+
+    # Voting console Voter A
+    role :  {2} in(y5{enc(message, kVCVa)}) .
+            {2} [checksign(dec(y5, kVCVa), pk(kRA)) == ok]
+                out (1 -> aenc(adec(getsign(dec(y5, kVCVa), pk(kRA)), sk(kVC1)), r5, pk(kVM))) .
+            {2} in(y9{aenc(pair(bidsA, message), nonce, pk(kVC1))}) .
+            {2} [ fst(adec(y9, sk(kVC1))) == bidsA ] out(1 -> T) .
+            {2} IF [ marked2(fst(snd(adec(y9, sk(kVC1))))) == ok ]
+                THEN out(1 -> aenc(fst(snd(adec(y9, sk(kVC1)))), r00, pk(kVR1)) @
+                             aenc(vote2(fst(snd(snd(adec(y9, sk(kVC1)))))), r01, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)))
+                ELSE out(1 -> aenc(vote2(fst(snd(adec(y9, sk(kVC1))))), r03, pk(kVR1)) @
+                             aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r04, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r05, pk(kVR3)));
+
+    # Vote Manager Ballot Generation Voter A
+    role :  {2} in(y7{aenc(rid1, nonce, pk(kVM))}) .
+            {2} [ adec(y7, sk(kVM)) ==  rid1 ]
+                out(1/6 -> aenc(pair(bidsA, pair(ballot(nomark, nomark), pair(ballot(mark,nomark), ballot(nomark,mark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(nomark, nomark), pair(ballot(nomark,mark), ballot(mark,nomark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(mark, nomark), pair(ballot(nomark,nomark), ballot(nomark,mark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(nomark, mark), pair(ballot(nomark,nomark), ballot(mark,nomark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(mark, nomark), pair(ballot(nomark,mark), ballot(nomark,nomark)))), r7, pk(kVC1)) +
+                    1/6 -> aenc(pair(bidsA, pair(ballot(nomark, mark), pair(ballot(mark,nomark), ballot(nomark,nomark)))), r7, pk(kVC1)));
+
+     # Voting console Voter B
+    role :  {3} in(y6{enc(message, kVCVb)}) .
+            {3} [checksign(dec(y6, kVCVb), pk(kRA)) == ok]
+                 out (1 -> aenc(adec(getsign(dec(y6, kVCVb), pk(kRA)), sk(kVC2)), r6, pk(kVM))) .
+            {3} in(y10{aenc(pair(bidsB, message), nonce, pk(kVC2))}) .
+            {3} [fst(adec(y10, sk(kVC2))) == bidsB] out(1 -> T) .
+            {3} IF [ marked1(fst(snd(adec(y10, sk(kVC2))))) == ok ]
+                THEN out(1 -> aenc(fst(snd(adec(y10, sk(kVC2)))), r06, pk(kVR1)) @
+                             aenc(vote1(fst(snd(snd(adec(y10, sk(kVC2)))))), r07, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)))
+                ELSE out(1 -> aenc(vote1(fst(snd(adec(y10, sk(kVC2))))), r09, pk(kVR1)) @
+                             aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r010, pk(kVR2)) @
+                             aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r011, pk(kVR3)));
+
+    # Vote Manager Ballot Generation Voter B
+    role :  {3} in(y8{aenc(rid2, nonce, pk(kVM))}) .
+            {3} [ adec(y8, sk(kVM)) ==  rid2 ]
+                out(1/6 -> aenc(pair(bidsB, pair(ballot(nomark, nomark), pair(ballot(mark,nomark), ballot(nomark,mark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(nomark, nomark), pair(ballot(nomark,mark), ballot(mark,nomark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(mark, nomark), pair(ballot(nomark,nomark), ballot(nomark,mark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(nomark, mark), pair(ballot(nomark,nomark), ballot(mark,nomark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(mark, nomark), pair(ballot(nomark,mark), ballot(nomark,nomark)))), r8, pk(kVC2)) +
+                    1/6 -> aenc(pair(bidsB, pair(ballot(nomark, mark), pair(ballot(mark,nomark), ballot(nomark,nomark)))), r8, pk(kVC2)));
