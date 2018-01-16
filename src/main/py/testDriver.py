@@ -5,14 +5,22 @@ import os
 from subprocess import Popen, PIPE
 
 parser = argparse.ArgumentParser()
-parser.add_argument("test_files_dir")
-parser.add_argument("jar_location")
-parser.add_argument("kiss")
+parser.add_argument("--test_files_dir")
+parser.add_argument("--jar_location")
+parser.add_argument("--maude")
+parser.add_argument("--kiss")
+parser.add_argument("--akiss")
+parser.add_argument("--glpk")
+parser.add_argument("--equiv")
+parser.add_argument("--equiv_engine")
 args = parser.parse_args()
 
 outFile = open('./results.csv', 'w+')
 
-print >> outFile, "test name, recipe size, time, attack found, maximum attack prob, belief states, states"
+if args.equiv == "no":
+    print >> outFile, "test name, recipe size, time, attack found, maximum attack prob, belief states, states"
+else:
+    print >> outFile, "test name, recipe size, time, attack found, belief states, states"
 
 for root, dirs, filenames in os.walk(args.test_files_dir):
 
@@ -24,7 +32,11 @@ for root, dirs, filenames in os.walk(args.test_files_dir):
 
         print("starting: " + testName + " " + recipeSize)
 
-        p = Popen(['java', '-jar', args.jar_location, "-maxAttack", "-kiss", args.kiss, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        if args.equiv_engine == "kiss":
+            p = Popen(['java', '-jar', args.jar_location, "-maxAttack", "-kiss", args.kiss, "-maude", args.maude, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        else:
+            p =   p = Popen(['java', '-jar', args.jar_location, "-maxAttack", "-akiss", args.akiss, "-maude", args.maude, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+
         output, err = p.communicate();
 
         if not err:
