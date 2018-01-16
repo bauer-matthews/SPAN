@@ -1,5 +1,5 @@
-# NAME: Pret a Voter
-# PARAMETERS: 2 parties, 2 voters, 1 teller
+# NAME: 3 Ballot
+# PARAMETERS: 2 parties, 2 voters
 
 .metadata
 
@@ -13,13 +13,14 @@
 
 .signature
 
-    sort : SKey, PKey, Bit, Nonce, Mark, Message;
-    subsort : SKey, PKey, Nonce, Mark, Bit < Message;
+    sort : SKey, PKey, Bit, Nonce, Mark, Message, Number;
+    subsort : SKey, PKey, Nonce, Mark, Bit, Number < Message;
 
     # equational theory variables
     variables : mes, mes1, mes2, mes3 | Message;
     variables : rand, key | Nonce;
     variables : vmark | Mark;
+    variables : num | Number;
 
     # input variables
     variables : y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 | Message;
@@ -41,7 +42,8 @@
     function : sign | Message SKey -> Message;
     function : checksign | Message PKey -> Bit;
     function : getsign | Message PKey -> Message;
-    function : ok | -> Bit;
+    function : yes | -> Bit;
+    function : no | -> Bit;
     function : mark | -> Mark;
     function : nomark | -> Mark;
     function : pair | Message Message -> Message;
@@ -52,6 +54,10 @@
     function : marked2 | Message -> Bit;
     function : vote1 | Message -> Message;
     function : vote2 | Message -> Message;
+
+    function : zeroN | -> Number;
+    function : suc | Number -> Number;
+    function : addVote | Bit Number -> Number;
 
     public names : a | Bit;
     public names : b | Message;
@@ -70,14 +76,18 @@
 
     rewrite : adec(aenc(mes, rand, pk(key)), sk(key)) -> mes;
     rewrite : dec(enc(mes, key), key) -> mes;
-    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> ok;
+    rewrite : checksign(sign(mes, sk(key)), pk(key)) -> yes;
     rewrite : getsign(sign(mes, sk(key)), pk(key)) -> mes;
     rewrite : fst(pair(mes1, mes2)) -> mes1;
     rewrite : snd(pair(mes1, mes2)) -> mes2;
-    rewrite : marked1(ballot(mark, vmark)) -> ok;
-    rewrite : marked2(ballot(vmark, mark)) -> ok;
+    rewrite : marked1(ballot(mark, vmark)) -> yes;
+    rewrite : marked1(ballot(nomark, vmark)) -> no;
+    rewrite : marked2(ballot(vmark, mark)) -> yes;
+    rewrite : marked2(ballot(vmark, nomark)) -> no;
     rewrite : vote1(ballot(nomark, vmark)) -> ballot(mark, vmark);
     rewrite : vote2(ballot(vmark, nomark)) -> ballot(vmark, mark);
+    rewrite : addVote(yes, num) -> suc(num);
+    rewrite : addVote(no, num) -> num;
 
 .roles1
 
@@ -99,31 +109,31 @@
     # Registration Authority Authentication
     role :  {1} in(y1{sign(message, sk(kVM))}) .
             {1} in(y2{sign(message, sk(kVM))}) .
-            {1} [ checksign(y1, pk(kVM)) == ok & checksign(y2, pk(kVM)) == ok & y1 != y2 ] out(1 -> T) .
+            {1} [ checksign(y1, pk(kVM)) == yes & checksign(y2, pk(kVM)) == yes & y1 != y2 ] out(1 -> T) .
             {1} [T] out(1 -> aenc(sign(getsign(y1, pk(kVM)), sk(kRA)), r3, pk(kVa))) .
             {1} [T] out(1 -> aenc(sign(getsign(y2, pk(kVM)), sk(kRA)), r4, pk(kVb)));
 
     # Authentication/Voting Voter A
     role :  {1} in(y3{aenc(sign(message, sk(kRA)), nonce, pk(kVa))}) .
-            {1} [checksign(adec(y3, sk(kVa)), pk(kRA)) == ok] out(1 -> enc(adec(y3, sk(kVa)), kVCVa));
+            {1} [checksign(adec(y3, sk(kVa)), pk(kRA)) == yes] out(1 -> enc(adec(y3, sk(kVa)), kVCVa));
 
     # Authentication/Voting Voter B
     role :  {1} in(y4{aenc(sign(message, sk(kRA)), nonce, pk(kVb))}) .
-            {1} [checksign(adec(y4, sk(kVb)), pk(kRA)) == ok] out(1 -> enc(adec(y4, sk(kVb)), kVCVb)) ;
+            {1} [checksign(adec(y4, sk(kVb)), pk(kRA)) == yes] out(1 -> enc(adec(y4, sk(kVb)), kVCVb)) ;
 
     # Voting console Voter A
     role :  {2} in(y5{enc(message, kVCVa)}) .
-            {2} [checksign(dec(y5, kVCVa), pk(kRA)) == ok]
+            {2} [checksign(dec(y5, kVCVa), pk(kRA)) == yes]
                 out (1 -> aenc(adec(getsign(dec(y5, kVCVa), pk(kRA)), sk(kVC1)), r5, pk(kVM))) .
             {2} in(y9{aenc(pair(bidsA, message), nonce, pk(kVC1))}) .
             {2} [ fst(adec(y9, sk(kVC1))) == bidsA ] out(1 -> T) .
-            {2} IF [ marked1(fst(snd(adec(y9, sk(kVC1))))) == ok ]
+            {2} IF [ marked2(fst(snd(adec(y9, sk(kVC1))))) == yes ]
                 THEN out( 1 -> sign(aenc(fst(snd(adec(y9, sk(kVC1)))), r00, pk(kVR1)), sk(kVC1)) @
-                             sign(aenc(vote1(fst(snd(snd(adec(y9, sk(kVC1)))))), r01, pk(kVR2)), sk(kVC1)) @
-                             sign(aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)))
-                ELSE out( 1 -> sign(aenc(vote1(fst(snd(adec(y9, sk(kVC1))))), r00, pk(kVR1)), sk(kVC1)) @
+                             sign(aenc(vote2(fst(snd(snd(adec(y9, sk(kVC1)))))), r01, pk(kVR2)), sk(kVC1)) @
+                             sign(aenc(snd(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)))
+                ELSE out( 1 -> sign(aenc(vote2(fst(snd(adec(y9, sk(kVC1))))), r00, pk(kVR1)), sk(kVC1)) @
                              sign(aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r01, pk(kVR2)), sk(kVC1)) @
-                             sign(aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)));
+                             sign(aenc(snd(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)));
 
     # Vote Manager Ballot Generation Voter A
     role :  {2} in(y7{aenc(rid1, nonce, pk(kVM))}) .
@@ -137,17 +147,17 @@
 
      # Voting console Voter B
     role :  {3} in(y6{enc(message, kVCVb)}) .
-            {3} [checksign(dec(y6, kVCVb), pk(kRA)) == ok]
+            {3} [checksign(dec(y6, kVCVb), pk(kRA)) == yes]
                  out (1 -> aenc(adec(getsign(dec(y6, kVCVb), pk(kRA)), sk(kVC2)), r6, pk(kVM))) .
             {3} in(y10{aenc(pair(bidsB, message), nonce, pk(kVC2))}) .
             {3} [fst(adec(y10, sk(kVC2))) == bidsB] out(1 -> T) .
-            {3} IF [ marked2(fst(snd(adec(y10, sk(kVC2))))) == ok ]
+            {3} IF [ marked1(fst(snd(adec(y10, sk(kVC2))))) == yes ]
                 THEN out(1 -> sign(aenc(fst(snd(adec(y10, sk(kVC2)))), r06, pk(kVR1)), sk(kVC2)) @
-                             sign(aenc(vote2(fst(snd(snd(adec(y10, sk(kVC2)))))), r07, pk(kVR2)), sk(kVC2)) @
-                             sign(aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)))
-                ELSE out(1 -> sign(aenc(vote2(fst(snd(adec(y10, sk(kVC2))))), r06, pk(kVR1)), sk(kVC2)) @
+                             sign(aenc(vote1(fst(snd(snd(adec(y10, sk(kVC2)))))), r07, pk(kVR2)), sk(kVC2)) @
+                             sign(aenc(snd(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)))
+                ELSE out(1 -> sign(aenc(vote1(fst(snd(adec(y10, sk(kVC2))))), r06, pk(kVR1)), sk(kVC2)) @
                              sign(aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r07, pk(kVR2)), sk(kVC2)) @
-                             sign(aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)));
+                             sign(aenc(snd(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)));
 
     # Vote Manager Ballot Generation Voter B
     role :  {3} in(y8{aenc(rid2, nonce, pk(kVM))}) .
@@ -162,7 +172,7 @@
     # Vote Repository 1
     role :  {4} in(y11{sign(aenc(message, nonce, pk(kVR1)), sk(kVC1))}) .
             {4} in(y12{sign(aenc(message, nonce, pk(kVR1)), sk(kVC2))}) .
-            {4} [checksign(y11, pk(kVC1)) == ok & checksign(y12, pk(kVC2)) == ok &
+            {4} [checksign(y11, pk(kVC1)) == yes & checksign(y12, pk(kVC2)) == yes &
                 aenc(adec(getsign(y11, pk(kVC1)), sk(kVR1)), r00, pk(kVR1)) ==  getsign(y11, pk(kVC1)) &
                 aenc(adec(getsign(y12, pk(kVC2)), sk(kVR1)), r06, pk(kVR1)) ==  getsign(y12, pk(kVC2)) ]
                 out(1 -> sign(aenc(pair(adec(getsign(y11, pk(kVC1)), sk(kVR1)),
@@ -171,7 +181,7 @@
     # Vote Repository 2
     role :  {5} in(y13{sign(aenc(message, nonce, pk(kVR2)), sk(kVC1))}) .
             {5} in(y14{sign(aenc(message, nonce, pk(kVR2)), sk(kVC2))}) .
-            {5} [checksign(y13, pk(kVC1)) == ok & checksign(y14, pk(kVC2)) == ok &
+            {5} [checksign(y13, pk(kVC1)) == yes & checksign(y14, pk(kVC2)) == yes &
                 aenc(adec(getsign(y13, pk(kVC1)), sk(kVR2)), r01, pk(kVR2)) ==  getsign(y13, pk(kVC1)) &
                 aenc(adec(getsign(y14, pk(kVC2)), sk(kVR2)), r07, pk(kVR2)) ==  getsign(y14, pk(kVC2)) ]
                 out(1 -> sign(aenc(pair(adec(getsign(y13, pk(kVC1)), sk(kVR2)),
@@ -180,7 +190,7 @@
     # Vote Repository 3
     role :  {6} in(y15{sign(aenc(message, nonce, pk(kVR3)), sk(kVC1))}) .
             {6} in(y16{sign(aenc(message, nonce, pk(kVR3)), sk(kVC2))}) .
-            {6} [checksign(y15, pk(kVC1)) == ok & checksign(y16, pk(kVC2)) == ok &
+            {6} [checksign(y15, pk(kVC1)) == yes & checksign(y16, pk(kVC2)) == yes &
                 aenc(adec(getsign(y15, pk(kVC1)), sk(kVR3)), r02, pk(kVR3)) ==  getsign(y15, pk(kVC1)) &
                 aenc(adec(getsign(y16, pk(kVC2)), sk(kVR3)), r08, pk(kVR3)) ==  getsign(y16, pk(kVC2)) ]
                 out(1 -> sign(aenc(pair(adec(getsign(y15, pk(kVC1)), sk(kVR3)),
@@ -190,13 +200,19 @@
     role :  {7} in(y17{sign(aenc(message, nonce, pk(kVC)), sk(kVR1))}) .
             {7} in(y18{sign(aenc(message, nonce, pk(kVC)), sk(kVR2))}) .
             {7} in(y19{sign(aenc(message, nonce, pk(kVC)), sk(kVR3))}) .
-    #        {7} [checksign(y17, pk(kVR1)) == ok & checksign(y18, pk(kVR2)) == ok & checksign(y19, pk(kVR3)) == ok]
-    #            out( 1 -> fst(adec(getsign(y17, pk(kVR1)), sk(kVC))) @
-    #                      snd(adec(getsign(y17, pk(kVR1)), sk(kVC))) @
-    #                      fst(adec(getsign(y18, pk(kVR2)), sk(kVC))) @
-    #                      snd(adec(getsign(y18, pk(kVR2)), sk(kVC))) @
-    #                      fst(adec(getsign(y19, pk(kVR3)), sk(kVC))) @
-    #                      snd(adec(getsign(y19, pk(kVR3)), sk(kVC))));
+            {7} [checksign(y17, pk(kVR1)) == yes & checksign(y18, pk(kVR2)) == yes & checksign(y19, pk(kVR3)) == yes]
+                out( 1 ->   addVote(marked1(snd(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked1(fst(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked1(snd(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked1(fst(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked1(snd(adec(getsign(y17, pk(kVR1)), sk(kVC)))),
+                            addVote(marked1(fst(adec(getsign(y17, pk(kVR1)), sk(kVC)))), zeroN)))))) @
+                            addVote(marked2(snd(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked2(fst(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked2(snd(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked2(fst(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked2(snd(adec(getsign(y17, pk(kVR1)), sk(kVC)))),
+                            addVote(marked2(fst(adec(getsign(y17, pk(kVR1)), sk(kVC)))), zeroN)))))));
 
 .roles2
 
@@ -218,31 +234,31 @@
     # Registration Authority Authentication
     role :  {1} in(y1{sign(message, sk(kVM))}) .
             {1} in(y2{sign(message, sk(kVM))}) .
-            {1} [ checksign(y1, pk(kVM)) == ok & checksign(y2, pk(kVM)) == ok & y1 != y2 ] out(1 -> T) .
+            {1} [ checksign(y1, pk(kVM)) == yes & checksign(y2, pk(kVM)) == yes & y1 != y2 ] out(1 -> T) .
             {1} [T] out(1 -> aenc(sign(getsign(y1, pk(kVM)), sk(kRA)), r3, pk(kVa))) .
             {1} [T] out(1 -> aenc(sign(getsign(y2, pk(kVM)), sk(kRA)), r4, pk(kVb)));
 
     # Authentication/Voting Voter A
     role :  {1} in(y3{aenc(sign(message, sk(kRA)), nonce, pk(kVa))}) .
-            {1} [checksign(adec(y3, sk(kVa)), pk(kRA)) == ok] out(1 -> enc(adec(y3, sk(kVa)), kVCVa));
+            {1} [checksign(adec(y3, sk(kVa)), pk(kRA)) == yes] out(1 -> enc(adec(y3, sk(kVa)), kVCVa));
 
     # Authentication/Voting Voter B
     role :  {1} in(y4{aenc(sign(message, sk(kRA)), nonce, pk(kVb))}) .
-            {1} [checksign(adec(y4, sk(kVb)), pk(kRA)) == ok] out(1 -> enc(adec(y4, sk(kVb)), kVCVb)) ;
+            {1} [checksign(adec(y4, sk(kVb)), pk(kRA)) == yes] out(1 -> enc(adec(y4, sk(kVb)), kVCVb)) ;
 
     # Voting console Voter A
     role :  {2} in(y5{enc(message, kVCVa)}) .
-            {2} [checksign(dec(y5, kVCVa), pk(kRA)) == ok]
+            {2} [checksign(dec(y5, kVCVa), pk(kRA)) == yes]
                 out (1 -> aenc(adec(getsign(dec(y5, kVCVa), pk(kRA)), sk(kVC1)), r5, pk(kVM))) .
             {2} in(y9{aenc(pair(bidsA, message), nonce, pk(kVC1))}) .
             {2} [ fst(adec(y9, sk(kVC1))) == bidsA ] out(1 -> T) .
-            {2} IF [ marked2(fst(snd(adec(y9, sk(kVC1))))) == ok ]
+            {2} IF [ marked1(fst(snd(adec(y9, sk(kVC1))))) == yes ]
                 THEN out( 1 -> sign(aenc(fst(snd(adec(y9, sk(kVC1)))), r00, pk(kVR1)), sk(kVC1)) @
-                             sign(aenc(vote2(fst(snd(snd(adec(y9, sk(kVC1)))))), r01, pk(kVR2)), sk(kVC1)) @
-                             sign(aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)))
-                ELSE out( 1 -> sign(aenc(vote2(fst(snd(adec(y9, sk(kVC1))))), r00, pk(kVR1)), sk(kVC1)) @
+                             sign(aenc(vote1(fst(snd(snd(adec(y9, sk(kVC1)))))), r01, pk(kVR2)), sk(kVC1)) @
+                             sign(aenc(snd(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)))
+                ELSE out( 1 -> sign(aenc(vote1(fst(snd(adec(y9, sk(kVC1))))), r00, pk(kVR1)), sk(kVC1)) @
                              sign(aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r01, pk(kVR2)), sk(kVC1)) @
-                             sign(aenc(fst(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)));
+                             sign(aenc(snd(snd(snd(adec(y9, sk(kVC1))))), r02, pk(kVR3)), sk(kVC1)));
 
     # Vote Manager Ballot Generation Voter A
     role :  {2} in(y7{aenc(rid1, nonce, pk(kVM))}) .
@@ -256,17 +272,17 @@
 
      # Voting console Voter B
     role :  {3} in(y6{enc(message, kVCVb)}) .
-            {3} [checksign(dec(y6, kVCVb), pk(kRA)) == ok]
+            {3} [checksign(dec(y6, kVCVb), pk(kRA)) == yes]
                  out (1 -> aenc(adec(getsign(dec(y6, kVCVb), pk(kRA)), sk(kVC2)), r6, pk(kVM))) .
             {3} in(y10{aenc(pair(bidsB, message), nonce, pk(kVC2))}) .
             {3} [fst(adec(y10, sk(kVC2))) == bidsB] out(1 -> T) .
-            {3} IF [ marked1(fst(snd(adec(y10, sk(kVC2))))) == ok ]
+            {3} IF [ marked2(fst(snd(adec(y10, sk(kVC2))))) == yes ]
                 THEN out(1 -> sign(aenc(fst(snd(adec(y10, sk(kVC2)))), r06, pk(kVR1)), sk(kVC2)) @
-                             sign(aenc(vote1(fst(snd(snd(adec(y10, sk(kVC2)))))), r07, pk(kVR2)), sk(kVC2)) @
-                             sign(aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)))
-                ELSE out(1 -> sign(aenc(vote1(fst(snd(adec(y10, sk(kVC2))))), r06, pk(kVR1)), sk(kVC2)) @
+                             sign(aenc(vote2(fst(snd(snd(adec(y10, sk(kVC2)))))), r07, pk(kVR2)), sk(kVC2)) @
+                             sign(aenc(snd(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)))
+                ELSE out(1 -> sign(aenc(vote2(fst(snd(adec(y10, sk(kVC2))))), r06, pk(kVR1)), sk(kVC2)) @
                              sign(aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r07, pk(kVR2)), sk(kVC2)) @
-                             sign(aenc(fst(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)));
+                             sign(aenc(snd(snd(snd(adec(y10, sk(kVC2))))), r08, pk(kVR3)), sk(kVC2)));
 
     # Vote Manager Ballot Generation Voter B
     role :  {3} in(y8{aenc(rid2, nonce, pk(kVM))}) .
@@ -281,7 +297,7 @@
     # Vote Repository 1
     role :  {4} in(y11{sign(aenc(message, nonce, pk(kVR1)), sk(kVC1))}) .
             {4} in(y12{sign(aenc(message, nonce, pk(kVR1)), sk(kVC2))}) .
-            {4} [checksign(y11, pk(kVC1)) == ok & checksign(y12, pk(kVC2)) == ok &
+            {4} [checksign(y11, pk(kVC1)) == yes & checksign(y12, pk(kVC2)) == yes &
                 aenc(adec(getsign(y11, pk(kVC1)), sk(kVR1)), r00, pk(kVR1)) ==  getsign(y11, pk(kVC1)) &
                 aenc(adec(getsign(y12, pk(kVC2)), sk(kVR1)), r06, pk(kVR1)) ==  getsign(y12, pk(kVC2)) ]
                 out(1 -> sign(aenc(pair(adec(getsign(y11, pk(kVC1)), sk(kVR1)),
@@ -290,7 +306,7 @@
     # Vote Repository 2
     role :  {5} in(y13{sign(aenc(message, nonce, pk(kVR2)), sk(kVC1))}) .
             {5} in(y14{sign(aenc(message, nonce, pk(kVR2)), sk(kVC2))}) .
-            {5} [checksign(y13, pk(kVC1)) == ok & checksign(y14, pk(kVC2)) == ok &
+            {5} [checksign(y13, pk(kVC1)) == yes & checksign(y14, pk(kVC2)) == yes &
                 aenc(adec(getsign(y13, pk(kVC1)), sk(kVR2)), r01, pk(kVR2)) ==  getsign(y13, pk(kVC1)) &
                 aenc(adec(getsign(y14, pk(kVC2)), sk(kVR2)), r07, pk(kVR2)) ==  getsign(y14, pk(kVC2)) ]
                 out(1 -> sign(aenc(pair(adec(getsign(y13, pk(kVC1)), sk(kVR2)),
@@ -299,7 +315,7 @@
     # Vote Repository 3
     role :  {6} in(y15{sign(aenc(message, nonce, pk(kVR3)), sk(kVC1))}) .
             {6} in(y16{sign(aenc(message, nonce, pk(kVR3)), sk(kVC2))}) .
-            {6} [checksign(y15, pk(kVC1)) == ok & checksign(y16, pk(kVC2)) == ok &
+            {6} [checksign(y15, pk(kVC1)) == yes & checksign(y16, pk(kVC2)) == yes &
                 aenc(adec(getsign(y15, pk(kVC1)), sk(kVR3)), r02, pk(kVR3)) ==  getsign(y15, pk(kVC1)) &
                 aenc(adec(getsign(y16, pk(kVC2)), sk(kVR3)), r08, pk(kVR3)) ==  getsign(y16, pk(kVC2)) ]
                 out(1 -> sign(aenc(pair(adec(getsign(y15, pk(kVC1)), sk(kVR3)),
@@ -308,11 +324,17 @@
     # Vote Collector / Publisher
     role :  {7} in(y17{sign(aenc(message, nonce, pk(kVC)), sk(kVR1))}) .
             {7} in(y18{sign(aenc(message, nonce, pk(kVC)), sk(kVR2))}) .
-            {7} in(y19{sign(aenc(message, nonce, pk(kVC)), sk(kVR3))});
-    #        {7} [checksign(y17, pk(kVR1)) == ok & checksign(y18, pk(kVR2)) == ok & checksign(y19, pk(kVR3)) == ok]
-    #            out( 1 -> fst(adec(getsign(y17, pk(kVR1)), sk(kVC))) @
-    #                      snd(adec(getsign(y17, pk(kVR1)), sk(kVC))) @
-    #                      fst(adec(getsign(y18, pk(kVR2)), sk(kVC))) @
-    #                      snd(adec(getsign(y18, pk(kVR2)), sk(kVC))) @
-    #                      fst(adec(getsign(y19, pk(kVR3)), sk(kVC))) @
-    #                      snd(adec(getsign(y19, pk(kVR3)), sk(kVC))));
+            {7} in(y19{sign(aenc(message, nonce, pk(kVC)), sk(kVR3))}) .
+            {7} [checksign(y17, pk(kVR1)) == yes & checksign(y18, pk(kVR2)) == yes & checksign(y19, pk(kVR3)) == yes]
+                out( 1 ->   addVote(marked1(snd(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked1(fst(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked1(snd(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked1(fst(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked1(snd(adec(getsign(y17, pk(kVR1)), sk(kVC)))),
+                            addVote(marked1(fst(adec(getsign(y17, pk(kVR1)), sk(kVC)))), zeroN)))))) @
+                            addVote(marked2(snd(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked2(fst(adec(getsign(y19, pk(kVR3)), sk(kVC)))),
+                            addVote(marked2(snd(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked2(fst(adec(getsign(y18, pk(kVR2)), sk(kVC)))),
+                            addVote(marked2(snd(adec(getsign(y17, pk(kVR1)), sk(kVC)))),
+                            addVote(marked2(fst(adec(getsign(y17, pk(kVR1)), sk(kVC)))), zeroN)))))));
