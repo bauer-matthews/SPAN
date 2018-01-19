@@ -56,6 +56,7 @@ public abstract class AbstractModelChecker implements IndistinguishabilityModelC
         if (GlobalDataCache.getMetadata().getIndistinguishabilityMethod().equals(IndistinguishabilityMethod.PFA)) {
             System.out.println("Protocol 1 states explored: " + GlobalDataCache.getProtcol1StateCounter());
             System.out.println("Protocol 2 states explored: " + GlobalDataCache.getProtcol2StateCounter());
+            System.out.println("Constrainsts: " + GlobalDataCache.getNumConstrainsts() );
         }
 
         //System.out.println("States explored: " + GlobalDataCache.getStateCounter());

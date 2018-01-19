@@ -31,6 +31,8 @@ public class GlobalDataCache {
     private static int interleavingsExplored;
     private static int maxActionSetSize;
     private static int branchIndexCounter;
+    private static int numConstrainsts;
+
     private static long protcol1StateCounter;
     private static long protcol2StateCounter;
     private static long beliefStateCounter;
@@ -222,5 +224,13 @@ public class GlobalDataCache {
 
     public static void setProtocolType(ProtocolType protocolType) {
         GlobalDataCache.protocolType = protocolType;
+    }
+
+    public static void setNumConstrainsts(int numConstrainsts) {
+        GlobalDataCache.numConstrainsts = numConstrainsts;
+    }
+
+    public static int getNumConstrainsts() {
+        return numConstrainsts;
     }
 }

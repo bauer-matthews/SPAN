@@ -41,8 +41,12 @@ public class VarList {
         }
     }
 
-    Aprational[] getConstList() {
+    public Aprational[] getConstList() {
         return constList;
+    }
+
+    public Aprational getFirstProb() {
+        return constList[0];
     }
 
     boolean isPositive() {

@@ -5,7 +5,7 @@
 
     version : 1.0;
     recipe depth : 1;
-    equiv : true;
+    equiv : yes;
     equiv method : otf;
 
 .constants
@@ -87,7 +87,7 @@
                  y2 != y3 & y2 != y4 & y2 != y5 & y3 != y4 &
                  y3 != y5  & y4 != y5  ]
                  permute(aenc(m1, r1, pk(k1)) @ aenc(m2, r3, pk(k2)) @
-                 aenc(m3, r5, pk(k3)) @ aenc(aenc(m4, r7, pk(k4)) @ aenc(m5, r9, pk(k5)) );
+                 aenc(m3, r5, pk(k3)) @ aenc(m4, r7, pk(k4)) @ aenc(m5, r9, pk(k5)) );
 
     role:   {7} in(y7{aenc(m1, r1, pk(k1))}) .
             {7} [ y7 == aenc(m1, r1, pk(k1)) ] out(1 -> s);

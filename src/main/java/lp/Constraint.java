@@ -1,5 +1,7 @@
 package lp;
 
+import org.apfloat.Apfloat;
+
 import java.util.Objects;
 
 /**
@@ -50,6 +52,10 @@ public class Constraint {
 
     String getConstraintId() {
         return constraintId;
+    }
+
+    boolean isValid() {
+        return leftList.getFirstProb().equals(rightList.getFirstProb());
     }
 
     @Override

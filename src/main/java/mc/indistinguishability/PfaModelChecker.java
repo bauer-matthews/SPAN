@@ -1,5 +1,7 @@
 package mc.indistinguishability;
 
+import cache.GlobalDataCache;
+import cache.RunConfiguration;
 import lp.PfaEquivLp;
 import lp.glpk.CplexCodec;
 import lp.glpk.GlpkEngine;
@@ -8,6 +10,7 @@ import models.pfa.Pfa;
 import process.InvalidActionException;
 import process.State;
 import util.Pair;
+import util.ParametricString;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +52,17 @@ public class PfaModelChecker extends AbstractModelChecker {
         for (int i = 0; i < Math.max(pfa1.getLength(), pfa2.getLength()); i++) {
 
             lp.updateConstraints();
-            File lpFile = CplexCodec.encodeLinearProg(lp);
+            GlobalDataCache.setNumConstrainsts(lp.getConstraints().size());
 
-            if (!CplexCodec.decode(GlpkEngine.invoke(lpFile))) {
-                return false;
+            if(true) {
+                if(!lp.constraintsPass()) {
+                    return false;
+                }
+            } else {
+                File lpFile = CplexCodec.encodeLinearProg(lp);
+                if (!CplexCodec.decode(GlpkEngine.invoke(lpFile))) {
+                    return false;
+                }
             }
 
         }

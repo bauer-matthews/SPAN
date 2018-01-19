@@ -23,12 +23,11 @@ public class PfaEquivLp {
     private final Pfa pfa2;
     private final VarList maximize;
     private final Set<Constraint> constraints;
-    private Set<Constraint> lastConstraints;
     private final int numLeftVars;
     private final int numRightVars;
-
     private final Map<Integer, Map<Integer, Aprational[]>> predecessorMap1;
     private final Map<Integer, Map<Integer, Aprational[]>> predecessorMap2;
+    private Set<Constraint> lastConstraints;
 
     public PfaEquivLp(Pfa pfa1, Pfa pfa2) {
 
@@ -106,6 +105,15 @@ public class PfaEquivLp {
                 }
             }
         }
+    }
+
+    public boolean constraintsPass() {
+        for(Constraint constraint : constraints) {
+            if(!constraint.isValid()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void updateConstraints() {
