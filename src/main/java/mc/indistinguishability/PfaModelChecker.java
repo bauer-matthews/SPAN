@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * SPAN - Stochastic Protocol Analyzer
@@ -43,9 +44,12 @@ public class PfaModelChecker extends AbstractModelChecker {
     public boolean check(State state1, State state2) throws InvalidActionException,
             InterruptedException, IOException, ExecutionException {
 
+
         Pair<Pfa, Pfa> pfas = ModelPairFactory.generatePfaPair(state1, state2);
         Pfa pfa1 = pfas.getKey();
         Pfa pfa2 = pfas.getValue();
+
+        long start = System.currentTimeMillis();
 
         PfaEquivLp lp = new PfaEquivLp(pfa1, pfa2);
 
@@ -66,6 +70,9 @@ public class PfaModelChecker extends AbstractModelChecker {
             }
 
         }
+
+        long stop = System.currentTimeMillis();
+        GlobalDataCache.incrimentConstraintUpdatetime(stop - start);
 
         return true;
     }

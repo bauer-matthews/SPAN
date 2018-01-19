@@ -57,6 +57,8 @@ public abstract class AbstractModelChecker implements IndistinguishabilityModelC
             System.out.println("Protocol 1 states explored: " + GlobalDataCache.getProtcol1StateCounter());
             System.out.println("Protocol 2 states explored: " + GlobalDataCache.getProtcol2StateCounter());
             System.out.println("Constrainsts: " + GlobalDataCache.getNumConstrainsts() );
+            System.out.println("Constraint update time: " + GlobalDataCache.getConstraintUpdatetime());
+            System.out.println("PFA model construction time: " + GlobalDataCache.getPfaConstructionTime());
         }
 
         //System.out.println("States explored: " + GlobalDataCache.getStateCounter());

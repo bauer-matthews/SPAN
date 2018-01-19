@@ -36,6 +36,8 @@ public class GlobalDataCache {
     private static long protcol1StateCounter;
     private static long protcol2StateCounter;
     private static long beliefStateCounter;
+    private static long pfaConstructionTime;
+    private static long constraintUpdatetime;
 
     private static AttackTree attackTree;
     private static ReachabilityProtocol reachabilityProtocol;
@@ -50,6 +52,7 @@ public class GlobalDataCache {
         protcol1StateCounter = 0;
         protcol2StateCounter = 0;
         beliefStateCounter = 0;
+        constraintUpdatetime = 0;
     }
 
     public static void reportActionSetSize(int size) {
@@ -232,5 +235,21 @@ public class GlobalDataCache {
 
     public static int getNumConstrainsts() {
         return numConstrainsts;
+    }
+
+    public static long getPfaConstructionTime() {
+        return pfaConstructionTime;
+    }
+
+    public static long getConstraintUpdatetime() {
+        return constraintUpdatetime;
+    }
+
+    public static void setPfaConstructionTime(long pfaConstructionTime) {
+        GlobalDataCache.pfaConstructionTime = pfaConstructionTime;
+    }
+
+    public static void incrimentConstraintUpdatetime(long additionalConstraintUpdatetime) {
+        GlobalDataCache.constraintUpdatetime = GlobalDataCache.constraintUpdatetime + additionalConstraintUpdatetime;
     }
 }

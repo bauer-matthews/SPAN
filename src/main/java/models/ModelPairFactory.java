@@ -23,6 +23,8 @@ public class ModelPairFactory {
     public static Pair<Pfa, Pfa> generatePfaPair(State state1, State state2) throws InvalidActionException,
             ExecutionException, InterruptedException, IOException {
 
+        long start = System.currentTimeMillis();
+
         PfaBuilder builder1 = ModelFactory.exploreEnabledTransitions(state1);
         PfaBuilder builder2 = ModelFactory.exploreEnabledTransitions(state2);
 
@@ -37,6 +39,9 @@ public class ModelPairFactory {
 
         GlobalDataCache.setProtcol1StateCounter(pfa1.getNumStates());
         GlobalDataCache.setProtcol2StateCounter(pfa2.getNumStates());
+
+        long stop = System.currentTimeMillis();
+        GlobalDataCache.setPfaConstructionTime(stop - start);
 
         return new Pair<>(pfa1, pfa2);
     }
