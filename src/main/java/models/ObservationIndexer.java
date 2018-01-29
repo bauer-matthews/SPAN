@@ -17,20 +17,20 @@ import java.util.concurrent.ExecutionException;
  * @author Matthew S. Bauer
  * @version 1.0
  */
-class ObservationIndexer {
+public class ObservationIndexer {
 
     private final Map<Observation, Integer> observationMap;
     private final Map<Integer, Map<State, Integer>> representativeMap;
     private int freshIndex;
 
-    ObservationIndexer() {
+    public ObservationIndexer() {
 
         observationMap = new HashMap<>();
         representativeMap = new HashMap<>();
         freshIndex = 0;
     }
 
-    int getObservationIndex(State state) throws IOException, InterruptedException, ExecutionException {
+    public int getObservationIndex(State state) throws IOException, InterruptedException, ExecutionException {
 
         Integer index = observationMap.get(state.getObservation());
 
@@ -63,11 +63,11 @@ class ObservationIndexer {
         }
     }
 
-    int getNumObservations() {
+    public int getNumObservations() {
         return observationMap.size();
     }
 
-    void reset() {
+    public void reset() {
         observationMap.clear();
         representativeMap.clear();
         freshIndex = 0;

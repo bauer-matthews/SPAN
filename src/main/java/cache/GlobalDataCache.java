@@ -2,6 +2,7 @@ package cache;
 
 import attacker.AttackTree;
 import attacker.Node;
+import models.ObservationIndexer;
 import org.apfloat.Aprational;
 import parser.protocol.ProtocolType;
 import protocol.IndistinguishabilityProtocol;
@@ -44,8 +45,10 @@ public class GlobalDataCache {
     private static IndistinguishabilityProtocol indistinguishabilityProtocol;
     private static ProtocolType protocolType;
 
+    private static ObservationIndexer observationIndexer;
+
     static {
-        interleavings = new ArrayList<>();
+
         interleavingsExplored = 0;
         maxActionSetSize = 0;
         branchIndexCounter = 0;
@@ -53,6 +56,9 @@ public class GlobalDataCache {
         protcol2StateCounter = 0;
         beliefStateCounter = 0;
         constraintUpdatetime = 0;
+
+        interleavings = new ArrayList<>();
+        observationIndexer = new ObservationIndexer();
     }
 
     public static void reportActionSetSize(int size) {
@@ -251,5 +257,9 @@ public class GlobalDataCache {
 
     public static void incrimentConstraintUpdatetime(long additionalConstraintUpdatetime) {
         GlobalDataCache.constraintUpdatetime = GlobalDataCache.constraintUpdatetime + additionalConstraintUpdatetime;
+    }
+
+    public static ObservationIndexer getObservationIndexer() {
+        return observationIndexer;
     }
 }

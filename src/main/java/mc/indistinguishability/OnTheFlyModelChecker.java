@@ -2,6 +2,7 @@ package mc.indistinguishability;
 
 import cache.EquivalenceCache;
 import cache.GlobalDataCache;
+import models.ObservationIndexer;
 import org.apfloat.Aprational;
 import process.*;
 import util.Pair;
@@ -19,6 +20,8 @@ import java.util.concurrent.ExecutionException;
  * @version 1.0
  */
 public class OnTheFlyModelChecker extends AbstractModelChecker {
+
+    private static ObservationIndexer INDEXER = GlobalDataCache.getObservationIndexer();
 
     private final State initialState1;
     private final State initialState2;
@@ -83,8 +86,8 @@ public class OnTheFlyModelChecker extends AbstractModelChecker {
 
                     if (transition1.getTransitionProbability().equals(transition2.getTransitionProbability())) {
 
-                        if (EquivalenceCache.checkEquivalence(transition1.getBeliefState().getStateRepresentative(),
-                                transition2.getBeliefState().getStateRepresentative()).isEquivalent()) {
+                        if(INDEXER.getObservationIndex(transition1.getBeliefState().getStateRepresentative()) ==
+                                INDEXER.getObservationIndex(transition2.getBeliefState().getStateRepresentative())) {
 
                             match = true;
                             if(!equivalent(transition1.getBeliefState(), transition2.getBeliefState())) {

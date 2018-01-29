@@ -1,5 +1,6 @@
 package models;
 
+import cache.GlobalDataCache;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import models.pfa.PfaBuilder;
@@ -36,7 +37,7 @@ public class ModelFactory {
     static {
         ACTION_INDEXER = new ActionIndexer();
         STATE_INDEXER = new StateIndexer();
-        OBSERVATION_INDEXER = new ObservationIndexer();
+        OBSERVATION_INDEXER = GlobalDataCache.getObservationIndexer();
         ALPHABET_INDEXER = new AlphabetIndexer();
         STATES_EXPLORED = new HashSet<>();
         length = 0;

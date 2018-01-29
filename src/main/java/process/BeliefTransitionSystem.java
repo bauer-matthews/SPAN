@@ -1,8 +1,10 @@
 package process;
 
 import cache.EquivalenceCache;
+import cache.GlobalDataCache;
 import equivalence.EquivalenceCheckResult;
 import org.apfloat.Aprational;
+import parser.protocol.ProtocolType;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,6 +38,78 @@ public class BeliefTransitionSystem {
         for (Belief belief : beliefState.getBeliefs()) {
             transitions.addAll(TransitionSystem.applyAction(belief.getState(), action));
         }
+
+        Map<Integer, ArrayList<Transition>> observations;
+        if (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY)) {
+            observations = groupTransitions1(transitions);
+        } else {
+            observations = groupTransitions2(transitions);
+        }
+
+        for (Integer obsIndex : observations.keySet()) {
+
+            State[] states = observations.get(obsIndex).stream()
+                    .map(Transition::getNewState).distinct().toArray(State[]::new);
+
+            Aprational bottomSum = Aprational.ZERO;
+
+            for (Transition transition : observations.get(obsIndex)) {
+
+                bottomSum = bottomSum.add(transition.getTransitionProbability()
+                        .multiply(beliefState.getStateProb(transition.getOriginalState())));
+            }
+
+            List<Belief> beliefs = new ArrayList<>();
+            for (State state : states) {
+
+                // Sum of b(s) * P(s,a)(s') for all states s from original belief state b,
+                // where s' (newState) has observation o
+                Aprational topSum = Aprational.ZERO;
+
+                for (Transition transition : observations.get(obsIndex)) {
+                    if (transition.getNewState().equals(state)) {
+                        topSum = topSum.add(transition.getTransitionProbability()
+                                .multiply(beliefState.getStateProb(transition.getOriginalState())));
+                    }
+                }
+
+                if (!bottomSum.equals(Aprational.ZERO) && !(topSum.equals(Aprational.ZERO))) {
+                    beliefs.add(new Belief(state, topSum.divide(bottomSum)));
+                }
+            }
+
+            List<Action> newActionHistory = new ArrayList<>();
+            newActionHistory.addAll(beliefState.getActionHistory());
+            newActionHistory.add(action);
+
+            beliefTransitions.add(new BeliefTransition(bottomSum, new BeliefState(beliefs, newActionHistory)));
+        }
+
+        return beliefTransitions;
+    }
+
+    private static Map<Integer, ArrayList<Transition>> groupTransitions2(
+            List<Transition> transitions) throws ExecutionException, IOException, InterruptedException {
+
+        Map<Integer, ArrayList<Transition>> observations = new HashMap<>();
+
+        for (Transition transition : transitions) {
+
+            Integer index = GlobalDataCache.getObservationIndexer().getObservationIndex(transition.getNewState());
+
+            observations.computeIfAbsent(index, k -> new ArrayList<>());
+            observations.get(index).add(transition);
+
+            // TODO
+            //transition.getNewState().setAttackState();
+        }
+
+        return observations;
+    }
+
+    @Deprecated
+    private static Map<Integer, ArrayList<Transition>> groupTransitions1(
+            List<Transition> transitions) throws ExecutionException {
 
         Map<Integer, ArrayList<Transition>> observations = new HashMap<>();
 
@@ -76,46 +150,7 @@ public class BeliefTransitionSystem {
             }
         }
 
-        for (int i = 0; i < numObservations; i++) {
-
-            State[] states = observations.get(i).stream()
-                    .map(Transition::getNewState).distinct().toArray(State[]::new);
-
-            Aprational bottomSum = Aprational.ZERO;
-
-            for (Transition transition : observations.get(i)) {
-
-                bottomSum = bottomSum.add(transition.getTransitionProbability()
-                        .multiply(beliefState.getStateProb(transition.getOriginalState())));
-            }
-
-            List<Belief> beliefs = new ArrayList<>();
-            for (State state : states) {
-
-                // Sum of b(s) * P(s,a)(s') for all states s from original belief state b,
-                // where s' (newState) has observation o
-                Aprational topSum = Aprational.ZERO;
-
-                for (Transition transition : observations.get(i)) {
-                    if (transition.getNewState().equals(state)) {
-                        topSum = topSum.add(transition.getTransitionProbability()
-                                .multiply(beliefState.getStateProb(transition.getOriginalState())));
-                    }
-                }
-
-                if (!bottomSum.equals(Aprational.ZERO) && !(topSum.equals(Aprational.ZERO))) {
-                    beliefs.add(new Belief(state, topSum.divide(bottomSum)));
-                }
-            }
-
-            List<Action> newActionHistory = new ArrayList<>();
-            newActionHistory.addAll(beliefState.getActionHistory());
-            newActionHistory.add(action);
-
-            beliefTransitions.add(new BeliefTransition(bottomSum, new BeliefState(beliefs, newActionHistory)));
-        }
-
-        return beliefTransitions;
+        return observations;
     }
 }
 
