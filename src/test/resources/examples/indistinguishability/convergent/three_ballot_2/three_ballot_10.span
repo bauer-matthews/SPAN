@@ -4,7 +4,7 @@
 .metadata
 
     version : 1.0;
-    recipe depth : 2;
+    recipe depth : 10;
     xor : no;
     equiv : yes;
     equiv method : otf;

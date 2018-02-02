@@ -1,0 +1,169 @@
+# NAME: Simple Electronic Voting Protocol
+# PARAMETERS: 10 parties, 2 candidates, 1 round
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 10;
+    equiv : yes;
+    equiv method : otf;
+
+.constants
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message, Vote;
+    subsort : PKey, SKey, Nonce, Vote < Message;
+
+    # equational theory variables
+    variables : m, m1, m2 | Message;
+    variables : k, r | Nonce;
+
+    # input variables
+    variables : y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 | Message;
+    variables : y11, y12, y13, y14, y15, y16, y17, y18, y19, y20 | Message;
+
+    # input guard variables
+    variables : nonce | Nonce;
+    variables : vote | Vote;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : party1 | -> Vote;
+    function : party2 | -> Vote;
+
+    public names : a | Nonce;
+    public names : b | Message;
+    public names : d | Vote;
+
+    private names : kEA, kA, kB, kC, kD, kE, kF, kG, kH, kI, kJ | Nonce;
+    private names : tA, tB, tC, tD, tE, tF, tG, tH, tI, tJ | Nonce;
+    private names : r1, r2, r3, r4, r5, r6, r7, r8, r9, r10 | Nonce;
+    private names : r11, r12, r13, r14, r15, s | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(m, r, pk(k)), sk(k)) -> m;
+    rewrite : fst(pair(m1, m2)) -> m1;
+    rewrite : snd(pair(m1, m2)) -> m2;
+
+.roles1
+
+    role :  {1} [T] out(1 -> aenc(tA, r1, pk(kA))) .
+            {1} [T] out(1 -> aenc(tB, r2, pk(kB))) .
+            {1} [T] out(1 -> aenc(tC, r3, pk(kC))) .
+            {1} [T] out(1 -> aenc(tD, r4, pk(kD))) .
+            {1} [T] out(1 -> aenc(tE, r2, pk(kE))) .
+            {1} [T] out(1 -> aenc(tF, r3, pk(kF))) .
+            {1} [T] out(1 -> aenc(tE, r2, pk(kG))) .
+            {1} [T] out(1 -> aenc(tF, r3, pk(kH))) .
+            {1} [T] out(1 -> aenc(tE, r2, pk(kI))) .
+            {1} [T] out(1 -> aenc(tF, r3, pk(kJ)));
+
+    role :  {2} in(y0{aenc(nonce, nonce, pk(kA))}) .
+            {2} [T] out(1-> aenc(pair(adec(y0, sk(kA)), party1), r6, pk(kEA)));
+
+    role :  {3} in(y1{aenc(nonce, nonce, pk(kB))}) .
+            {3} [T] out(1 -> aenc(pair(adec(y1, sk(kB)), party2), r7, pk(kEA)));
+
+    role :  {4} in(y2{aenc(nonce, nonce, pk(kC))}) .
+            {4} [T] out(1 -> aenc(pair(adec(y2, sk(kC)), party1), r8, pk(kEA)));
+
+    role :  {5} in(y3{aenc(nonce, nonce, pk(kD))}) .
+            {5} [T] out(1 -> aenc(pair(adec(y3, sk(kD)), party2), r9, pk(kEA)));
+
+    role :  {5} in(y4{aenc(nonce, nonce, pk(kE))}) .
+            {5} [T] out(1 -> aenc(pair(adec(y4, sk(kE)), party1), r10, pk(kEA)));
+
+    role :  {6} in(y5{aenc(nonce, nonce, pk(kF))}) .
+            {6} [T] out(1-> aenc(pair(adec(y5, sk(kF)), party2), r11, pk(kEA)));
+
+    role :  {7} in(y6{aenc(nonce, nonce, pk(kG))}) .
+            {7} [T] out(1 -> aenc(pair(adec(y6, sk(kG)), party1), r12, pk(kEA)));
+
+    role :  {8} in(y7{aenc(nonce, nonce, pk(kH))}) .
+            {8} [T] out(1-> aenc(pair(adec(y7, sk(kH)), party2), r13, pk(kEA)));
+
+    role :  {9} in(y8{aenc(nonce, nonce, pk(kI))}) .
+            {9} [T] out(1 -> aenc(pair(adec(y8, sk(kI)), party1), r14, pk(kEA)));
+
+    role :  {10} in(y9{aenc(nonce, nonce, pk(kJ))}) .
+            {10} [T] out(1-> aenc(pair(adec(y9, sk(kJ)), party2), r15, pk(kEA)));
+
+    role:   {11} in(y10{aenc(pair(tA, vote), nonce, pk(kEA))}) .
+            {11} in(y11{aenc(pair(tB, vote), nonce, pk(kEA))}) .
+            {11} in(y12{aenc(pair(tC, vote), nonce, pk(kEA))}) .
+            {11} in(y13{aenc(pair(tD, vote), nonce, pk(kEA))}) .
+            {11} in(y14{aenc(pair(tE, vote), nonce, pk(kEA))}) .
+            {11} in(y15{aenc(pair(tF, vote), nonce, pk(kEA))}) .
+            {11} in(y16{aenc(pair(tG, vote), nonce, pk(kEA))}) .
+            {11} in(y17{aenc(pair(tH, vote), nonce, pk(kEA))}) .
+            {11} in(y18{aenc(pair(tI, vote), nonce, pk(kEA))}) .
+            {11} in(y19{aenc(pair(tJ, vote), nonce, pk(kEA))}) .
+            {11} [ T ] permute ( snd(adec(y10, sk(kEA))) @ snd(adec(y11, sk(kEA))) @ snd(adec(y12, sk(kEA))) @
+                                snd(adec(y13, sk(kEA))) @ snd(adec(y14, sk(kEA))) @ snd(adec(y15, sk(kEA))) @
+                                snd(adec(y16, sk(kEA))) @ snd(adec(y17, sk(kEA))) @ snd(adec(y18, sk(kEA))) @
+                                snd(adec(y19, sk(kEA))) );
+
+.roles2
+
+    role :  {1} [T] out(1 -> aenc(tA, r1, pk(kA))) .
+            {1} [T] out(1 -> aenc(tB, r2, pk(kB))) .
+            {1} [T] out(1 -> aenc(tC, r3, pk(kC))) .
+            {1} [T] out(1 -> aenc(tD, r4, pk(kD))) .
+            {1} [T] out(1 -> aenc(tE, r2, pk(kE))) .
+            {1} [T] out(1 -> aenc(tF, r3, pk(kF))) .
+            {1} [T] out(1 -> aenc(tE, r2, pk(kG))) .
+            {1} [T] out(1 -> aenc(tF, r3, pk(kH))) .
+            {1} [T] out(1 -> aenc(tE, r2, pk(kI))) .
+            {1} [T] out(1 -> aenc(tF, r3, pk(kJ)));
+
+    role :  {2} in(y0{aenc(nonce, nonce, pk(kA))}) .
+            {2} [T] out(1-> aenc(pair(adec(y0, sk(kA)), party2), r6, pk(kEA)));
+
+    role :  {3} in(y1{aenc(nonce, nonce, pk(kB))}) .
+            {3} [T] out(1 -> aenc(pair(adec(y1, sk(kB)), party1), r7, pk(kEA)));
+
+    role :  {4} in(y2{aenc(nonce, nonce, pk(kC))}) .
+            {4} [T] out(1 -> aenc(pair(adec(y2, sk(kC)), party2), r8, pk(kEA)));
+
+    role :  {5} in(y3{aenc(nonce, nonce, pk(kD))}) .
+            {5} [T] out(1 -> aenc(pair(adec(y3, sk(kD)), party1), r9, pk(kEA)));
+
+    role :  {5} in(y4{aenc(nonce, nonce, pk(kE))}) .
+            {5} [T] out(1 -> aenc(pair(adec(y4, sk(kE)), party2), r10, pk(kEA)));
+
+    role :  {6} in(y5{aenc(nonce, nonce, pk(kF))}) .
+            {6} [T] out(1-> aenc(pair(adec(y5, sk(kF)), party1), r11, pk(kEA)));
+
+    role :  {7} in(y6{aenc(nonce, nonce, pk(kG))}) .
+            {7} [T] out(1 -> aenc(pair(adec(y6, sk(kG)), party2), r12, pk(kEA)));
+
+    role :  {8} in(y7{aenc(nonce, nonce, pk(kH))}) .
+            {8} [T] out(1-> aenc(pair(adec(y7, sk(kH)), party1), r13, pk(kEA)));
+
+    role :  {9} in(y8{aenc(nonce, nonce, pk(kI))}) .
+            {9} [T] out(1 -> aenc(pair(adec(y8, sk(kI)), party2), r14, pk(kEA)));
+
+    role :  {10} in(y9{aenc(nonce, nonce, pk(kJ))}) .
+            {10} [T] out(1-> aenc(pair(adec(y9, sk(kJ)), party1), r15, pk(kEA)));
+
+    role:   {11} in(y10{aenc(pair(tA, vote), nonce, pk(kEA))}) .
+            {11} in(y11{aenc(pair(tB, vote), nonce, pk(kEA))}) .
+            {11} in(y12{aenc(pair(tC, vote), nonce, pk(kEA))}) .
+            {11} in(y13{aenc(pair(tD, vote), nonce, pk(kEA))}) .
+            {11} in(y14{aenc(pair(tE, vote), nonce, pk(kEA))}) .
+            {11} in(y15{aenc(pair(tF, vote), nonce, pk(kEA))}) .
+            {11} in(y16{aenc(pair(tG, vote), nonce, pk(kEA))}) .
+            {11} in(y17{aenc(pair(tH, vote), nonce, pk(kEA))}) .
+            {11} in(y18{aenc(pair(tI, vote), nonce, pk(kEA))}) .
+            {11} in(y19{aenc(pair(tJ, vote), nonce, pk(kEA))}) .
+            {11} [ T ] permute ( snd(adec(y10, sk(kEA))) @ snd(adec(y11, sk(kEA))) @ snd(adec(y12, sk(kEA))) @
+                                snd(adec(y13, sk(kEA))) @ snd(adec(y14, sk(kEA))) @ snd(adec(y15, sk(kEA))) @
+                                snd(adec(y16, sk(kEA))) @ snd(adec(y17, sk(kEA))) @ snd(adec(y18, sk(kEA))) @
+                                snd(adec(y19, sk(kEA))) );

@@ -1,10 +1,10 @@
 # NAME: Threshold Mix Protocol
-# PARAMETERS: 4 parties, 1 round
+# PARAMETERS: 3 parties, 1 round
 
 .metadata
 
     version : 1.0;
-    recipe depth : 1;
+    recipe depth : 10;
     equiv : yes;
     equiv method : otf;
 
@@ -51,15 +51,12 @@
     role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)), r2, pk(km)));
     role :  {2} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)), r4, pk(km)));
     role :  {3} [T] out(1 -> aenc(aenc(m3, r5, pk(k3)), r6, pk(km)));
-    role :  {4} [T] out(1 -> aenc(aenc(m4, r7, pk(k4)), r8, pk(km)));
 
     role:   {5} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
             {5} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
             {5} in(y3{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
-            {5} in(y4{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
-            {5} [y1 != y2 & y1 != y3 & y1 != y4 &
-                 y2 != y3 & y2 != y4 & y3 != y4] permute(adec(y1, sk(km)) @ adec(y2, sk(km)) @
-                 adec(y3, sk(km)) @ adec(y4, sk(km)));
+            {5} [y1 != y2 & y1 != y3 & y2 != y3 ]
+            permute(adec(y1, sk(km)) @ adec(y2, sk(km)) @ adec(y3, sk(km)));
 
 .roles2
 
@@ -68,12 +65,9 @@
     role :  {1} [T] out(1 -> aenc(aenc(m1, r1, pk(k1)), r2, pk(km)));
     role :  {2} [T] out(1 -> aenc(aenc(m2, r3, pk(k2)), r4, pk(km)));
     role :  {3} [T] out(1 -> aenc(aenc(m3, r5, pk(k3)), r6, pk(km)));
-    role :  {4} [T] out(1 -> aenc(aenc(m4, r7, pk(k4)), r8, pk(km)));
 
     role:   {5} in(y1{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
             {5} in(y2{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
             {5} in(y3{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
-            {5} in(y4{aenc(aenc(message, nonce, pk(nonce)), nonce, pk(km))}) .
-            {5} [y1 != y2 & y1 != y3 & y1 != y4 &
-                 y2 != y3 & y2 != y4 & y3 != y4] permute(aenc(m1, r1, pk(k1)) @ aenc(m2, r3, pk(k2)) @
-                 aenc(m3, r5, pk(k3)) @ aenc(m4, r7, pk(k4)));
+            {5} [y1 != y2 & y1 != y3 & y2 != y3 ]
+            permute(aenc(m1, r1, pk(k1)) @ aenc(m2, r3, pk(k2)) @ aenc(m3, r5, pk(k3)) );

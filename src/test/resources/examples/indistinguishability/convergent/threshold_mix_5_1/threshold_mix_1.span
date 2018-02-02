@@ -65,9 +65,6 @@
                  permute(adec(y1, sk(km)) @ adec(y2, sk(km)) @
                  adec(y3, sk(km)) @ adec(y4, sk(km)) @ adec(y5, sk(km)) );
 
-    role:   {7} in(y7{aenc(m1, r1, pk(k1))}) .
-            {7} [ y7 == aenc(m1, r1, pk(k1)) ] out(1 -> s);
-
 .roles2
 
     role :  {0} [T] out(1 -> pk(km));
@@ -88,6 +85,3 @@
                  y3 != y5  & y4 != y5  ]
                  permute(aenc(m1, r1, pk(k1)) @ aenc(m2, r3, pk(k2)) @
                  aenc(m3, r5, pk(k3)) @ aenc(m4, r7, pk(k4)) @ aenc(m5, r9, pk(k5)) );
-
-    role:   {7} in(y7{aenc(m1, r1, pk(k1))}) .
-            {7} [ y7 == aenc(m1, r1, pk(k1)) ] out(1 -> s);

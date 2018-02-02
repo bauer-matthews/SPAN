@@ -1,9 +1,9 @@
 # NAME: DC-net Protocol
 # PARAMETERS: 2 parties
 
-#b0 = fst(adec(y1, sk(tp)))
-#b1 = fst(snd(adec(y1, sk(tp))))
-#b2 = snd(snd(adec(y1, sk(tp))))
+#b0 = fst(dec(y1, tp))
+#b1 = fst(snd(dec(y1, tp)))
+#b2 = snd(snd(dec(y1, tp)))
 
 .metadata
 
@@ -17,95 +17,87 @@
 
 .signature
 
-    sort : SKey, PKey, Bit, Nonce, Message;
-    subsort : SKey, PKey, Nonce, Bit < Message;
+    sort : Key, Bit, Message;
+    subsort : Key, Bit < Message;
 
     # equational theory variables
-    variables : pkey | PKey;
-    variables : skey | SKey;
+    variables : k | Key;
     variables : mes, m1, m2 | Message;
-    variables : b, bit1, bit2 | Bit;
-    variables : key, rand | Nonce;
 
     # input variables
     variables : y1, y2, y3, y4 | Message;
 
     # input guard variables
-    variables : bit | Bit;
     variables : message | Message;
-    variables : nonce | Nonce;
+    variables : key | Key;
 
-    function : aenc | Message Nonce PKey -> Message;
-    function : adec | Message SKey -> Message;
-    function : pk | Nonce -> PKey;
-    function : sk | Nonce -> SKey;
+    function : enc | Message Key -> Message;
+    function : dec | Message Key -> Message;
     function : pair | Message Message -> Message;
     function : fst | Message -> Message;
     function : snd | Message -> Message;
-    function : val | Bit Bit Bit Bit -> Message;
 
     public names : a | Message;
-    public names : d | Nonce;
-    public names : g | Bit;
+    public names : b1, b2, b3, b4 | Bit;
+    public names : d | Key;
 
-    private names : s | Nonce;
-    private names : kA, kB, tp | Nonce;
-    private names : r1, r2, r3, r4 | Nonce;
+    private names : tp | Key;
 
 .rewrites
 
-    rewrite : adec(aenc(mes, rand, pk(key)), sk(key)) -> mes;
+    rewrite : dec(enc(mes, k), k) -> mes;
     rewrite : fst(pair(m1, m2)) -> m1;
     rewrite : snd(pair(m1, m2)) -> m2;
-    rewrite : val(b, zero, bit1, bit2) -> pair(plus(b, bit1), bit2);
-    rewrite : val(b, one, bit1, bit2) -> pair(bit1, plus(b, bit2));
 
 .roles1
 
-    role :  {0} [T] out(1/8 -> aenc(pair(zero, pair(zero, zero)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(zero, pair(zero, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(zero, pair(one, zero)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(zero, pair(one, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(one, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(one, zero)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(zero, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(zero, zero)), r1, pk(tp)));
+    role :  {0} [T] out(1/8 -> enc(pair(zero, pair(zero, zero)), tp) +
+                        1/8 -> enc(pair(zero, pair(zero, one)), tp) +
+                        1/8 -> enc(pair(zero, pair(one, zero)), tp) +
+                        1/8 -> enc(pair(zero, pair(one, one)), tp) +
+                        1/8 -> enc(pair(one, pair(one, one)), tp) +
+                        1/8 -> enc(pair(one, pair(one, zero)), tp) +
+                        1/8 -> enc(pair(one, pair(zero, one)), tp) +
+                        1/8 -> enc(pair(one, pair(zero, zero)), tp));
 
-    role :  {1} in(y1{aenc(message, nonce, pk(tp))}) .
-            {1} [ y1 == aenc(adec(y1, sk(tp)), r1, pk(tp)) ] out( 1 -> T) .
-            {1} IF [ fst(adec(y1, sk(tp))) == zero ] THEN out(1-> pair(plus(fst(snd(adec(y1, sk(tp)))), zero),
-                                                                            snd(snd(adec(y1, sk(tp))))))
-                                                     ELSE out(1-> pair(     fst(snd(adec(y1, sk(tp)))),
-                                                                       plus(snd(snd(adec(y1, sk(tp)))), zero)));
+    role :  {1} in(y1{enc(message, tp)}) .
+            {1} [ y1 == enc(dec(y1, tp), tp) ] out( 1 -> T) .
+            {1} IF [ fst(dec(y1, tp)) == zero ]
+                THEN out(1-> pair(plus(fst(snd(dec(y1, tp))), zero),
+                                       snd(snd(dec(y1, tp)))))
+                ELSE out(1-> pair(     fst(snd(dec(y1, tp))),
+                                  plus(snd(snd(dec(y1, tp))), zero)));
 
-    role :  {1} in(y2{aenc(message, nonce, pk(tp))}) .
-            {1} [ y2 == aenc(adec(y2, sk(tp)), r1, pk(tp)) ] out( 1 -> T) .
-            {1} IF [ fst(adec(y2, sk(tp))) == zero ] THEN out(1-> pair(     fst(snd(adec(y2, sk(tp)))),
-                                                                       plus(snd(snd(adec(y2, sk(tp)))), one)))
-                                                     ELSE out(1-> pair(plus(fst(snd(adec(y2, sk(tp)))), one),
-                                                                            snd(snd(adec(y2, sk(tp))))));
-
+    role :  {2} in(y2{enc(message, tp)}) .
+            {2} [ y2 == enc(dec(y2, tp), tp) ] out( 1 -> T) .
+            {2} IF [ fst(dec(y2, tp)) == zero ]
+                THEN out(1-> pair(     fst(snd(dec(y2, tp))),
+                                  plus(snd(snd(dec(y2, tp))), one)))
+                ELSE out(1-> pair(plus(fst(snd(dec(y2, tp))), one),
+                                  snd(snd(dec(y2, tp)))));
 .roles2
 
-    role :  {0} [T] out(1/8 -> aenc(pair(zero, pair(zero, zero)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(zero, pair(zero, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(zero, pair(one, zero)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(zero, pair(one, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(one, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(one, zero)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(zero, one)), r1, pk(tp)) +
-                        1/8 -> aenc(pair(one, pair(zero, zero)), r1, pk(tp)));
+    role :  {0} [T] out(1/8 -> enc(pair(zero, pair(zero, zero)), tp) +
+                        1/8 -> enc(pair(zero, pair(zero, one)), tp) +
+                        1/8 -> enc(pair(zero, pair(one, zero)), tp) +
+                        1/8 -> enc(pair(zero, pair(one, one)), tp) +
+                        1/8 -> enc(pair(one, pair(one, one)), tp) +
+                        1/8 -> enc(pair(one, pair(one, zero)), tp) +
+                        1/8 -> enc(pair(one, pair(zero, one)), tp) +
+                        1/8 -> enc(pair(one, pair(zero, zero)), tp));
 
-    role :  {1} in(y1{aenc(message, nonce, pk(tp))}) .
-            {1} [ y1 == aenc(adec(y1, sk(tp)), r1, pk(tp)) ] out( 1 -> T) .
-            {1} IF [ fst(adec(y1, sk(tp))) == zero ] THEN out(1-> pair(plus(fst(snd(adec(y1, sk(tp)))), one),
-                                                                            snd(snd(adec(y1, sk(tp))))))
-                                                     ELSE out(1-> pair(     fst(snd(adec(y1, sk(tp)))),
-                                                                       plus(snd(snd(adec(y1, sk(tp)))), one)));
+    role :  {1} in(y1{enc(message, tp)}) .
+            {1} [ y1 == enc(dec(y1, tp), tp) ] out( 1 -> T) .
+            {1} IF [ fst(dec(y1, tp)) == zero ]
+                THEN out(1-> pair(plus(fst(snd(dec(y1, tp))), one),
+                             snd(snd(dec(y1, tp)))))
+                ELSE out(1-> pair(     fst(snd(dec(y1, tp))),
+                             plus(snd(snd(dec(y1, tp))), one)));
 
-    role :  {1} in(y2{aenc(message, nonce, pk(tp))}) .
-            {1} [ y2 == aenc(adec(y2, sk(tp)), r1, pk(tp)) ] out( 1 -> T) .
-            {1} IF [ fst(adec(y2, sk(tp))) == zero ] THEN out(1-> pair(     fst(snd(adec(y2, sk(tp)))),
-                                                                       plus(snd(snd(adec(y2, sk(tp)))), zero)))
-                                                     ELSE out(1-> pair(plus(fst(snd(adec(y2, sk(tp)))), zero),
-                                                                            snd(snd(adec(y2, sk(tp))))));
+    role :  {2} in(y2{enc(message, tp)}) .
+            {2} [ y2 == enc(dec(y2, tp), tp) ] out( 1 -> T) .
+            {2} IF [ fst(dec(y2, tp)) == zero ]
+            THEN out(1-> pair(     fst(snd(dec(y2, tp))),
+                              plus(snd(snd(dec(y2, tp))), zero)))
+            ELSE out(1-> pair(plus(fst(snd(dec(y2, tp))), zero),
+                                   snd(snd(dec(y2, tp)))));

@@ -1,0 +1,104 @@
+# NAME: Simple Electronic Voting Protocol
+# PARAMETERS: 4 parties, 2 candidates, 1 round
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 10;
+    equiv : yes;
+    equiv method : otf;
+
+.constants
+
+.signature
+
+    sort : PKey, SKey, Nonce, Message, Vote;
+    subsort : PKey, SKey, Nonce, Vote < Message;
+
+    # equational theory variables
+    variables : m, m1, m2 | Message;
+    variables : k, r | Nonce;
+
+    # input variables
+    variables : y0, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10 | Message;
+
+    # input guard variables
+    variables : nonce | Nonce;
+    variables : vote | Vote;
+
+    function : aenc | Message Nonce PKey -> Message;
+    function : adec | Message SKey -> Message;
+    function : pk | Nonce -> PKey;
+    function : sk | Nonce -> SKey;
+    function : pair | Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : party1 | -> Vote;
+    function : party2 | -> Vote;
+
+    public names : a | Nonce;
+    public names : b | Message;
+    public names : d | Vote;
+
+    private names : kEA, kA, kB, kC, kD, kE, tA, tB, tC, tD, tE | Nonce;
+    private names : r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, s | Nonce;
+
+.rewrites
+
+    rewrite : adec(aenc(m, r, pk(k)), sk(k)) -> m;
+    rewrite : fst(pair(m1, m2)) -> m1;
+    rewrite : snd(pair(m1, m2)) -> m2;
+
+.roles1
+
+    role :  {1} [T] out(1 -> aenc(tA, r1, pk(kA))) .
+            {1} [T] out(1 -> aenc(tB, r2, pk(kB))) .
+            {1} [T] out(1 -> aenc(tC, r3, pk(kC))) .
+            {1} [T] out(1 -> aenc(tD, r4, pk(kD))) .
+            {1} [T] out(1 -> aenc(tE, r5, pk(kE)));
+
+    role :  {2} in(y0{aenc(nonce, nonce, pk(kA))}) .
+            {2} [T] out(1-> aenc(pair(adec(y0, sk(kA)), party1), r6, pk(kEA)));
+
+    role :  {3} in(y1{aenc(nonce, nonce, pk(kB))}) .
+            {3} [T] out(1 -> aenc(pair(adec(y1, sk(kB)), party2), r7, pk(kEA)));
+
+    role :  {4} in(y2{aenc(nonce, nonce, pk(kC))}) .
+            {4} [T] out(1 -> aenc(pair(adec(y2, sk(kC)), party1), r8, pk(kEA)));
+
+    role :  {5} in(y3{aenc(nonce, nonce, pk(kD))}) .
+            {5} [T] out(1 -> aenc(pair(adec(y3, sk(kD)), party2), r9, pk(kEA)));
+
+    role:   {6} in(y5{aenc(pair(tA, vote), nonce, pk(kEA))}) .
+            {6} in(y6{aenc(pair(tB, vote), nonce, pk(kEA))}) .
+            {6} in(y7{aenc(pair(tC, vote), nonce, pk(kEA))}) .
+            {6} in(y8{aenc(pair(tD, vote), nonce, pk(kEA))}) .
+            {6} [ T ] permute ( snd(adec(y5, sk(kEA))) @ snd(adec(y6, sk(kEA))) @
+                                snd(adec(y7, sk(kEA))) @ snd(adec(y8, sk(kEA))) );
+
+.roles2
+
+    role :  {1} [T] out(1 -> aenc(tA, r1, pk(kA))) .
+            {1} [T] out(1 -> aenc(tB, r2, pk(kB))) .
+            {1} [T] out(1 -> aenc(tC, r3, pk(kC))) .
+            {1} [T] out(1 -> aenc(tD, r4, pk(kD))) .
+            {1} [T] out(1 -> aenc(tE, r5, pk(kE)));
+
+    role :  {2} in(y0{aenc(nonce, nonce, pk(kA))}) .
+            {2} [T] out(1-> aenc(pair(adec(y0, sk(kA)), party2), r6, pk(kEA)));
+
+    role :  {3} in(y1{aenc(nonce, nonce, pk(kB))}) .
+            {3} [T] out(1 -> aenc(pair(adec(y1, sk(kB)), party1), r7, pk(kEA)));
+
+    role :  {4} in(y2{aenc(nonce, nonce, pk(kC))}) .
+            {4} [T] out(1 -> aenc(pair(adec(y2, sk(kC)), party2), r8, pk(kEA)));
+
+    role :  {5} in(y3{aenc(nonce, nonce, pk(kD))}) .
+            {5} [T] out(1 -> aenc(pair(adec(y3, sk(kD)), party1), r9, pk(kEA)));
+
+    role:   {6} in(y5{aenc(pair(tA, vote), nonce, pk(kEA))}) .
+            {6} in(y6{aenc(pair(tB, vote), nonce, pk(kEA))}) .
+            {6} in(y7{aenc(pair(tC, vote), nonce, pk(kEA))}) .
+            {6} in(y8{aenc(pair(tD, vote), nonce, pk(kEA))}) .
+            {6} [ T ] permute ( snd(adec(y5, sk(kEA))) @ snd(adec(y6, sk(kEA))) @
+                                snd(adec(y7, sk(kEA))) @ snd(adec(y8, sk(kEA))) );

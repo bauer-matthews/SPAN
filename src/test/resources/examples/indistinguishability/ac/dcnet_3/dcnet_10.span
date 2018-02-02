@@ -1,0 +1,159 @@
+# NAME: DC-net Protocol
+# PARAMETERS: 3 parties
+
+#b0 = fst(adec(y1, sk(tp)))
+#b1 = fst(snd(adec(y1, sk(tp))))
+#b2 = snd(snd(adec(y1, sk(tp))))
+
+.metadata
+
+    version : 1.0;
+    recipe depth : 10;
+    xor : yes;
+    equiv : yes;
+    equiv method : pfa;
+
+.constants
+
+.signature
+
+    sort :  Key, Bit, Message;
+    subsort : Key, Bit < Message;
+
+    # equational theory variables
+    variables : mes, m1, m2, m3 | Message;
+    variables : k | Key;
+
+    # input variables
+    variables : y1, y2, y3, y4, y5, y6 | Message;
+
+    # input guard variables
+    variables : message | Message;
+    variables : key | Key;
+
+    function : enc | Message Key -> Message;
+    function : dec | Message Key -> Message;
+    function : triple | Message Message Message -> Message;
+    function : fst | Message -> Message;
+    function : snd | Message -> Message;
+    function : thd | Message -> Message;
+
+    public names : a | Message;
+    public names : b1, b2, b3, b4 | Bit;
+    public names : d | Key;
+
+    private names : s | Key;
+    private names : tp13, tp12, tp23 | Key;
+
+.rewrites
+
+    rewrite : dec(enc(mes, k), k) -> mes;
+    rewrite : fst(triple(m1, m2, m3)) -> m1;
+    rewrite : snd(triple(m1, m2, m3)) -> m2;
+    rewrite : thd(triple(m1, m2, m3)) -> m3;
+
+.roles1
+
+    role :  {0} [T] out(1/8 -> enc(triple(zero, zero, zero), tp13) +
+                        1/8 -> enc(triple(zero, zero, one), tp13) +
+                        1/8 -> enc(triple(zero, one, zero), tp13) +
+                        1/8 -> enc(triple(zero, one, one), tp13) +
+                        1/8 -> enc(triple(one,  one, one), tp13) +
+                        1/8 -> enc(triple(one, one, zero), tp13) +
+                        1/8 -> enc(triple(one, zero, one), tp13) +
+                        1/8 -> enc(triple(one, zero, zero), tp13)) .
+            {0} [T] out(1/8 -> enc(triple(zero, zero, zero), tp23) +
+                        1/8 -> enc(triple(zero, zero, one), tp23) +
+                        1/8 -> enc(triple(zero, one, zero), tp23) +
+                        1/8 -> enc(triple(zero, one, one), tp23) +
+                        1/8 -> enc(triple(one, one, one), tp23) +
+                        1/8 -> enc(triple(one, one, zero), tp23) +
+                        1/8 -> enc(triple(one, zero, one), tp23) +
+                        1/8 -> enc(triple(one, zero, zero), tp23)) .
+            {0} [T] out(1/8 -> enc(triple(zero, zero, zero), tp12) +
+                        1/8 -> enc(triple(zero, zero, one), tp12) +
+                        1/8 -> enc(triple(zero, one, zero), tp12) +
+                        1/8 -> enc(triple(zero, one, one), tp12) +
+                        1/8 -> enc(triple(one, one, one), tp12) +
+                        1/8 -> enc(triple(one, one, zero), tp12) +
+                        1/8 -> enc(triple(one, zero, one), tp12) +
+                        1/8 -> enc(triple(one, zero, zero), tp12));
+    # Player 1
+    role :  {1} in(y1{enc(message, tp13)}) .
+            {1} in(y2{enc(message, tp12)}) .
+            {1} [ y1 == enc(dec(y1, tp13), tp13) &
+                  y2 == enc(dec(y2, tp12), tp12) ]
+                out( 1 -> triple( plus(zero,plus(fst(dec(y1, tp13)), fst(dec(y2, tp12)))),
+                                  plus(snd(dec(y1, tp13)), snd(dec(y2, tp12))),
+                                  plus(thd(dec(y1, tp13)), thd(dec(y2, tp12)))));
+
+    # Player 2
+    role :  {2} in(y3{enc(message, tp23)}) .
+            {2} in(y4{enc(message, tp12)}) .
+            {2} [ y3 == enc(dec(y3, tp23), tp23) &
+                  y4 == enc(dec(y4, tp12), tp12) ]
+                out( 1 -> triple( plus(fst(dec(y3, tp23)), fst(dec(y4, tp12))),
+                                  plus(zero,plus(snd(dec(y3, tp23)), snd(dec(y4, tp12)))),
+                                  plus(thd(dec(y3, tp23)), thd(dec(y4, tp12)))));
+
+    # Player 3
+    role :  {3} in(y5{enc(message, tp23)}) .
+            {3} in(y6{enc(message, tp13)}) .
+            {3} [ y5 == enc(dec(y5, tp23), tp23) &
+                  y6 == enc(dec(y6, tp13), tp13) ]
+                out( 1 -> triple( plus(fst(dec(y5, tp23)), fst(dec(y6, tp13))),
+                                  plus(snd(dec(y5, tp23)), snd(dec(y6, tp13))),
+                                  plus(one,plus(thd(dec(y5, tp23)), thd(dec(y6, tp13))))));
+
+.roles2
+
+    role :  {0} [T] out(1/8 -> enc(triple(zero, zero, zero), tp13) +
+                        1/8 -> enc(triple(zero, zero, one), tp13) +
+                        1/8 -> enc(triple(zero, one, zero), tp13) +
+                        1/8 -> enc(triple(zero, one, one), tp13) +
+                        1/8 -> enc(triple(one,  one, one), tp13) +
+                        1/8 -> enc(triple(one, one, zero), tp13) +
+                        1/8 -> enc(triple(one, zero, one), tp13) +
+                        1/8 -> enc(triple(one, zero, zero), tp13)) .
+            {0} [T] out(1/8 -> enc(triple(zero, zero, zero), tp23) +
+                        1/8 -> enc(triple(zero, zero, one), tp23) +
+                        1/8 -> enc(triple(zero, one, zero), tp23) +
+                        1/8 -> enc(triple(zero, one, one), tp23) +
+                        1/8 -> enc(triple(one, one, one), tp23) +
+                        1/8 -> enc(triple(one, one, zero), tp23) +
+                        1/8 -> enc(triple(one, zero, one), tp23) +
+                        1/8 -> enc(triple(one, zero, zero), tp23)) .
+            {0} [T] out(1/8 -> enc(triple(zero, zero, zero), tp12) +
+                        1/8 -> enc(triple(zero, zero, one), tp12) +
+                        1/8 -> enc(triple(zero, one, zero), tp12) +
+                        1/8 -> enc(triple(zero, one, one), tp12) +
+                        1/8 -> enc(triple(one, one, one), tp12) +
+                        1/8 -> enc(triple(one, one, zero), tp12) +
+                        1/8 -> enc(triple(one, zero, one), tp12) +
+                        1/8 -> enc(triple(one, zero, zero), tp12));
+    # Player 1
+    role :  {1} in(y1{enc(message, tp13)}) .
+            {1} in(y2{enc(message, tp12)}) .
+            {1} [ y1 == enc(dec(y1, tp13), tp13) &
+                  y2 == enc(dec(y2, tp12), tp12) ]
+                out( 1 -> triple( plus(fst(dec(y1, tp13)), fst(dec(y2, tp12))),
+                                  plus(snd(dec(y1, tp13)), snd(dec(y2, tp12))),
+                                  plus(one,plus(thd(dec(y1, tp13)), thd(dec(y2, tp12))))));
+
+    # Player 2
+    role :  {2} in(y3{enc(message, tp23)}) .
+            {2} in(y4{enc(message, tp12)}) .
+            {2} [ y3 == enc(dec(y3, tp23), tp23) &
+                  y4 == enc(dec(y4, tp12), tp12) ]
+                out( 1 -> triple( plus(fst(dec(y3, tp23)), fst(dec(y4, tp12))),
+                                  plus(zero,plus(snd(dec(y3, tp23)), snd(dec(y4, tp12)))),
+                                  plus(thd(dec(y3, tp23)), thd(dec(y4, tp12)))));
+
+    # Player 3
+    role :  {3} in(y5{enc(message, tp23)}) .
+            {3} in(y6{enc(message, tp13)}) .
+            {3} [ y5 == enc(dec(y5, tp23), tp23) &
+                  y6 == enc(dec(y6, tp13), tp13) ]
+                out( 1 -> triple( plus(zero,plus(fst(dec(y5, tp23)), fst(dec(y6, tp13)))),
+                                  plus(snd(dec(y5, tp23)), snd(dec(y6, tp13))),
+                                  plus(thd(dec(y5, tp23)), thd(dec(y6, tp13)))));
