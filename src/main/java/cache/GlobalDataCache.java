@@ -2,6 +2,7 @@ package cache;
 
 import attacker.AttackTree;
 import attacker.Node;
+import models.ObsAttackIndexer;
 import models.ObservationIndexer;
 import org.apfloat.Aprational;
 import parser.protocol.ProtocolType;
@@ -46,6 +47,7 @@ public class GlobalDataCache {
     private static ProtocolType protocolType;
 
     private static ObservationIndexer observationIndexer;
+    private static ObsAttackIndexer obsAttackIndexer;
 
     static {
 
@@ -59,6 +61,7 @@ public class GlobalDataCache {
 
         interleavings = new ArrayList<>();
         observationIndexer = new ObservationIndexer();
+        obsAttackIndexer = new ObsAttackIndexer();
     }
 
     public static void reportActionSetSize(int size) {
@@ -261,5 +264,9 @@ public class GlobalDataCache {
 
     public static ObservationIndexer getObservationIndexer() {
         return observationIndexer;
+    }
+
+    public static ObsAttackIndexer getObsAttackIndexer() {
+        return obsAttackIndexer;
     }
 }

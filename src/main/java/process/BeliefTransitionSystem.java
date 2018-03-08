@@ -5,6 +5,7 @@ import cache.GlobalDataCache;
 import equivalence.EquivalenceCheckResult;
 import org.apfloat.Aprational;
 import parser.protocol.ProtocolType;
+import util.Pair;
 
 import java.io.IOException;
 import java.util.*;
@@ -41,9 +42,9 @@ public class BeliefTransitionSystem {
 
         Map<Integer, ArrayList<Transition>> observations;
         if (GlobalDataCache.getProtocolType().equals(ProtocolType.REACHABILITY)) {
-            observations = groupTransitions1(transitions);
+            observations = groupTransitionsReach(transitions);
         } else {
-            observations = groupTransitions2(transitions);
+            observations = groupTransitionsEquiv(transitions);
         }
 
         for (Integer obsIndex : observations.keySet()) {
@@ -88,7 +89,7 @@ public class BeliefTransitionSystem {
         return beliefTransitions;
     }
 
-    private static Map<Integer, ArrayList<Transition>> groupTransitions2(
+    private static Map<Integer, ArrayList<Transition>> groupTransitionsEquiv(
             List<Transition> transitions) throws ExecutionException, IOException, InterruptedException {
 
         Map<Integer, ArrayList<Transition>> observations = new HashMap<>();
@@ -99,16 +100,30 @@ public class BeliefTransitionSystem {
 
             observations.computeIfAbsent(index, k -> new ArrayList<>());
             observations.get(index).add(transition);
-
-            // TODO
-            //transition.getNewState().setAttackState();
         }
 
         return observations;
     }
 
-    @Deprecated
-    private static Map<Integer, ArrayList<Transition>> groupTransitions1(
+    private static Map<Integer, ArrayList<Transition>> groupTransitionsReach2(
+            List<Transition> transitions) throws ExecutionException, IOException, InterruptedException {
+
+        Map<Integer, ArrayList<Transition>> observations = new HashMap<>();
+
+        for (Transition transition : transitions) {
+
+            Pair<Integer, Boolean> obsAttackPair =
+                    GlobalDataCache.getObsAttackIndexer().getObservationAttackPair(transition.getNewState());
+
+            observations.computeIfAbsent(obsAttackPair.getKey(), k -> new ArrayList<>());
+            observations.get(obsAttackPair.getKey()).add(transition);
+            transition.getNewState().setAttackState(obsAttackPair.getValue());
+        }
+
+        return observations;
+    }
+
+    private static Map<Integer, ArrayList<Transition>> groupTransitionsReach(
             List<Transition> transitions) throws ExecutionException {
 
         Map<Integer, ArrayList<Transition>> observations = new HashMap<>();
