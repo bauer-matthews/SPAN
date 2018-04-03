@@ -33,8 +33,10 @@ for root, dirs, filenames in os.walk(args.test_files_dir):
         print("starting: " + testName + " " + recipeSize)
 
         if args.equiv_engine == "kiss":
+            print("using kiss")
             p = Popen(['java', '-jar', args.jar_location, "-maxAttack", "-kiss", args.kiss, "-maude", args.maude, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
         else:
+            print("using akiss")
             p =   p = Popen(['java', '-jar', args.jar_location, "-maxAttack", "-akiss", args.akiss, "-maude", args.maude, '-protocol', os.path.join(root,f)], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
         output, err = p.communicate();

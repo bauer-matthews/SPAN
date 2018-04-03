@@ -57,9 +57,7 @@
             {1} [T] out(1 -> aenc(tC, r3, pk(kC))) .
             {1} [T] out(1 -> aenc(tD, r4, pk(kD))) .
             {1} [T] out(1 -> aenc(tE, r2, pk(kE))) .
-            {1} [T] out(1 -> aenc(tF, r3, pk(kF))) .
-            {1} [T] out(1 -> aenc(tE, r2, pk(kG))) .
-            {1} [T] out(1 -> aenc(tF, r3, pk(kH)));
+            {1} [T] out(1 -> aenc(tF, r3, pk(kF)));
 
     role :  {2} in(y0{aenc(nonce, nonce, pk(kA))}) .
             {2} [T] out(1/2 -> aenc(pair(adec(y0, sk(kA)), party1), r6, pk(kEA)) # A +
@@ -85,31 +83,20 @@
             {6} [T] out(1/2 -> aenc(pair(adec(y5, sk(kF)), party1), r11, pk(kEA)) +
                         1/2 -> aenc(pair(adec(y5, sk(kF)), party2), r11, pk(kEA)));
 
-    role :  {7} in(y6{aenc(nonce, nonce, pk(kG))}) .
-            {7} [T] out(1/2 -> aenc(pair(adec(y6, sk(kG)), party1), r12, pk(kEA)) +
-                        1/2 -> aenc(pair(adec(y6, sk(kG)), party2), r12, pk(kEA)));
-
-    role :  {8} in(y7{aenc(nonce, nonce, pk(kH))}) .
-            {8} [T] out(1/2 -> aenc(pair(adec(y7, sk(kH)), party1), r13, pk(kEA)) +
-                        1/2 -> aenc(pair(adec(y7, sk(kH)), party2), r13, pk(kEA)));
-
     role:   {11} in(y10{aenc(pair(tA, vote), nonce, pk(kEA))}) .
             {11} in(y11{aenc(pair(tB, vote), nonce, pk(kEA))}) .
             {11} in(y12{aenc(pair(tC, vote), nonce, pk(kEA))}) .
             {11} in(y13{aenc(pair(tD, vote), nonce, pk(kEA))}) .
             {11} in(y14{aenc(pair(tE, vote), nonce, pk(kEA))}) .
             {11} in(y15{aenc(pair(tF, vote), nonce, pk(kEA))}) .
-            {11} in(y16{aenc(pair(tG, vote), nonce, pk(kEA))}) .
-            {11} in(y17{aenc(pair(tH, vote), nonce, pk(kEA))}) .
             {11} [ T ] permute ( snd(adec(y10, sk(kEA))) @ snd(adec(y11, sk(kEA))) @ snd(adec(y12, sk(kEA))) @
-                                snd(adec(y13, sk(kEA))) @ snd(adec(y14, sk(kEA))) @ snd(adec(y15, sk(kEA))) @
-                                snd(adec(y16, sk(kEA))) @ snd(adec(y17, sk(kEA))));
+                                snd(adec(y13, sk(kEA))) @ snd(adec(y14, sk(kEA))) @ snd(adec(y15, sk(kEA))));
 
-    subrole(A) : {4} in(y18{vote}) .
-                 {4} [y18 == party1] out(1 -> s);
+    subrole(A) : {12} in(y18{vote}) .
+                 {12} [y18 == party1] out(1 -> s);
 
-    subrole(B) : {4} in(y18{vote}) .
-                 {4} [y18 == party2] out(1 -> s);
+    subrole(B) : {12} in(y18{vote}) .
+                 {12} [y18 == party2] out(1 -> s);
 
 .safety
     secrecy : s >= 1/4;

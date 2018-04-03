@@ -36,7 +36,7 @@
 
     public names : a | Nonce;
     public names : b | Message;
-    public names : c | Vote;
+    public names : d | Vote;
 
     private names : kEA, kA, kB, tA, tB | Nonce;
     private names : r1, r2, r3, r4, r5, r6, s | Nonce;
