@@ -20,8 +20,8 @@ Information regarding threat model and the process calculus can be found in the 
 
 `span [options]`
 
-- `-akiss <location>`   path to AKISS engine
-- `-attackTree`         print the attack tree
+- `-akiss <location>` :  path to AKISS engine
+- `-attackTree`       :  print the attack tree
 - `-debug`              print debugging information
 - `-dot <file>`         output attack tree to dot file
 - `-glpk <location>`    path to glpk engine
