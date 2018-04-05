@@ -16,6 +16,9 @@ Information regarding threat model and the process calculus can be found in the 
 
 ###### Optional Dependancies
 
+- **Maude** : for rewriting (supported version: 2.7.1)
+- **AKISS** : for (supported version)
+
 ###### Build
 
 Obtain the source code `git clone https://github.com/bauer-matthews/SPAN.git`. 
