@@ -14,7 +14,7 @@ Information regarding threat model and the process calculus can be found in the 
 
 ## Installation
 
-###### Optional Dependancies
+###### Dependancies
 
 - [Java](https://java.com/en/download/)  (supported version: 1.8 or higher) 
 
