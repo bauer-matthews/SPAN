@@ -16,13 +16,12 @@ Information regarding threat model and the process calculus can be found in the 
 
 ###### Optional Dependancies
 
-- [Java](https://java.com/en/download/): supported version: 8 or higher 
+- [Java](https://java.com/en/download/)  (supported version: 1.8 or higher) 
 
 ###### Optional Dependancies
 
 - [Maude](http://maude.cs.illinois.edu/w/index.php?title=The_Maude_System) (supported version: 2.7.1)
-- **AKISS** : for (supported version)
-
+- [AKISS](https://github.com/akiss/akiss) 
 ###### Build
 
 Obtain the source code `git clone https://github.com/bauer-matthews/SPAN.git`. 
