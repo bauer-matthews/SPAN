@@ -11,3 +11,6 @@ Information regarding threat model and the process calculus can be found in the 
 - Matthew S. Bauer, Rohit Chada and Mahesh Viswanathan. [Modular verification of protocol equivalence in the presence of randomness](https://link.springer.com/chapter/10.1007/978-3-319-66402-6_12). European Symposium on Research in Computer Security (ESORICS) 2017. 
 
 - Matthew S. Bauer, Rohit Chada and Mahesh Viswanathan. [Composing protocols with randomized actions](https://link.springer.com/chapter/10.1007/978-3-662-49635-0_10). Principles of Security and Trust (POST) 2016. 
+
+## Instalation
+
