@@ -22,14 +22,14 @@ Information regarding threat model and the process calculus can be found in the 
 
 - `-akiss <location>` :  path to AKISS engine
 - `-attackTree`       :  print the attack tree
-- `-debug`              print debugging information
-- `-dot <file>`         output attack tree to dot file
-- `-glpk <location>`    path to glpk engine
-- `-help`               print this message
-- `-kiss <location>`    path to KISS engine
-- `-maude <location>`   path to maude engine
-- `-maxAttack`          find the maximum attack probability
-- `-protocol <file>`    user specified protocol file
-- `-trace`              print path exploration
+- `-debug`            :  print debugging information
+- `-dot <file>`       :  output attack tree to dot file
+- `-glpk <location>`  :  path to glpk engine
+- `-help`             :  print this message
+- `-kiss <location>`  :  path to KISS engine
+- `-maude <location>` :  path to maude engine
+- `-maxAttack`        :  find the maximum attack probability
+- `-protocol <file>`  :  user specified protocol file
+- `-trace`            :  print path exploration
 
 
