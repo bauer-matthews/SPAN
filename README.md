@@ -18,5 +18,9 @@ Information regarding threat model and the process calculus can be found in the 
 
 ## Usage
 
-`span [options]`
+`span [args] [options]`
+
+- `kiss <path>`
+- akiss 
+- maude
 
