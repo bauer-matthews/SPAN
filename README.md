@@ -14,6 +14,11 @@ Information regarding threat model and the process calculus can be found in the 
 
 ## Installation
 
+###### Optional Dependancies
+
+###### Build
+
+Obtain the source code `git clone https://github.com/bauer-matthews/SPAN.git`. 
 
 
 ## Usage
