@@ -152,11 +152,11 @@
     <mkdir dir="${artifact.temp.output.span:jar}"/>
     <jar destfile="${temp.jar.path.span.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
       <zipfileset dir="${span.output.dir}"/>
-      <zipfileset src="${path.variable.maven_repository}/commons-io/commons-io/2.5/commons-io-2.5.jar"/>
-      <zipfileset src="${path.variable.maven_repository}/com/google/guava/guava/21.0/guava-21.0.jar"/>
-      <zipfileset src="${path.variable.maven_repository}/commons-cli/commons-cli/1.4/commons-cli-1.4.jar"/>
+      <zipfileset src="${basedir}/lib/commons-io-2.5.jar"/>
+      <zipfileset src="${basedir}/lib/guava-21.0.jar"/>
+      <zipfileset src="${basedir}/lib/commons-cli-1.4.jar"/>
       <zipfileset src="${basedir}/lib/apfloat.jar"/>
-      <zipfileset src="${path.variable.maven_repository}/org/apache/commons/commons-lang3/3.0/commons-lang3-3.0.jar"/>
+      <zipfileset src="${basedir}/lib/commons-lang3-3.0.jar"/>
     </jar>
     <copy file="${temp.jar.path.span.jar}" tofile="${artifact.temp.output.span:jar}/span.jar"/>
   </target>
@@ -171,5 +171,5 @@
     <delete dir="${artifacts.temp.dir}"/>
   </target>
   
-  <target name="all" depends="build.modules, build.all.artifacts" description="build all"/>
+  <target name="all" depends="resolve, build.modules, build.all.artifacts" description="build all"/>
 </project>
