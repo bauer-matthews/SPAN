@@ -166,7 +166,11 @@
     <copy todir="${artifact.output.span:jar}">
       <fileset dir="${artifact.temp.output.span:jar}"/>
     </copy>
-    
+
+    <copy todir="${artifact.output.span:jar}">
+      <fileset dir="${basedir:jar}"/>
+    </copy>
+
     <!-- Delete temporary files -->
     <delete dir="${artifacts.temp.dir}"/>
   </target>
