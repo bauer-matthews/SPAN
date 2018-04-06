@@ -18,6 +18,7 @@ Information regarding threat model and the process calculus can be found in the 
 
 - [Java](https://java.com/en/download/)  (supported version: 1.8 or higher) 
 - [Ant](https://ant.apache.org/)
+- [Git](https://git-scm.com/)
 
 ###### Optional Dependancies
 
