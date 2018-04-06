@@ -150,7 +150,10 @@
   <target name="artifact.span:jar" depends="init.artifacts, compile.module.span" description="Build &#39;span:jar&#39; artifact">
     <property name="artifact.temp.output.span:jar" value="${artifacts.temp.dir}/span_jar"/>
     <mkdir dir="${artifact.temp.output.span:jar}"/>
-    <jar destfile="${temp.jar.path.span.jar}" duplicate="preserve" filesetmanifest="mergewithoutmain">
+    <jar destfile="${temp.jar.path.span.jar}" duplicate="preserve">
+      <manifest>
+        <attribute name="Main-Class" value="CLI"/>
+      </manifest>
       <zipfileset dir="${span.output.dir}"/>
       <zipfileset src="${basedir}/lib/commons-io-2.5.jar"/>
       <zipfileset src="${basedir}/lib/guava-21.0.jar"/>
@@ -160,7 +163,7 @@
     </jar>
     <copy file="${temp.jar.path.span.jar}" tofile="${artifact.temp.output.span:jar}/span.jar"/>
   </target>
-  
+
   <target name="build.all.artifacts" depends="artifact.span:jar" description="Build all artifacts">
     <mkdir dir="${artifact.output.span:jar}"/>
     <copy todir="${artifact.output.span:jar}">
