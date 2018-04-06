@@ -87,15 +87,15 @@
   
   <target name="compile.module.span" depends="compile.module.span.production,compile.module.span.tests" description="Compile module span"/>
   
-  <target name="compile.module.span.production" depends="register.custom.compilers" description="Compile module span; production classes">
+  <target name="compile.module.span.production" description="Compile module span; production classes">
     <mkdir dir="${span.output.dir}"/>
-    <javac2 destdir="${span.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.span}/javac">
+    <javac destdir="${span.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.span}/javac">
       <compilerarg line="${compiler.args.span}"/>
       <bootclasspath refid="span.module.bootclasspath"/>
       <classpath refid="span.module.production.classpath"/>
       <src refid="span.module.sourcepath"/>
       <patternset refid="excluded.from.compilation.span"/>
-    </javac2>
+    </javac>
     
     <copy todir="${span.output.dir}">
       <fileset dir="${module.span.basedir}/../src/main/resources">
@@ -109,15 +109,15 @@
     </copy>
   </target>
   
-  <target name="compile.module.span.tests" depends="register.custom.compilers,compile.module.span.production" description="compile module span; test classes" unless="skip.tests">
+  <target name="compile.module.span.tests" depends="compile.module.span.production" description="compile module span; test classes" unless="skip.tests">
     <mkdir dir="${span.testoutput.dir}"/>
-    <javac2 destdir="${span.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.span}/javac">
+    <javac destdir="${span.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.span}/javac">
       <compilerarg line="${compiler.args.span}"/>
       <bootclasspath refid="span.module.bootclasspath"/>
       <classpath refid="span.module.classpath"/>
       <src refid="span.module.test.sourcepath"/>
       <patternset refid="excluded.from.compilation.span"/>
-    </javac2>
+    </javac>
     
     <copy todir="${span.testoutput.dir}">
       <fileset dir="${module.span.basedir}/../src/test/main">
