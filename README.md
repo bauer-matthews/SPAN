@@ -29,12 +29,13 @@ Information regarding threat model and the process calculus can be found in the 
 
 Obtain the source code `git clone https://github.com/bauer-matthews/SPAN.git`. 
 
-Navigate to the root directory `cd SPAN` and build the project `ant`. 
+Navigate to the root directory `cd SPAN` and build the project `ant`.
 
+If using KISS, `cd src/main/cpp/kiss` and run `make`. 
 
 ## Usage
 
-`span [options]`
+`java -jar span.jar [options]`
 
 - `-akiss <location>` :  path to AKISS engine
 - `-attackTree`       :  print the attack tree
