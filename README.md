@@ -27,7 +27,7 @@ Information regarding threat model and the process calculus can be found in the 
 - [AKISS](https://github.com/akiss/akiss) 
 ###### Build
 
-Obtain the source code `git clone https://github.com/bauer-matthews/SPAN.git`. 
+Obtain the source code `git clone https://github.com/bauer-matthews/SPAN.git` and navigate to the root directory `cd SPAN`. Download the required Java libraries `mvn dependency:resolve`. 
 
 
 ## Usage
