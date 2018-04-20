@@ -1,6 +1,5 @@
 <ivy-module version="2.0">
 
-    <info organisation="org.apache" module="hello-ivy"/>
     <dependencies>
         <dependency org="com.google.guava" name="guava" rev="21.0"/>
         <dependency org="com.google.collections" name="google-collections" rev="1.0"/>

@@ -20,7 +20,7 @@
     <packaging>jar</packaging>
 
     <name>Stochastic Protocol Analyzer</name>
-    <url>http://tbd.com</url>
+    <url>https://github.com/bauer-matthews/SPAN</url>
 
     <dependencies>
 
